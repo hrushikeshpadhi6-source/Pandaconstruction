@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #0e0e10; }
+  a { color: #d4af37; }
+  a:hover { color: #e6c65c; }
+  select, input, button { font-family: 'Manrope', sans-serif; }
+  ::placeholder { color: #6f6e6b; }
+</style>
+<script src="config.js"></script>
+<script src="api.js"></script>
+</helmet>
+
+<sc-if value="{{ viewIs.login }}" hint-placeholder-val="{{ true }}">
+  <div style="min-height:100vh;background:#0e0e10;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Manrope',sans-serif;">
+    <div style="width:100%;max-width:380px;background:#1c1c1f;border:1px solid #2b2b2f;border-radius:14px;padding:40px 32px;text-align:center;">
+      <img src="logo.png" alt="Panda Construction" style="max-width:150px;width:100%;height:auto;margin:0 auto 8px;display:block;" />
+      <div style="color:#9b9a97;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:28px;">Site Support Management System</div>
+      <form onSubmit="{{ handleLogin }}" style="display:flex;flex-direction:column;gap:14px;text-align:left;">
+        <div>
+          <label style="display:block;font-size:12px;color:#9b9a97;margin-bottom:6px;">User</label>
+          <select name="name" required="true" style="width:100%;background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px 12px;font-size:14px;box-sizing:border-box;">
+            <sc-for list="{{ users }}" as="u" hint-placeholder-count="4">
+              <option value="{{ u.Name }}">{{ u.Name }} — {{ u.Role }}</option>
+            </sc-for>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;color:#9b9a97;margin-bottom:6px;">Password</label>
+          <input type="password" name="password" required="true" style="width:100%;background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px 12px;font-size:14px;box-sizing:border-box;" />
+        </div>
+        <sc-if value="{{ loginError }}">
+          <div style="color:#e2574c;font-size:13px;">{{ loginError }}</div>
+        </sc-if>
+        <button type="submit" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:12px;border-radius:8px;border:none;cursor:pointer;font-size:14px;margin-top:6px;">Sign In</button>
+        <sc-if value="{{ isDemo }}">
+          <div style="color:#6f6e6b;font-size:12px;text-align:center;margin-top:4px;">Demo mode — password: panda@123</div>
+        </sc-if>
+      </form>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ session }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;min-height:100vh;background:#0e0e10;font-family:'Manrope',sans-serif;color:#f2f0ec;">
+
+  <div style="width:260px;flex-shrink:0;background:#151517;border-right:1px solid #2b2b2f;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;gap:10px;padding:20px 20px 20px;border-bottom:1px solid #2b2b2f;">
+      <img src="logo.png" alt="logo" style="width:38px;height:38px;object-fit:contain;flex-shrink:0;" />
+      <div style="font-weight:800;font-size:14px;letter-spacing:0.4px;line-height:1.3;">PANDA<br/>CONSTRUCTION</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;padding:16px 12px;overflow-y:auto;">
+      <button onClick="{{ navDashboard }}" style="{{ navStyle.dashboard }}">Dashboard</button>
+      <div style="margin:16px 12px 6px;font-size:11px;color:#6f6e6b;text-transform:uppercase;letter-spacing:0.6px;">Supplier Management</div>
+      <button onClick="{{ navSuppliers }}" style="{{ navStyle.suppliers }}">Suppliers</button>
+      <button onClick="{{ navTransactions }}" style="{{ navStyle.transactions }}">Transactions</button>
+      <button onClick="{{ navPayments }}" style="{{ navStyle.payments }}">Payments</button>
+      <button onClick="{{ navBF }}" style="{{ navStyle.bf }}">BF Balance</button>
+      <div style="margin:16px 12px 6px;font-size:11px;color:#6f6e6b;text-transform:uppercase;letter-spacing:0.6px;">Diesel Management</div>
+      <button onClick="{{ navDieselTx }}" style="{{ navStyle.dieselTx }}">Diesel Transactions</button>
+      <button onClick="{{ navDieselPayments }}" style="{{ navStyle.dieselPayments }}">Diesel Payments</button>
+      <button onClick="{{ navDieselBF }}" style="{{ navStyle.dieselBF }}">Diesel BF</button>
+      <div style="margin:16px 12px 6px;font-size:11px;color:#6f6e6b;text-transform:uppercase;letter-spacing:0.6px;">Master Data</div>
+      <button onClick="{{ navSites }}" style="{{ navStyle.sites }}">Sites</button>
+      <button onClick="{{ navMaterials }}" style="{{ navStyle.materials }}">Materials</button>
+      <div style="margin:16px 12px 6px;"></div>
+      <button onClick="{{ navReports }}" style="{{ navStyle.reports }}">Reports</button>
+      <button onClick="{{ navSettings }}" style="{{ navStyle.settings }}">Settings</button>
+    </div>
+    <div style="padding:16px 20px 20px;border-top:1px solid #2b2b2f;">
+      <div style="font-size:13px;font-weight:700;">{{ session.name }}</div>
+      <div style="font-size:12px;color:#9b9a97;margin-bottom:10px;">{{ session.role }}</div>
+      <button onClick="{{ logout }}" style="width:100%;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:9px;border-radius:6px;cursor:pointer;font-size:13px;box-sizing:border-box;">Logout</button>
+    </div>
+  </div>
+
+  <div style="flex:1;min-width:0;padding:32px 40px;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;gap:16px;flex-wrap:wrap;">
+      <h1 style="font-size:24px;font-weight:800;margin:0;">{{ pageTitle }}</h1>
+      <sc-if value="{{ isDemo }}"><div style="background:#2b2b2f;color:#d4af37;font-size:12px;padding:6px 14px;border-radius:20px;white-space:nowrap;">Demo Data — connect config.js for live Sheet</div></sc-if>
+    </div>
+
+    <sc-if value="{{ viewIs.dashboard }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">From</label><input type="date" onChange="{{ onDashFrom }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">To</label><input type="date" onChange="{{ onDashTo }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Supplier</label>
+          <select onChange="{{ onDashSupplier }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+            <option value="">All Suppliers</option>
+            <sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+          </select>
+        </div>
+        <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Site</label>
+          <select onChange="{{ onDashSite }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+            <option value="">All Sites</option>
+            <sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+          </select>
+        </div>
+        <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Material</label>
+          <select onChange="{{ onDashMaterial }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+            <option value="">All Materials</option>
+            <sc-for list="{{ materialOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px;">
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total Supplier Purchase</div><div style="font-size:22px;font-weight:800;">{{ totalSupplierPurchase }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total Supplier Paid</div><div style="font-size:22px;font-weight:800;">{{ totalSupplierPaid }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total Supplier Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalSupplierOutstanding }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total BF Balance</div><div style="font-size:22px;font-weight:800;">{{ totalBFBalance }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total Diesel Cost</div><div style="font-size:22px;font-weight:800;">{{ totalDieselCost }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total Diesel Paid</div><div style="font-size:22px;font-weight:800;">{{ totalDieselPaid }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total Diesel Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalDieselOutstanding }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Current Month Expenditure</div><div style="font-size:22px;font-weight:800;">{{ currentMonthExpenditure }}</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;">
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:20px;">
+          <div style="font-weight:700;margin-bottom:14px;">Supplier Expenditure</div>
+          <sc-for list="{{ supplierExpenditure }}" as="row" hint-placeholder-count="3">
+            <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>{{ row.label }}</span><span style="color:#d4af37;font-weight:700;">{{ row.valueFmt }}</span></div><div style="height:6px;background:#2b2b2f;border-radius:4px;overflow:hidden;"><div style="height:100%;background:#d4af37;width:{{ row.barPct }};"></div></div></div>
+          </sc-for>
+        </div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:20px;">
+          <div style="font-weight:700;margin-bottom:14px;">Site-wise Expenditure</div>
+          <sc-for list="{{ siteExpenditure }}" as="row" hint-placeholder-count="3">
+            <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>{{ row.label }}</span><span style="color:#d4af37;font-weight:700;">{{ row.valueFmt }}</span></div><div style="height:6px;background:#2b2b2f;border-radius:4px;overflow:hidden;"><div style="height:100%;background:#d4af37;width:{{ row.barPct }};"></div></div></div>
+          </sc-for>
+        </div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:20px;">
+          <div style="font-weight:700;margin-bottom:14px;">Material-wise Expenditure</div>
+          <sc-for list="{{ materialExpenditure }}" as="row" hint-placeholder-count="3">
+            <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>{{ row.label }}</span><span style="color:#d4af37;font-weight:700;">{{ row.valueFmt }}</span></div><div style="height:6px;background:#2b2b2f;border-radius:4px;overflow:hidden;"><div style="height:100%;background:#d4af37;width:{{ row.barPct }};"></div></div></div>
+          </sc-for>
+        </div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:20px;">
+          <div style="font-weight:700;margin-bottom:14px;">Diesel Expenditure (by Site)</div>
+          <sc-for list="{{ dieselExpenditure }}" as="row" hint-placeholder-count="3">
+            <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>{{ row.label }}</span><span style="color:#d4af37;font-weight:700;">{{ row.valueFmt }}</span></div><div style="height:6px;background:#2b2b2f;border-radius:4px;overflow:hidden;"><div style="height:100%;background:#d4af37;width:{{ row.barPct }};"></div></div></div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.suppliers }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;"><button onClick="{{ openSupplierModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add Supplier</button></div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;">
+        <sc-for list="{{ supplierCards }}" as="sup" hint-placeholder-count="3">
+          <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:20px;">
+            <div style="font-weight:700;font-size:16px;margin-bottom:4px;">{{ sup.SupplierName }}</div>
+            <div style="font-size:12px;color:#9b9a97;margin-bottom:14px;">{{ sup.ContactPerson }} · {{ sup.ContactNumber }}</div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:#9b9a97;">Purchase</span><span>{{ sup.purchase }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:#9b9a97;">Paid</span><span>{{ sup.paid }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:14px;"><span style="color:#9b9a97;">Outstanding</span><span style="color:#d4af37;font-weight:700;">{{ sup.outstanding }}</span></div>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ sup.onOpen }}" style="flex:1;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:9px;border-radius:6px;cursor:pointer;font-size:13px;">View Details</button>
+              <button onClick="{{ sup.onEdit }}" style="background:transparent;border:1px solid #2b2b2f;color:#d4af37;padding:9px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Edit</button>
+              <button onClick="{{ sup.onDelete }}" style="background:transparent;border:1px solid #2b2b2f;color:#e2574c;padding:9px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Delete</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.supplierDetail }}">
+      <button onClick="{{ navSuppliers }}" style="background:transparent;border:1px solid #2b2b2f;color:#9b9a97;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:20px;">← All Suppliers</button>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px;">
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">BF Balance</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.bfFmt }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total Purchase</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.purchaseFmt }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total Paid</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.paidFmt }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Outstanding</div><div style="font-size:20px;font-weight:800;color:#d4af37;">{{ supplierDetail.outstandingFmt }}</div></div>
+      </div>
+      <div style="color:#6f6e6b;font-size:12px;margin-bottom:20px;">Outstanding = BF Balance + Total Purchase − Total Paid</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Site</label>
+          <select onChange="{{ onDetailSite }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+            <option value="">All Sites</option>
+            <sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+          </select>
+        </div>
+        <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Material</label>
+          <select onChange="{{ onDetailMaterial }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+            <option value="">All Materials</option>
+            <sc-for list="{{ materialOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+          </select>
+        </div>
+        <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Vehicle</label>
+          <input type="text" onChange="{{ onDetailVehicle }}" placeholder="Search vehicle no." style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;" />
+        </div>
+      </div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid #2b2b2f;">Date</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid #2b2b2f;">Vehicle</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid #2b2b2f;">Material</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid #2b2b2f;">Qty</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid #2b2b2f;">Unit</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid #2b2b2f;">Rate</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid #2b2b2f;">Value</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid #2b2b2f;">Site</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ supplierDetail.rows }}" as="r" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.VehicleNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Material }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.Quantity }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Unit }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.RateFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Site }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.transactions }}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:16px;background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:16px;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">From</label><input type="date" onChange="{{ onDashFrom }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">To</label><input type="date" onChange="{{ onDashTo }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Supplier</label>
+            <select onChange="{{ onDashSupplier }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+              <option value="">All</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+            </select>
+          </div>
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Site</label>
+            <select onChange="{{ onDashSite }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+              <option value="">All</option><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+            </select>
+          </div>
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Material</label>
+            <select onChange="{{ onDashMaterial }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+              <option value="">All</option><sc-for list="{{ materialOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+            </select>
+          </div>
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Vehicle</label><input type="text" onChange="{{ onDashVehicle }}" placeholder="Search" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;width:110px;" /></div>
+        </div>
+        <button onClick="{{ openTransactionModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;white-space:nowrap;">+ Add Transaction</button>
+      </div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:900px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">SL</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Date</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Supplier</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Vehicle</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Material</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Qty</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Unit</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Rate</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Value</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Site</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Remarks</th>
+            <th style="padding:12px;border-bottom:1px solid #2b2b2f;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ txRows }}" as="r" hint-placeholder-count="5">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.SLNo }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.VehicleNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Material }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.Quantity }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Unit }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.RateFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;color:#9b9a97;">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid #2b2b2f;color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.payments }}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:16px;background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:16px;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Supplier</label>
+            <select onChange="{{ onDashSupplier }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+              <option value="">All</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+            </select>
+          </div>
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Site</label>
+            <select onChange="{{ onDashSite }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+              <option value="">All</option><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+            </select>
+          </div>
+        </div>
+        <button onClick="{{ openPaymentModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;white-space:nowrap;">+ Add Payment</button>
+      </div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:800px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Date</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Supplier</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Amount Paid</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Method</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Reference</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Site</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Remarks</th>
+            <th style="padding:12px;border-bottom:1px solid #2b2b2f;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ payRows }}" as="r" hint-placeholder-count="5">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;color:#9b9a97;">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid #2b2b2f;color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.bf }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;"><button onClick="{{ openBFModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add BF Entry</button></div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:700px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Supplier</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">BF Month</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">BF Date</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">BF Amount</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Site</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Remarks</th>
+            <th style="padding:12px;border-bottom:1px solid #2b2b2f;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ bfRows }}" as="r" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.BFMonth }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.BFDate }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.BFAmountFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;color:#9b9a97;">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid #2b2b2f;color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.dieselTx }}">
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px;">
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total Diesel Quantity</div><div style="font-size:20px;font-weight:800;">{{ totalDieselQty }} L</div></div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Total Diesel Cost</div><div style="font-size:20px;font-weight:800;">{{ totalDieselCost }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Average Rate</div><div style="font-size:20px;font-weight:800;">{{ avgDieselRate }}</div></div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:18px;"><div style="font-size:12px;color:#9b9a97;margin-bottom:8px;">Current Month Diesel Cost</div><div style="font-size:20px;font-weight:800;">{{ currentMonthDiesel }}</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:16px;background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:16px;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">From</label><input type="date" onChange="{{ onDashFrom }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">To</label><input type="date" onChange="{{ onDashTo }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Fuel Station</label>
+            <select onChange="{{ onDashSupplier }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+              <option value="">All</option><sc-for list="{{ dieselSupplierOptions }}" as="opt" hint-placeholder-count="2"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+            </select>
+          </div>
+          <div><label style="display:block;font-size:11px;color:#9b9a97;margin-bottom:4px;">Site</label>
+            <select onChange="{{ onDashSite }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:8px 10px;font-size:13px;">
+              <option value="">All</option><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+            </select>
+          </div>
+        </div>
+        <button onClick="{{ openDieselTxModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;white-space:nowrap;">+ Add Diesel Entry</button>
+      </div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:900px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">SL</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Date</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Fuel Station</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Vehicle</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Qty (L)</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Rate</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Value</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Site</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Driver</th>
+            <th style="padding:12px;border-bottom:1px solid #2b2b2f;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ dieselTxRows }}" as="r" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.SLNo }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.VehicleNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.DieselQuantity }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.RateFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Driver }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid #2b2b2f;color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.dieselPayments }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;"><button onClick="{{ openDieselPaymentModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add Diesel Payment</button></div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:800px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Date</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Fuel Station</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Amount Paid</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Method</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Reference</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Site</th>
+            <th style="padding:12px;border-bottom:1px solid #2b2b2f;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ dieselPayRows }}" as="r" hint-placeholder-count="3">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid #2b2b2f;color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.dieselBF }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;"><button onClick="{{ openDieselBFModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add Diesel BF</button></div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:700px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Fuel Station</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">BF Month</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">BF Date</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">BF Amount</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Site</th>
+            <th style="padding:12px;border-bottom:1px solid #2b2b2f;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ dieselBFRows }}" as="r" hint-placeholder-count="2">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.BFMonth }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.BFDate }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.BFAmountFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid #2b2b2f;color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.sites }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;"><button onClick="{{ openSiteModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add Site</button></div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Site Name</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Purchase</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Paid</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Outstanding</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Status</th>
+            <th style="padding:12px;border-bottom:1px solid #2b2b2f;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ siteRows }}" as="r" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.SiteName }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.purchaseFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.paidFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.outstandingFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Status }}</td>
+                <td style="padding:12px;border-bottom:1px solid #232326;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid #2b2b2f;color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.materials }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;"><button onClick="{{ openMaterialModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add Material</button></div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Material</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Total Qty</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Unit</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Avg Rate</th>
+            <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Total Value</th>
+            <th style="padding:12px;border-bottom:1px solid #2b2b2f;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ materialAnalysis }}" as="r" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.MaterialName }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.qty }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.DefaultUnit }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.avgRate }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.value }}</td>
+                <td style="padding:12px;border-bottom:1px solid #232326;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid #2b2b2f;color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.reports }}">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onClick="{{ setReportSupplier }}" style="{{ reportTabStyle.supplier }}">Supplier Report</button>
+          <button onClick="{{ setReportSite }}" style="{{ reportTabStyle.site }}">Site Report</button>
+          <button onClick="{{ setReportMaterial }}" style="{{ reportTabStyle.material }}">Material Report</button>
+          <button onClick="{{ setReportMonthly }}" style="{{ reportTabStyle.monthly }}">Monthly Report</button>
+          <button onClick="{{ setReportDiesel }}" style="{{ reportTabStyle.diesel }}">Diesel Report</button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onClick="{{ exportCurrentReport }}" style="background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export CSV</button>
+          <button onClick="{{ printReport }}" style="background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Print</button>
+        </div>
+      </div>
+
+      <sc-if value="{{ reportTabIs.supplier }}">
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Supplier</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">BF</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Purchase</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Paid</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Outstanding</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ supplierReportRows }}" as="r" hint-placeholder-count="4">
+                <tr>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Supplier }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.BF }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.Purchase }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.Paid }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.Outstanding }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </sc-if>
+      <sc-if value="{{ reportTabIs.site }}">
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Site</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Purchase</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Paid</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Outstanding</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ siteReportRows }}" as="r" hint-placeholder-count="4">
+                <tr>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Site }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.Purchase }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.Paid }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.Outstanding }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </sc-if>
+      <sc-if value="{{ reportTabIs.material }}">
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Material</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Quantity</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Value</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ materialReportRows }}" as="r" hint-placeholder-count="4">
+                <tr>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Material }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.Quantity }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.Value }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </sc-if>
+      <sc-if value="{{ reportTabIs.monthly }}">
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Month</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Purchase</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Paid</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Outstanding</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ monthlyReportRows }}" as="r" hint-placeholder-count="3">
+                <tr>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Month }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.Purchase }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.Paid }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.Outstanding }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="color:#6f6e6b;font-size:12px;margin-top:10px;">Outstanding here is period purchase minus period payments (excludes BF carried from earlier months).</div>
+      </sc-if>
+      <sc-if value="{{ reportTabIs.diesel }}">
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Site</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Quantity (L)</th>
+              <th style="text-align:right;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Cost</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ dieselReportRows }}" as="r" hint-placeholder-count="4">
+                <tr>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ r.Site }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;">{{ r.Quantity }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;text-align:right;color:#d4af37;font-weight:600;">{{ r.Cost }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.settings }}">
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:20px;">
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:20px;display:flex;align-items:center;gap:16px;">
+          <img src="logo.png" alt="logo" style="width:56px;height:56px;object-fit:contain;" />
+          <div><div style="font-weight:700;font-size:16px;">Panda Construction</div><div style="font-size:12px;color:#9b9a97;">Currency: ₹ INR</div></div>
+        </div>
+        <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;padding:20px;">
+          <div style="font-weight:700;font-size:14px;margin-bottom:6px;">Data Source</div>
+          <div style="font-size:13px;color:#9b9a97;">{{ dataSourceLabel }}</div>
+        </div>
+      </div>
+      <div style="font-weight:700;margin-bottom:10px;">Users</div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;margin-bottom:24px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Name</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Role</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Status</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ users }}" as="u" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ u.Name }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ u.Role }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ u.Status }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-weight:700;margin-bottom:10px;">Recent Activity (Audit Log)</div>
+      <div style="background:#1c1c1f;border:1px solid #2b2b2f;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Timestamp</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">User</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Action</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Module</th>
+            <th style="text-align:left;font-size:11px;color:#9b9a97;text-transform:uppercase;padding:12px;border-bottom:1px solid #2b2b2f;">Details</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ auditLog }}" as="a" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ a.Timestamp }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ a.User }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ a.Action }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;">{{ a.Module }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #232326;color:#9b9a97;">{{ a.Details }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+
+<sc-if value="{{ toast }}">
+  <div style="position:fixed;bottom:24px;right:24px;background:#1c1c1f;border:1px solid #2b2b2f;padding:14px 20px;border-radius:8px;color:#f2f0ec;font-size:14px;font-family:'Manrope',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:200;">{{ toast.msg }}</div>
+</sc-if>
+
+<sc-if value="{{ modal }}">
+  <div style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:150;padding:20px;font-family:'Manrope',sans-serif;">
+    <div style="width:100%;max-width:460px;max-height:90vh;overflow-y:auto;background:#1c1c1f;border:1px solid #2b2b2f;border-radius:12px;padding:28px;">
+
+      <sc-if value="{{ modalIs.transaction }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitTransaction }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="date" name="Date" required="true" defaultValue="{{ txDefaults.Date }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;" />
+          <select name="Supplier" required="true" defaultValue="{{ txDefaults.Supplier }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;"><option value="">Select Supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <input type="text" name="VehicleNumber" placeholder="Vehicle Number" defaultValue="{{ txDefaults.VehicleNumber }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="Material" placeholder="Material (pick or type new)" required="true" defaultValue="{{ txDefaults.Material }}" list="materialList" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="materialList"><sc-for list="{{ materialOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <div style="display:flex;gap:10px;">
+            <input type="number" step="any" name="Quantity" placeholder="Quantity" required="true" defaultValue="{{ txDefaults.Quantity }}" style="flex:1;background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+            <select name="Unit" defaultValue="{{ txDefaults.Unit }}" style="flex:1;background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;"><sc-for list="{{ unitOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          </div>
+          <input type="number" step="any" name="Rate" placeholder="Rate (₹)" required="true" defaultValue="{{ txDefaults.Rate }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ txDefaults.Site }}" list="siteList" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ txDefaults.Remarks }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="color:#6f6e6b;font-size:12px;">Value is calculated automatically as Quantity × Rate.</div>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.payment }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitPayment }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="date" name="Date" required="true" defaultValue="{{ payDefaults.Date }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;" />
+          <select name="Supplier" required="true" defaultValue="{{ payDefaults.Supplier }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;"><option value="">Select Supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ payDefaults.AmountPaid }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <select name="PaymentMethod" defaultValue="{{ payDefaults.PaymentMethod }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ payDefaults.ReferenceNumber }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ payDefaults.Site }}" list="siteList" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ payDefaults.Remarks }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.bf }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitBF }}" style="display:flex;flex-direction:column;gap:12px;">
+          <select name="Supplier" required="true" defaultValue="{{ bfDefaults.Supplier }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;"><option value="">Select Supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <input type="text" name="BFMonth" placeholder="BF Month (e.g. August 2026)" required="true" defaultValue="{{ bfDefaults.BFMonth }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="date" name="BFDate" required="true" defaultValue="{{ bfDefaults.BFDate }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;" />
+          <input type="number" step="any" name="BFAmount" placeholder="BF Amount (₹)" required="true" defaultValue="{{ bfDefaults.BFAmount }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ bfDefaults.Site }}" list="siteList" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ bfDefaults.Remarks }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.dieselTx }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitDieselTx }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="date" name="Date" required="true" defaultValue="{{ dieselTxDefaults.Date }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;" />
+          <input type="text" name="Supplier" placeholder="Supplier / Fuel Station" required="true" defaultValue="{{ dieselTxDefaults.Supplier }}" list="dieselSupplierList" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="dieselSupplierList"><sc-for list="{{ dieselSupplierOptions }}" as="opt" hint-placeholder-count="2"><option value="{{ opt }}"></option></sc-for></datalist>
+          <input type="text" name="VehicleNumber" placeholder="Vehicle / Equipment Number" defaultValue="{{ dieselTxDefaults.VehicleNumber }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;gap:10px;">
+            <input type="number" step="any" name="DieselQuantity" placeholder="Quantity (Litres)" required="true" defaultValue="{{ dieselTxDefaults.DieselQuantity }}" style="flex:1;background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+            <input type="number" step="any" name="Rate" placeholder="Rate (₹)" required="true" defaultValue="{{ dieselTxDefaults.Rate }}" style="flex:1;background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          </div>
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ dieselTxDefaults.Site }}" list="siteList" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <input type="text" name="Driver" placeholder="Driver / Operator" defaultValue="{{ dieselTxDefaults.Driver }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ dieselTxDefaults.Remarks }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.dieselPayment }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitDieselPayment }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="date" name="Date" required="true" defaultValue="{{ dieselPayDefaults.Date }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;" />
+          <input type="text" name="Supplier" placeholder="Supplier / Fuel Station" required="true" defaultValue="{{ dieselPayDefaults.Supplier }}" list="dieselSupplierList2" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="dieselSupplierList2"><sc-for list="{{ dieselSupplierOptions }}" as="opt" hint-placeholder-count="2"><option value="{{ opt }}"></option></sc-for></datalist>
+          <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ dieselPayDefaults.AmountPaid }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <select name="PaymentMethod" defaultValue="{{ dieselPayDefaults.PaymentMethod }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ dieselPayDefaults.ReferenceNumber }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ dieselPayDefaults.Site }}" list="siteList" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ dieselPayDefaults.Remarks }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.dieselBF }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitDieselBF }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" name="Supplier" placeholder="Fuel Station" required="true" defaultValue="{{ dieselBFDefaults.Supplier }}" list="dieselSupplierList3" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="dieselSupplierList3"><sc-for list="{{ dieselSupplierOptions }}" as="opt" hint-placeholder-count="2"><option value="{{ opt }}"></option></sc-for></datalist>
+          <input type="text" name="BFMonth" placeholder="BF Month (e.g. August 2026)" required="true" defaultValue="{{ dieselBFDefaults.BFMonth }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="date" name="BFDate" required="true" defaultValue="{{ dieselBFDefaults.BFDate }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;" />
+          <input type="number" step="any" name="BFAmount" placeholder="BF Amount (₹)" required="true" defaultValue="{{ dieselBFDefaults.BFAmount }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ dieselBFDefaults.Site }}" list="siteList" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ dieselBFDefaults.Remarks }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.supplier }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitSupplier }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" name="SupplierName" placeholder="Supplier Name" required="true" defaultValue="{{ supplierDefaults.SupplierName }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="ContactPerson" placeholder="Contact Person" defaultValue="{{ supplierDefaults.ContactPerson }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="ContactNumber" placeholder="Contact Number" defaultValue="{{ supplierDefaults.ContactNumber }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="MaterialType" placeholder="Material Types (comma separated, e.g. Sand, Cement, Steel)" defaultValue="{{ supplierDefaults.MaterialType }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.site }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitSite }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" name="SiteName" placeholder="Site Name" required="true" defaultValue="{{ siteDefaults.SiteName }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.material }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitMaterial }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" name="MaterialName" placeholder="Material Name" required="true" defaultValue="{{ materialDefaults.MaterialName }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;box-sizing:border-box;" />
+          <select name="DefaultUnit" defaultValue="{{ materialDefaults.DefaultUnit }}" style="background:#0e0e10;border:1px solid #2b2b2f;border-radius:6px;color:#f2f0ec;padding:10px;font-size:14px;"><sc-for list="{{ unitOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid #2b2b2f;color:#f2f0ec;padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+    </div>
+  </div>
+</sc-if>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    session: null, view: 'login', loading: true, toast: null, loginError: '',
+    suppliers: [], transactions: [], payments: [], bf: [],
+    dieselTx: [], dieselPayments: [], dieselBF: [],
+    sites: [], materials: [], users: [], auditLog: [],
+    selectedSupplier: null, modal: null, editRecord: null,
+    dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
+    detailFilters: { site: '', material: '', vehicle: '' },
+    reportTab: 'supplier'
+  };
+
+  componentDidMount() {
+    PandaAPI.call('getUsers').then(function (r) { this.setState({ users: r.data || [] }); }.bind(this));
+    let sess = null;
+    try { sess = JSON.parse(localStorage.getItem('panda_session')); } catch (e) {}
+    if (sess) { this.setState({ session: sess, view: 'dashboard' }); this.loadAll(); }
+    else this.setState({ loading: false });
+  }
+
+  showToast(msg) {
+    this.setState({ toast: { msg: msg } });
+    clearTimeout(this._toastT);
+    this._toastT = setTimeout(function () { this.setState({ toast: null }); }.bind(this), 3200);
+  }
+
+  loadAll() {
+    this.setState({ loading: true });
+    return Promise.all([
+      PandaAPI.call('getSuppliers'), PandaAPI.call('getTransactions'), PandaAPI.call('getPayments'), PandaAPI.call('getBF'),
+      PandaAPI.call('getDieselTransactions'), PandaAPI.call('getDieselPayments'), PandaAPI.call('getDieselBF'),
+      PandaAPI.call('getSites'), PandaAPI.call('getMaterials'), PandaAPI.call('getUsers'), PandaAPI.call('getAuditLog')
+    ]).then(function (res) {
+      this.setState({
+        suppliers: res[0].data || [], transactions: res[1].data || [], payments: res[2].data || [], bf: res[3].data || [],
+        dieselTx: res[4].data || [], dieselPayments: res[5].data || [], dieselBF: res[6].data || [],
+        sites: res[7].data || [], materials: res[8].data || [], users: res[9].data || [], auditLog: res[10].data || [],
+        loading: false
+      });
+    }.bind(this));
+  }
+
+  handleLogin(e) {
+    e.preventDefault();
+    const name = e.target.elements.name.value;
+    const password = e.target.elements.password.value;
+    PandaAPI.call('login', { name: name, password: password }).then(function (res) {
+      if (res.success) {
+        localStorage.setItem('panda_session', JSON.stringify(res.user));
+        this.setState({ session: res.user, view: 'dashboard', loginError: '' });
+        this.loadAll();
+      } else {
+        this.setState({ loginError: res.message || 'Login failed.' });
+      }
+    }.bind(this));
+  }
+
+  logout() { localStorage.removeItem('panda_session'); this.setState({ session: null, view: 'login' }); }
+  setView(view) { this.setState({ view: view, selectedSupplier: null, modal: null }); }
+  openSupplier(name) { this.setState({ view: 'supplierDetail', selectedSupplier: name }); }
+  openModal(type, record) { this.setState({ modal: type, editRecord: record || null }); }
+  closeModal() { this.setState({ modal: null, editRecord: null }); }
+  currentUserName() { return this.state.session ? this.state.session.name : ''; }
+
+  submitGeneric(action, payload, successMsg) {
+    return PandaAPI.call(action, payload).then(function (res) {
+      if (res.success) { this.showToast(res.message || successMsg); this.closeModal(); this.loadAll(); }
+      else this.showToast(res.message || 'Save failed.');
+    }.bind(this));
+  }
+
+  submitTransaction(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value || !f.Supplier.value || !f.Material.value || !f.Quantity.value || !f.Rate.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, Material: f.Material.value, Quantity: f.Quantity.value, Unit: f.Unit.value, Rate: f.Rate.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.SLNo = ed.SLNo; this.submitGeneric('updateTransaction', payload, 'Transaction updated successfully.'); }
+    else this.submitGeneric('addTransaction', payload, 'Transaction saved successfully.');
+  }
+  submitPayment(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value || !f.Supplier.value || !f.AmountPaid.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updatePayment', payload, 'Payment updated successfully.'); }
+    else this.submitGeneric('addPayment', payload, 'Payment saved successfully.');
+  }
+  submitBF(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Supplier.value || !f.BFAmount.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Supplier: f.Supplier.value, BFMonth: f.BFMonth.value, BFDate: f.BFDate.value, BFAmount: f.BFAmount.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.OrigSupplier = ed.Supplier; payload.OrigBFMonth = ed.BFMonth; payload.OrigBFDate = ed.BFDate; this.submitGeneric('updateBF', payload, 'BF balance updated successfully.'); }
+    else this.submitGeneric('addBF', payload, 'BF balance saved successfully.');
+  }
+  submitDieselTx(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value || !f.Supplier.value || !f.DieselQuantity.value || !f.Rate.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, DieselQuantity: f.DieselQuantity.value, Rate: f.Rate.value, Site: f.Site.value, Driver: f.Driver.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.SLNo = ed.SLNo; this.submitGeneric('updateDieselTransaction', payload, 'Diesel transaction updated successfully.'); }
+    else this.submitGeneric('addDieselTransaction', payload, 'Diesel transaction saved successfully.');
+  }
+  submitDieselPayment(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value || !f.Supplier.value || !f.AmountPaid.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateDieselPayment', payload, 'Diesel payment updated successfully.'); }
+    else this.submitGeneric('addDieselPayment', payload, 'Diesel payment saved successfully.');
+  }
+  submitDieselBF(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Supplier.value || !f.BFAmount.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Supplier: f.Supplier.value, BFMonth: f.BFMonth.value, BFDate: f.BFDate.value, BFAmount: f.BFAmount.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.OrigSupplier = ed.Supplier; payload.OrigBFMonth = ed.BFMonth; payload.OrigBFDate = ed.BFDate; this.submitGeneric('updateDieselBF', payload, 'Diesel BF updated successfully.'); }
+    else this.submitGeneric('addDieselBF', payload, 'Diesel BF saved successfully.');
+  }
+  deleteSupplier(sup) {
+    if (!window.confirm('Delete supplier "' + sup.SupplierName + '"? This cannot be undone.')) return;
+    this.submitGeneric('deleteSupplier', { SupplierID: sup.SupplierID, SupplierName: sup.SupplierName, CreatedBy: this.currentUserName() }, 'Supplier deleted successfully.');
+  }
+  submitSupplier(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.SupplierName.value) { this.showToast('Supplier name is required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { SupplierName: f.SupplierName.value, ContactPerson: f.ContactPerson.value, ContactNumber: f.ContactNumber.value, MaterialType: f.MaterialType.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.SupplierID = ed.SupplierID; this.submitGeneric('updateSupplier', payload, 'Supplier updated successfully.'); }
+    else this.submitGeneric('addSupplier', payload, 'Supplier saved successfully.');
+  }
+  submitSite(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.SiteName.value) { this.showToast('Site name is required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { SiteName: f.SiteName.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.SiteID = ed.SiteID; this.submitGeneric('updateSite', payload, 'Site updated successfully.'); }
+    else this.submitGeneric('addSite', payload, 'Site saved successfully.');
+  }
+  submitMaterial(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.MaterialName.value) { this.showToast('Material name is required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { MaterialName: f.MaterialName.value, DefaultUnit: f.DefaultUnit.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.MaterialID = ed.MaterialID; this.submitGeneric('updateMaterial', payload, 'Material updated successfully.'); }
+    else this.submitGeneric('addMaterial', payload, 'Material saved successfully.');
+  }
+
+  setDashFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.dashFilters); nf[key] = e.target.value; return { dashFilters: nf }; }); }.bind(this); }
+  setDetailFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.detailFilters); nf[key] = e.target.value; return { detailFilters: nf }; }); }.bind(this); }
+
+  fmt(n) { n = Number(n) || 0; return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 }); }
+  sum(list, field) { return (list || []).reduce(function (a, r) { return a + (Number(r[field]) || 0); }, 0); }
+  inRange(dateStr, from, to) { if (!dateStr) return true; if (from && dateStr < from) return false; if (to && dateStr > to) return false; return true; }
+
+  exportCSV(rows, headers, filename) {
+    const esc = function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
+    const csv = [headers.map(esc).join(',')].concat(rows.map(function (r) { return headers.map(function (h) { return esc(r[h]); }).join(','); })).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+  }
+  printReport() { window.print(); }
+
+  exportCurrentReport() {
+    const rows = this._lastReportRows || []; const headers = this._lastReportHeaders || [];
+    this.exportCSV(rows, headers, 'panda-construction-' + this.state.reportTab + '-report.csv');
+  }
+
+  renderVals() {
+    const s = this.state;
+    const self = this;
+    const fmt = function (n) { return self.fmt(n); };
+    const isDemo = window.PandaAPI ? PandaAPI.isDemo : true;
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    const df = s.dashFilters;
+    const txF = s.transactions.filter(function (t) { return self.inRange(t.Date, df.from, df.to) && (!df.supplier || t.Supplier === df.supplier) && (!df.site || t.Site === df.site) && (!df.material || t.Material === df.material) && (!df.vehicle || String(t.VehicleNumber || '').toLowerCase().indexOf(df.vehicle.toLowerCase()) !== -1); });
+    const payF = s.payments.filter(function (p) { return self.inRange(p.Date, df.from, df.to) && (!df.supplier || p.Supplier === df.supplier) && (!df.site || p.Site === df.site); });
+    const dieselTxF = s.dieselTx.filter(function (t) { return self.inRange(t.Date, df.from, df.to) && (!df.site || t.Site === df.site) && (!df.supplier || t.Supplier === df.supplier); });
+    const dieselPayF = s.dieselPayments.filter(function (p) { return self.inRange(p.Date, df.from, df.to) && (!df.site || p.Site === df.site); });
+
+    const totalSupplierPurchaseN = this.sum(txF, 'Value');
+    const totalSupplierPaidN = this.sum(payF, 'AmountPaid');
+    const totalSupplierBFN = this.sum(s.bf, 'BFAmount');
+    const totalSupplierOutstandingN = totalSupplierBFN + totalSupplierPurchaseN - totalSupplierPaidN;
+    const totalDieselCostN = this.sum(dieselTxF, 'Value');
+    const totalDieselPaidN = this.sum(dieselPayF, 'AmountPaid');
+    const totalDieselBFN = this.sum(s.dieselBF, 'BFAmount');
+    const totalDieselOutstandingN = totalDieselBFN + totalDieselCostN - totalDieselPaidN;
+    const totalBFBalanceN = totalSupplierBFN + totalDieselBFN;
+    const curMonth = new Date().toISOString().slice(0, 7);
+    const currentMonthExpenditureN = this.sum(s.transactions.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') + this.sum(s.dieselTx.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value');
+
+    const groupSum = function (list, key, field) {
+      const map = {};
+      list.forEach(function (r) { const k = r[key] || '—'; map[k] = (map[k] || 0) + (Number(r[field]) || 0); });
+      return Object.keys(map).map(function (k) { return { label: k, value: map[k] }; }).sort(function (a, b) { return b.value - a.value; });
+    };
+    const withBars = function (rows) {
+      const max = rows.reduce(function (m, r) { return Math.max(m, r.value); }, 0) || 1;
+      return rows.map(function (r) { return { label: r.label, value: r.value, valueFmt: fmt(r.value), barPct: Math.round((r.value / max) * 100) + '%' }; });
+    };
+
+    const supplierExpenditure = withBars(groupSum(txF, 'Supplier', 'Value'));
+    const siteExpenditure = withBars(groupSum(txF, 'Site', 'Value'));
+    const materialExpenditure = withBars(groupSum(txF, 'Material', 'Value'));
+    const dieselExpenditure = withBars(groupSum(dieselTxF, 'Site', 'Value'));
+
+    const supplierOptions = s.suppliers.map(function (x) { return x.SupplierName; });
+    const siteOptions = s.sites.map(function (x) { return x.SiteName; });
+    const materialOptions = s.materials.map(function (x) { return x.MaterialName; });
+    const dieselSupplierOptions = Array.from(new Set(s.dieselTx.map(function (x) { return x.Supplier; }).concat(s.dieselBF.map(function (x) { return x.Supplier; })).filter(Boolean)));
+    const unitOptions = ['TON', 'FT', 'KG', 'NOS', 'Other'];
+    const paymentMethodOptions = ['Bank Transfer', 'Cheque', 'Cash', 'UPI', 'Other'];
+
+    const supplierCards = s.suppliers.map(function (sup) {
+      const purchase = self.sum(s.transactions.filter(function (t) { return t.Supplier === sup.SupplierName; }), 'Value');
+      const paid = self.sum(s.payments.filter(function (p) { return p.Supplier === sup.SupplierName; }), 'AmountPaid');
+      const bfAmt = self.sum(s.bf.filter(function (b) { return b.Supplier === sup.SupplierName; }), 'BFAmount');
+      const outstanding = bfAmt + purchase - paid;
+      return Object.assign({}, sup, { purchase: fmt(purchase), paid: fmt(paid), outstanding: fmt(outstanding), onOpen: function () { self.openSupplier(sup.SupplierName); }, onEdit: function () { self.openModal('supplier', sup); }, onDelete: function () { self.deleteSupplier(sup); } });
+    });
+
+    let supplierDetail = { name: '', bfFmt: fmt(0), purchaseFmt: fmt(0), paidFmt: fmt(0), outstandingFmt: fmt(0), rows: [] };
+    if (s.selectedSupplier) {
+      const name = s.selectedSupplier;
+      const dfl = s.detailFilters;
+      const filteredTx = s.transactions.filter(function (t) { return t.Supplier === name && (!dfl.site || t.Site === dfl.site) && (!dfl.material || t.Material === dfl.material) && (!dfl.vehicle || String(t.VehicleNumber || '').toLowerCase().indexOf(dfl.vehicle.toLowerCase()) !== -1); });
+      const allTx = s.transactions.filter(function (t) { return t.Supplier === name; });
+      const pay = s.payments.filter(function (p) { return p.Supplier === name; });
+      const bfEntries = s.bf.filter(function (b) { return b.Supplier === name; });
+      const purchase = this.sum(allTx, 'Value');
+      const paid = this.sum(pay, 'AmountPaid');
+      const bfAmt = this.sum(bfEntries, 'BFAmount');
+      const outstanding = bfAmt + purchase - paid;
+      supplierDetail = {
+        name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding),
+        rows: filteredTx.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value) }); })
+      };
+    }
+
+    const materialAnalysis = s.materials.map(function (m) {
+      const rows = s.transactions.filter(function (t) { return t.Material === m.MaterialName; });
+      const qty = self.sum(rows, 'Quantity');
+      const value = self.sum(rows, 'Value');
+      const avgRate = qty ? Math.round(value / qty) : 0;
+      return Object.assign({}, m, { qty: qty, value: fmt(value), avgRate: fmt(avgRate), onEdit: function () { self.openModal('material', m); } });
+    });
+
+    const siteRows = s.sites.map(function (site) {
+      const purchase = self.sum(s.transactions.filter(function (t) { return t.Site === site.SiteName; }), 'Value');
+      const paid = self.sum(s.payments.filter(function (p) { return p.Site === site.SiteName; }), 'AmountPaid');
+      return Object.assign({}, site, { purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(purchase - paid), onEdit: function () { self.openModal('site', site); } });
+    });
+
+    const supplierReportRows = s.suppliers.map(function (sup) {
+      const purchase = self.sum(s.transactions.filter(function (t) { return t.Supplier === sup.SupplierName; }), 'Value');
+      const paid = self.sum(s.payments.filter(function (p) { return p.Supplier === sup.SupplierName; }), 'AmountPaid');
+      const bfAmt = self.sum(s.bf.filter(function (b) { return b.Supplier === sup.SupplierName; }), 'BFAmount');
+      return { Supplier: sup.SupplierName, BF: fmt(bfAmt), Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(bfAmt + purchase - paid) };
+    });
+    const siteReportRows = s.sites.map(function (site) {
+      const purchase = self.sum(s.transactions.filter(function (t) { return t.Site === site.SiteName; }), 'Value');
+      const paid = self.sum(s.payments.filter(function (p) { return p.Site === site.SiteName; }), 'AmountPaid');
+      return { Site: site.SiteName, Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(purchase - paid) };
+    });
+    const materialReportRows = s.materials.map(function (m) {
+      const rows = s.transactions.filter(function (t) { return t.Material === m.MaterialName; });
+      return { Material: m.MaterialName, Quantity: self.sum(rows, 'Quantity'), Value: fmt(self.sum(rows, 'Value')) };
+    });
+    const months = Array.from(new Set(s.transactions.map(function (t) { return String(t.Date || '').slice(0, 7); }).concat(s.payments.map(function (p) { return String(p.Date || '').slice(0, 7); })))).filter(Boolean).sort();
+    const monthlyReportRows = months.map(function (mo) {
+      const purchase = self.sum(s.transactions.filter(function (t) { return String(t.Date || '').slice(0, 7) === mo; }), 'Value');
+      const paid = self.sum(s.payments.filter(function (p) { return String(p.Date || '').slice(0, 7) === mo; }), 'AmountPaid');
+      return { Month: mo, Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(purchase - paid) };
+    });
+    const dieselReportRows = s.sites.map(function (site) {
+      const rows = s.dieselTx.filter(function (t) { return t.Site === site.SiteName; });
+      return { Site: site.SiteName, Quantity: self.sum(rows, 'DieselQuantity'), Cost: fmt(self.sum(rows, 'Value')) };
+    });
+
+    const reportRawMap = { supplier: { rows: supplierReportRows, headers: ['Supplier', 'BF', 'Purchase', 'Paid', 'Outstanding'] }, site: { rows: siteReportRows, headers: ['Site', 'Purchase', 'Paid', 'Outstanding'] }, material: { rows: materialReportRows, headers: ['Material', 'Quantity', 'Value'] }, monthly: { rows: monthlyReportRows, headers: ['Month', 'Purchase', 'Paid', 'Outstanding'] }, diesel: { rows: dieselReportRows, headers: ['Site', 'Quantity', 'Cost'] } };
+    this._lastReportRows = (reportRawMap[s.reportTab] || {}).rows || [];
+    this._lastReportHeaders = (reportRawMap[s.reportTab] || {}).headers || [];
+
+    const totalDieselQty = this.sum(s.dieselTx, 'DieselQuantity').toLocaleString('en-IN');
+    const avgDieselRate = fmt(this.sum(s.dieselTx, 'DieselQuantity') ? Math.round(this.sum(s.dieselTx, 'Value') / this.sum(s.dieselTx, 'DieselQuantity')) : 0);
+    const currentMonthDiesel = fmt(this.sum(s.dieselTx.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value'));
+
+    const viewIs = {
+      login: s.view === 'login', dashboard: s.view === 'dashboard', suppliers: s.view === 'suppliers', supplierDetail: s.view === 'supplierDetail',
+      transactions: s.view === 'transactions', payments: s.view === 'payments', bf: s.view === 'bf',
+      dieselTx: s.view === 'dieselTx', dieselPayments: s.view === 'dieselPayments', dieselBF: s.view === 'dieselBF',
+      sites: s.view === 'sites', materials: s.view === 'materials', reports: s.view === 'reports', settings: s.view === 'settings'
+    };
+    const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel' };
+    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material' };
+
+    const editRecordRaw = s.editRecord || {};
+    const isEditing = !!s.editRecord;
+    const formKey = s.modal + ':' + (editRecordRaw.SLNo || editRecordRaw.PaymentID || editRecordRaw.SupplierID || editRecordRaw.SiteID || editRecordRaw.MaterialID || (editRecordRaw.Supplier ? editRecordRaw.Supplier + '|' + editRecordRaw.BFDate : 'new'));
+    const txDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const payDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const bfDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const dieselTxDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', DieselQuantity: editRecordRaw.DieselQuantity != null ? editRecordRaw.DieselQuantity : '', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Driver: editRecordRaw.Driver || '', Remarks: editRecordRaw.Remarks || '' };
+    const dieselPayDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const dieselBFDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const supplierDefaults = { SupplierName: editRecordRaw.SupplierName || '', ContactPerson: editRecordRaw.ContactPerson || '', ContactNumber: editRecordRaw.ContactNumber || '', MaterialType: editRecordRaw.MaterialType || '' };
+    const siteDefaults = { SiteName: editRecordRaw.SiteName || '' };
+    const materialDefaults = { MaterialName: editRecordRaw.MaterialName || '', DefaultUnit: editRecordRaw.DefaultUnit || 'TON' };
+    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material' };
+    const modalTitle = modalTitleMap[s.modal] || '';
+
+    const navBtn = function (active) { return 'display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;margin-bottom:2px;box-sizing:border-box;background:' + (active ? '#2b2b2f' : 'transparent') + ';color:' + (active ? '#d4af37' : '#f2f0ec') + ';'; };
+    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), bf: navBtn(viewIs.bf), dieselTx: navBtn(viewIs.dieselTx), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings) };
+    const tabBtn = function (active) { return 'padding:9px 16px;border-radius:20px;border:1px solid ' + (active ? '#d4af37' : '#2b2b2f') + ';cursor:pointer;font-size:13px;font-weight:600;background:' + (active ? '#2b2b2f' : 'transparent') + ';color:' + (active ? '#d4af37' : '#f2f0ec') + ';'; };
+    const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel) };
+
+    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', sites: 'Sites', materials: 'Materials', reports: 'Reports', settings: 'Settings' };
+
+    return {
+      session: s.session, loading: s.loading, toast: s.toast, loginError: s.loginError, isDemo: isDemo, todayStr: todayStr,
+      handleLogin: this.handleLogin.bind(this), logout: this.logout.bind(this),
+      navDashboard: function () { self.setView('dashboard'); }, navSuppliers: function () { self.setView('suppliers'); }, navTransactions: function () { self.setView('transactions'); },
+      navPayments: function () { self.setView('payments'); }, navBF: function () { self.setView('bf'); }, navDieselTx: function () { self.setView('dieselTx'); },
+      navDieselPayments: function () { self.setView('dieselPayments'); }, navDieselBF: function () { self.setView('dieselBF'); }, navSites: function () { self.setView('sites'); },
+      navMaterials: function () { self.setView('materials'); }, navReports: function () { self.setView('reports'); }, navSettings: function () { self.setView('settings'); },
+      viewIs: viewIs, pageTitle: pageTitles[s.view] || '', navStyle: navStyle, reportTabStyle: reportTabStyle, reportTabIs: reportTabIs, modal: s.modal, modalIs: modalIs,
+      users: s.users, auditLog: s.auditLog, dataSourceLabel: isDemo ? 'Demo mode — data stored in this browser only. Paste your Apps Script Web App URL into config.js to switch to live Google Sheet.' : 'Connected to Google Sheets via Apps Script.',
+      dashFilters: s.dashFilters, supplierOptions: supplierOptions, siteOptions: siteOptions, materialOptions: materialOptions, dieselSupplierOptions: dieselSupplierOptions, unitOptions: unitOptions, paymentMethodOptions: paymentMethodOptions,
+      onDashFrom: this.setDashFilter('from'), onDashTo: this.setDashFilter('to'), onDashSupplier: this.setDashFilter('supplier'), onDashSite: this.setDashFilter('site'), onDashMaterial: this.setDashFilter('material'), onDashVehicle: this.setDashFilter('vehicle'),
+      onDetailSite: this.setDetailFilter('site'), onDetailMaterial: this.setDetailFilter('material'), onDetailVehicle: this.setDetailFilter('vehicle'),
+      totalSupplierPurchase: fmt(totalSupplierPurchaseN), totalSupplierPaid: fmt(totalSupplierPaidN), totalSupplierOutstanding: fmt(totalSupplierOutstandingN),
+      totalDieselCost: fmt(totalDieselCostN), totalDieselPaid: fmt(totalDieselPaidN), totalDieselOutstanding: fmt(totalDieselOutstandingN),
+      totalBFBalance: fmt(totalBFBalanceN), currentMonthExpenditure: fmt(currentMonthExpenditureN),
+      supplierExpenditure: supplierExpenditure, siteExpenditure: siteExpenditure, materialExpenditure: materialExpenditure, dieselExpenditure: dieselExpenditure,
+      supplierCards: supplierCards, openSupplierModal: function () { self.openModal('supplier'); },
+      supplierDetail: supplierDetail,
+      txRows: txF.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); } }); }),
+      payRows: payF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); } }); }),
+      bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); } }); }),
+      dieselTxRows: dieselTxF.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); } }); }),
+      dieselPayRows: dieselPayF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); } }); }),
+      dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); } }); }),
+      formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
+      totalDieselQty: totalDieselQty, avgDieselRate: avgDieselRate, currentMonthDiesel: currentMonthDiesel,
+      openTransactionModal: function () { self.openModal('transaction'); }, openPaymentModal: function () { self.openModal('payment'); }, openBFModal: function () { self.openModal('bf'); },
+      openDieselTxModal: function () { self.openModal('dieselTx'); }, openDieselPaymentModal: function () { self.openModal('dieselPayment'); }, openDieselBFModal: function () { self.openModal('dieselBF'); },
+      openSiteModal: function () { self.openModal('site'); }, openMaterialModal: function () { self.openModal('material'); },
+      closeModal: this.closeModal.bind(this),
+      submitTransaction: this.submitTransaction.bind(this), submitPayment: this.submitPayment.bind(this), submitBF: this.submitBF.bind(this),
+      submitDieselTx: this.submitDieselTx.bind(this), submitDieselPayment: this.submitDieselPayment.bind(this), submitDieselBF: this.submitDieselBF.bind(this),
+      submitSupplier: this.submitSupplier.bind(this), submitSite: this.submitSite.bind(this), submitMaterial: this.submitMaterial.bind(this),
+      siteRows: siteRows, materialAnalysis: materialAnalysis,
+      supplierReportRows: supplierReportRows, siteReportRows: siteReportRows, materialReportRows: materialReportRows, monthlyReportRows: monthlyReportRows, dieselReportRows: dieselReportRows,
+      setReportSupplier: function () { self.setState({ reportTab: 'supplier' }); }, setReportSite: function () { self.setState({ reportTab: 'site' }); }, setReportMaterial: function () { self.setState({ reportTab: 'material' }); },
+      setReportMonthly: function () { self.setState({ reportTab: 'monthly' }); }, setReportDiesel: function () { self.setState({ reportTab: 'diesel' }); },
+      exportCurrentReport: this.exportCurrentReport.bind(this), printReport: this.printReport.bind(this)
+    };
+  }
+}
+
+</script>
+</body>
+</html>
