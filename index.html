@@ -41,6 +41,8 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>@keyframes pandaLoadBar { 0% { left:-40%; } 100% { left:100%; } }
+@keyframes pandaSpin { to { transform:rotate(360deg); } }</style>
 </helmet>
 
 <sc-if value="{{ viewIs.login }}" hint-placeholder-val="{{ true }}">
@@ -76,6 +78,11 @@
 </sc-if>
 
 <sc-if value="{{ session }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ loading }}">
+  <div style="position:fixed;top:0;left:0;right:0;height:3px;background:rgba(212,175,55,0.15);z-index:9999;overflow:hidden;">
+    <div style="position:absolute;top:0;left:0;height:100%;width:40%;background:#d4af37;animation:pandaLoadBar 1.1s ease-in-out infinite;"></div>
+  </div>
+</sc-if>
 <div data-app-theme="{{ theme }}" data-app-shell style="display:flex;min-height:100vh;background:var(--bg);font-family:'Manrope',sans-serif;color:var(--text);">
 
   <div data-mobile-topbar style="position:fixed;top:0;left:0;right:0;height:60px;z-index:250;background:var(--sidebar);border-bottom:1px solid var(--border);align-items:center;gap:12px;padding:0 16px;box-sizing:border-box;">
@@ -129,6 +136,13 @@
     </div>
 
     <sc-if value="{{ viewIs.dashboard }}" hint-placeholder-val="{{ true }}">
+    <sc-if value="{{ loading }}">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:80px 0;">
+        <div style="width:40px;height:40px;border-radius:50%;border:4px solid var(--border);border-top-color:#d4af37;animation:pandaSpin 0.8s linear infinite;"></div>
+        <div style="color:var(--muted);font-size:13px;">Loading data…</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ !loading }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" onChange="{{ onDashFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" onChange="{{ onDashTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
@@ -189,6 +203,7 @@
           </sc-for>
         </div>
       </div>
+    </sc-if>
     </sc-if>
 
     <sc-if value="{{ viewIs.suppliers }}">
@@ -1430,19 +1445,14 @@ class Component extends DCLogic {
 
   loadAll() {
     this.setState({ loading: true });
-    return Promise.all([
-      PandaAPI.call('getSuppliers'), PandaAPI.call('getTransactions'), PandaAPI.call('getPayments'), PandaAPI.call('getBF'),
-      PandaAPI.call('getDieselTransactions'), PandaAPI.call('getDieselPayments'), PandaAPI.call('getDieselBF'),
-      PandaAPI.call('getSites'), PandaAPI.call('getMaterials'), PandaAPI.call('getUsers'), PandaAPI.call('getAuditLog'),
-      PandaAPI.call('getStaff'), PandaAPI.call('getStaffSalary'), PandaAPI.call('getStaffPayments'),
-      PandaAPI.call('getFundTransfers'), PandaAPI.call('getSiteAllocations'), PandaAPI.call('getStaffAttendance'), PandaAPI.call('getTaskCompletions')
-    ]).then(function (res) {
+    return PandaAPI.call('getAllData').then(function (r) {
+      if (!r || !r.success) { this.setState({ loading: false }); this.showToast((r && r.message) || 'Failed to load data.'); return; }
       this.setState({
-        suppliers: res[0].data || [], transactions: res[1].data || [], payments: res[2].data || [], bf: res[3].data || [],
-        dieselTx: res[4].data || [], dieselPayments: res[5].data || [], dieselBF: res[6].data || [],
-        sites: res[7].data || [], materials: res[8].data || [], users: res[9].data || [], auditLog: res[10].data || [],
-        staff: res[11].data || [], staffSalary: res[12].data || [], staffPayments: res[13].data || [],
-        fundTransfers: res[14].data || [], siteAllocations: res[15].data || [], staffAttendance: res[16].data || [], taskCompletions: res[17].data || [],
+        suppliers: r.suppliers || [], transactions: r.transactions || [], payments: r.payments || [], bf: r.bf || [],
+        dieselTx: r.dieselTx || [], dieselPayments: r.dieselPayments || [], dieselBF: r.dieselBF || [],
+        sites: r.sites || [], materials: r.materials || [], users: r.users || [], auditLog: r.auditLog || [],
+        staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [],
+        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
         loading: false
       });
     }.bind(this)).catch(function (e) {
