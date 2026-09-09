@@ -92,9 +92,7 @@
     </div>
     <div style="flex:1;display:flex;flex-direction:column;padding:16px 12px;overflow-y:auto;">
       <button onClick="{{ navDashboard }}" style="{{ navStyle.dashboard }}">Dashboard</button>
-      <sc-if value="{{ isOwnerOrAdmin1 }}">
-        <button onClick="{{ navTasks }}" style="{{ navStyle.tasks }}">Task Tracker</button>
-      </sc-if>
+      <button onClick="{{ navTasks }}" style="{{ navStyle.tasks }}">Task Tracker</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Supplier Management</div>
       <button onClick="{{ navSuppliers }}" style="{{ navStyle.suppliers }}">Suppliers</button>
       <button onClick="{{ navTransactions }}" style="{{ navStyle.transactions }}">Transactions</button>
@@ -580,6 +578,20 @@
     </sc-if>
 
     <sc-if value="{{ viewIs.tasks }}">
+      <sc-if value="{{ myRoleIsAdmin23 }}">
+        <div style="background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div style="font-weight:700;font-size:14px;">Finished all your entries for today?</div>
+          <sc-if value="{{ myTaskCompletedToday }}">
+            <div style="display:flex;gap:10px;align-items:center;">
+              <span style="background:#dff5e1;color:#1a7f37;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;">Task Completed for Today</span>
+              <button onClick="{{ onNotifyOwnerCompleted }}" style="background:#25D366;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;">Notify Owner</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ myTaskNotCompletedToday }}">
+            <button onClick="{{ onMarkTaskCompleted }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Mark Task Completed</button>
+          </sc-if>
+        </div>
+      </sc-if>
       <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:20px;">
         <label style="font-size:12px;color:var(--muted);">Date</label>
         <input type="date" value="{{ taskDateResolved }}" onChange="{{ onTaskDate }}" style="background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" />
@@ -602,6 +614,10 @@
                 <span style="{{ t.dieselBadgeStyle }}">{{ t.dieselStatus }}</span>
                 <sc-if value="{{ t.showDieselWA }}"><button onClick="{{ t.onDieselWA }}" style="background:#25D366;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap;">Remind</button></sc-if>
               </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border-soft);">
+              <div style="font-size:13px;font-weight:600;">Overall</div>
+              <span style="{{ t.overallBadgeStyle }}">{{ t.overallStatus }}</span>
             </div>
           </div>
         </sc-for>
@@ -674,7 +690,6 @@
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Basic</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">DA</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Deductions</th>
-            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">BF Due</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Net Salary</th>
             <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
           </tr></thead>
@@ -685,7 +700,6 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BasicFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.DAFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.DeductionsFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BFDueFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.NetSalaryFmt }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;">
                   <button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button>
@@ -717,7 +731,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
-                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button></td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onExport }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">PDF</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -769,9 +783,10 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;">{{ r.Name }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Role }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.StatusLabel }}</td>
-                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;">
-                  <button onClick="{{ r.onMarkPresent }}" style="background:{{ r.presentBg }};color:#fff;border:none;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-right:6px;">Present</button>
-                  <button onClick="{{ r.onMarkAbsent }}" style="background:{{ r.absentBg }};color:#fff;border:none;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">Absent</button>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:normal;min-width:220px;">
+                  <button onClick="{{ r.onMarkPresent }}" style="background:{{ r.presentBg }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Present</button>
+                  <button onClick="{{ r.onMarkHalf }}" style="background:{{ r.halfBg }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Half</button>
+                  <button onClick="{{ r.onMarkAbsent }}" style="background:{{ r.absentBg }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Absent</button>
                 </td>
               </tr>
             </sc-for>
@@ -794,9 +809,10 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.StaffName }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Status }}</td>
-                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;">
-                  <button onClick="{{ r.onMarkPresent }}" style="background:transparent;border:1px solid var(--border);color:#1a7f37;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Present</button>
-                  <button onClick="{{ r.onMarkAbsent }}" style="background:transparent;border:1px solid var(--border);color:#c0392b;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:12px;">Absent</button>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:normal;min-width:180px;">
+                  <button onClick="{{ r.onMarkPresent }}" style="background:transparent;border:1px solid var(--border);color:#1a7f37;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:12px;margin:2px;">Present</button>
+                  <button onClick="{{ r.onMarkHalf }}" style="background:transparent;border:1px solid var(--border);color:#b8860b;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:12px;margin:2px;">Half</button>
+                  <button onClick="{{ r.onMarkAbsent }}" style="background:transparent;border:1px solid var(--border);color:#c0392b;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:12px;margin:2px;">Absent</button>
                 </td>
               </tr>
             </sc-for>
@@ -1019,7 +1035,6 @@
         </div>
         <div style="color:var(--muted2);font-size:12px;margin-top:10px;">Outstanding here is period purchase minus period payments (excludes BF carried from earlier months).</div>
       </sc-if>
-      <sc-if value="{{ reportTabIs.diesel }}">
       <sc-if value="{{ reportTabIs.diesel }}">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
           <table style="width:100%;border-collapse:collapse;">
@@ -1386,7 +1401,7 @@ class Component extends DCLogic {
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [],
-    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], fundTransfers: [], siteAllocations: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', selectedStaffIds: [], mobileNavOpen: false,
+    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], fundTransfers: [], siteAllocations: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false,
     selectedSupplier: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     detailFilters: { site: '', material: '', vehicle: '' },
@@ -1397,7 +1412,10 @@ class Component extends DCLogic {
   componentDidMount() {
     const savedTheme = localStorage.getItem('panda_theme');
     if (savedTheme === 'dark' || savedTheme === 'light') this.setState({ theme: savedTheme });
-    PandaAPI.call('getUsers').then(function (r) { this.setState({ users: r.data || [] }); }.bind(this));
+    PandaAPI.call('getUsers').then(function (r) {
+      if (!r.success) { this.showToast(r.message || 'Could not load users.'); return; }
+      this.setState({ users: r.data || [] });
+    }.bind(this)).catch(function (e) { this.showToast('Could not reach backend: ' + e.message); }.bind(this));
     let sess = null;
     try { sess = JSON.parse(localStorage.getItem('panda_session')); } catch (e) {}
     if (sess) { this.setState({ session: sess, view: 'dashboard' }); this.loadAll(); }
@@ -1417,16 +1435,19 @@ class Component extends DCLogic {
       PandaAPI.call('getDieselTransactions'), PandaAPI.call('getDieselPayments'), PandaAPI.call('getDieselBF'),
       PandaAPI.call('getSites'), PandaAPI.call('getMaterials'), PandaAPI.call('getUsers'), PandaAPI.call('getAuditLog'),
       PandaAPI.call('getStaff'), PandaAPI.call('getStaffSalary'), PandaAPI.call('getStaffPayments'),
-      PandaAPI.call('getFundTransfers'), PandaAPI.call('getSiteAllocations'), PandaAPI.call('getStaffAttendance')
+      PandaAPI.call('getFundTransfers'), PandaAPI.call('getSiteAllocations'), PandaAPI.call('getStaffAttendance'), PandaAPI.call('getTaskCompletions')
     ]).then(function (res) {
       this.setState({
         suppliers: res[0].data || [], transactions: res[1].data || [], payments: res[2].data || [], bf: res[3].data || [],
         dieselTx: res[4].data || [], dieselPayments: res[5].data || [], dieselBF: res[6].data || [],
         sites: res[7].data || [], materials: res[8].data || [], users: res[9].data || [], auditLog: res[10].data || [],
         staff: res[11].data || [], staffSalary: res[12].data || [], staffPayments: res[13].data || [],
-        fundTransfers: res[14].data || [], siteAllocations: res[15].data || [], staffAttendance: res[16].data || [],
+        fundTransfers: res[14].data || [], siteAllocations: res[15].data || [], staffAttendance: res[16].data || [], taskCompletions: res[17].data || [],
         loading: false
       });
+    }.bind(this)).catch(function (e) {
+      this.setState({ loading: false });
+      this.showToast('Failed to load data: ' + e.message + ' — check your connection and try again.');
     }.bind(this));
   }
 
@@ -1455,41 +1476,22 @@ class Component extends DCLogic {
   openStaffDetail(name) { this.setState({ view: 'staffDetail', selectedStaff: name, modal: null, mobileNavOpen: false }); }
   setTaskDate(e) { this.setState({ taskDate: e.target.value }); }
   setAttendanceDate(e) { this.setState({ attendanceDate: e.target.value }); }
-  setAttendanceExportMonth(e) { this.setState({ attendanceExportMonth: e.target.value }); }
-  toggleStaffSelect(name) {
-    this.setState(function (s) {
-      const cur = s.selectedStaffIds || [];
-      const next = cur.includes(name) ? cur.filter(function (n) { return n !== name; }) : cur.concat([name]);
-      return { selectedStaffIds: next };
-    });
-  }
-  toggleSelectAllStaff(names) {
-    this.setState(function (s) {
-      const all = (s.selectedStaffIds || []).length === names.length && names.length > 0;
-      return { selectedStaffIds: all ? [] : names.slice() };
-    });
-  }
-  bulkMarkAttendance(status) {
-    const s = this.state;
-    const date = s.attendanceDate || new Date().toISOString().slice(0, 10);
-    const names = s.selectedStaffIds || [];
-    if (!names.length) { this.showToast('Select at least one staff member.'); return; }
+  markTaskCompleted() {
     const self = this;
-    Promise.all(names.map(function (name) {
-      return PandaAPI.call('addStaffAttendance', { Date: date, StaffName: name, Status: status, CreatedBy: self.currentUserName() });
-    })).then(function () {
-      self.setState(function (st) {
-        const list = st.staffAttendance.slice();
-        names.forEach(function (name) {
-          const idx = list.findIndex(function (a) { return a.StaffName === name && a.Date === date; });
-          if (idx >= 0) list[idx] = Object.assign({}, list[idx], { Status: status });
-          else list.push({ AttendanceID: 'tmp' + Date.now() + name, Date: date, StaffName: name, Status: status, MarkedBy: self.currentUserName(), CreatedAt: new Date().toISOString() });
-        });
-        return { staffAttendance: list, selectedStaffIds: [] };
-      });
-      self.showToast('Marked ' + names.length + ' staff as ' + status + '.');
+    const today = new Date().toISOString().slice(0, 10);
+    const myName = this.currentUserName();
+    PandaAPI.call('addTaskCompletion', { Date: today, User: myName }).then(function (res) {
+      if (res.success) {
+        self.setState(function (s) { return { taskCompletions: s.taskCompletions.concat([{ Date: today, User: myName, CreatedAt: new Date().toISOString() }]) }; });
+        self.showToast('Task marked completed for today.');
+      } else self.showToast(res.message || 'Could not save.');
     });
   }
+  notifyOwnerCompleted() {
+    const today = new Date().toISOString().slice(0, 10);
+    this.sendWhatsApp('919938353942', 'Hi, this is ' + this.currentUserName() + '. I have completed my tasks for ' + today + ' in the Panda Construction app.');
+  }
+  setAttendanceExportMonth(e) { this.setState({ attendanceExportMonth: e.target.value }); }
   exportMonthlyAttendance() {
     if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
     const s = this.state;
@@ -1500,23 +1502,28 @@ class Component extends DCLogic {
     aoa.push([]);
     const header = ['Staff Name'];
     for (let d = 1; d <= daysInMonth; d++) header.push(String(d));
-    header.push('Present', 'Absent');
+    header.push('Present', 'Half', 'Absent');
     aoa.push(header);
+    const attMap = {};
+    s.staffAttendance.forEach(function (r) {
+      const key = r.StaffName + '|' + r.Date;
+      if (!attMap[key] || String(r.CreatedAt || '') >= String(attMap[key].CreatedAt || '')) attMap[key] = r;
+    });
     s.staff.forEach(function (st) {
       const row = [st.Name];
-      let present = 0, absent = 0;
+      let present = 0, half = 0, absent = 0;
       for (let d = 1; d <= daysInMonth; d++) {
         const dateStr = month + '-' + String(d).padStart(2, '0');
-        const rec = attendanceDeduped.find(function (a) { return a.StaffName === st.Name && a.Date === dateStr; });
-        const mark = rec ? (rec.Status === 'Present' ? 'P' : 'A') : '';
-        if (mark === 'P') present++; if (mark === 'A') absent++;
+        const rec = attMap[st.Name + '|' + dateStr];
+        const mark = rec ? (rec.Status === 'Present' ? 'P' : (rec.Status === 'Half' ? 'H' : 'A')) : '';
+        if (mark === 'P') present++; if (mark === 'H') half++; if (mark === 'A') absent++;
         row.push(mark);
       }
-      row.push(present, absent);
+      row.push(present, half, absent);
       aoa.push(row);
     });
     const ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols'] = [{ wch: 22 }].concat(Array.from({ length: daysInMonth }, function () { return { wch: 4 }; })).concat([{ wch: 10 }, { wch: 10 }]);
+    ws['!cols'] = [{ wch: 22 }].concat(Array.from({ length: daysInMonth }, function () { return { wch: 4 }; })).concat([{ wch: 10 }, { wch: 10 }, { wch: 10 }]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Attendance');
     XLSX.writeFile(wb, 'panda-construction-attendance-' + month + '.xlsx');
@@ -1725,7 +1732,7 @@ class Component extends DCLogic {
       head: [['Earnings', 'Amount', 'Deductions', 'Amount']],
       body: [
         ['Basic', fmt(sal.Basic), 'Deductions', fmt(sal.Deductions)],
-        ['DA', fmt(sal.DA), 'BF Due (Recovery)', fmt(sal.BFDue)]
+        ['DA', fmt(sal.DA), '', '']
       ],
       theme: 'grid',
       margin: { left: 40, right: 40 },
@@ -1739,6 +1746,43 @@ class Component extends DCLogic {
     doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(140, 140, 140);
     doc.text('Panda Construction \u2014 Site Support Management System', 40, doc.internal.pageSize.getHeight() - 24);
     doc.save('salary-slip-' + staffRow.Name.replace(/\s+/g, '-') + '-' + sal.Month.replace(/\s+/g, '-') + '.pdf');
+  }
+
+  async exportPaymentSlipPDF(staffRow, pay) {
+    const self = this;
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let y = 40;
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(20, 20, 20);
+    doc.text('PANDA CONSTRUCTION', 120, y + 16);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(90, 90, 90);
+    doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y + 30);
+    y += 56;
+    doc.setDrawColor(212, 175, 55); doc.setLineWidth(1.2); doc.line(40, y, pageWidth - 40, y);
+    y += 24;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(20, 20, 20);
+    doc.text('PAYMENT RECEIPT', 40, y);
+    y += 22;
+    const fmt = function (n) { return self.fmtPdf(n); };
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(60, 60, 60);
+    doc.text('Paid To: ' + staffRow.Name, 40, y);
+    doc.text('Role: ' + staffRow.Role, 320, y);
+    y += 16;
+    doc.text('Date: ' + pay.Date, 40, y);
+    doc.text('Method: ' + (pay.PaymentMethod || '-'), 320, y);
+    y += 16;
+    doc.text('Reference: ' + (pay.ReferenceNumber || '-'), 40, y);
+    y += 24;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(20, 20, 20);
+    doc.text('AMOUNT PAID: ' + fmt(pay.AmountPaid), 40, y);
+    y += 20;
+    if (pay.Remarks) { doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(90, 90, 90); doc.text('Remarks: ' + pay.Remarks, 40, y); y += 16; }
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(140, 140, 140);
+    doc.text('Panda Construction \u2014 Site Support Management System', 40, doc.internal.pageSize.getHeight() - 24);
+    doc.save('payment-slip-' + staffRow.Name.replace(/\s+/g, '-') + '-' + pay.Date + '.pdf');
   }
 
   setDashFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.dashFilters); nf[key] = e.target.value; return { dashFilters: nf }; }); }.bind(this); }
@@ -1984,34 +2028,44 @@ class Component extends DCLogic {
     const taskRows = taskAdmins.map(function (u) {
       const didSupplier = s.transactions.some(function (t) { return t.CreatedBy === u.Name && t.Date === taskDateResolved; });
       const didDiesel = s.dieselTx.some(function (t) { return t.CreatedBy === u.Name && t.Date === taskDateResolved; });
+      const completed = s.taskCompletions.some(function (c) { return c.User === u.Name && c.Date === taskDateResolved; });
       return {
         Name: u.Name, Role: u.Role,
         supplierStatus: didSupplier ? 'Done' : 'Pending', supplierBadgeStyle: didSupplier ? doneStyle : pendingStyle,
         dieselStatus: didDiesel ? 'Done' : 'Pending', dieselBadgeStyle: didDiesel ? doneStyle : pendingStyle,
+        overallStatus: completed ? 'Task Completed' : 'Pending', overallBadgeStyle: completed ? doneStyle : pendingStyle,
         showSupplierWA: !didSupplier, showDieselWA: !didDiesel,
         onSupplierWA: function () { self.sendWhatsApp(u.ContactNumber, 'Hi ' + u.Name + ', please complete today\'s (' + taskDateResolved + ') Supplier Entry in the Panda Construction app. It is still showing Pending. — Panda Construction'); },
         onDieselWA: function () { self.sendWhatsApp(u.ContactNumber, 'Hi ' + u.Name + ', please complete today\'s (' + taskDateResolved + ') Diesel Entry in the Panda Construction app. It is still showing Pending. — Panda Construction'); }
       };
     });
     const noTaskAdmins = taskAdmins.length === 0;
+    const myRoleIsAdmin23 = s.session && (s.session.role === 'Admin 2' || s.session.role === 'Admin 3');
+    const myTodayStr = new Date().toISOString().slice(0, 10);
+    const myTaskCompletedToday = myRoleIsAdmin23 && s.taskCompletions.some(function (c) { return c.User === s.session.name && c.Date === myTodayStr; });
+    const myTaskNotCompletedToday = myRoleIsAdmin23 && !myTaskCompletedToday;
 
     const curMonthKeyAll = todayStr.slice(0, 7);
+    const monthNamesAll = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const curMonthLabelAll = (function () { const p = curMonthKeyAll.split('-'); return monthNamesAll[Number(p[1]) - 1] + ' ' + p[0]; })();
+    const hasSlipThisMonth = function (name) { return s.staffSalary.some(function (r) { return r.StaffName === name && String(r.Month || '').trim().toLowerCase() === curMonthLabelAll.toLowerCase(); }); };
+    const dayValue = function (status) { return status === 'Present' ? 1 : (status === 'Half' ? 0.5 : 0); };
     const totalStaffOutstandingN = self.sum(s.staff.map(function (st) {
       const due = self.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }), 'NetSalary');
       const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
       const bfAmt = Number(st.BFAmount) || 0;
-      const presentThisMonth = attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && r.Status === 'Present' && String(r.Date).slice(0, 7) === curMonthKeyAll; }).length;
-      const monthEarned = st.SalaryBasis === 'Daily' ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
+      const presentThisMonth = self.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKeyAll; }).map(function (r) { return { v: dayValue(r.Status) }; }), 'v');
+      const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
       return { v: bfAmt + due + monthEarned - paid };
     }), 'v');
     const staffCards = s.staff.map(function (st) {
       const due = self.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }), 'NetSalary');
       const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
       const bfAmt = Number(st.BFAmount) || 0;
-      const presentThisMonth = attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && r.Status === 'Present' && String(r.Date).slice(0, 7) === curMonthKeyAll; }).length;
-      const monthEarned = st.SalaryBasis === 'Daily' ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
+      const presentThisMonth = self.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKeyAll; }).map(function (r) { return { v: dayValue(r.Status) }; }), 'v');
+      const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
       const rate = st.SalaryBasis === 'Daily' ? fmt(st.DailyRate) + '/day' : fmt(st.MonthlyAmount) + '/month';
-      return Object.assign({}, st, { rateFmt: rate, bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(bfAmt + due + monthEarned - paid), isSelected: (s.selectedStaffIds || []).includes(st.Name), onToggleSelect: function () { self.toggleStaffSelect(st.Name); }, onView: function () { self.openStaffDetail(st.Name); }, onEdit: function () { self.openModal('staff', st); } });
+      return Object.assign({}, st, { rateFmt: rate, bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(bfAmt + due + monthEarned - paid), onView: function () { self.openStaffDetail(st.Name); }, onEdit: function () { self.openModal('staff', st); } });
     });
 
     const toolDateResolved = s.attendanceDate || todayStr;
@@ -2020,14 +2074,15 @@ class Component extends DCLogic {
       const status = rec ? rec.Status : 'Not marked';
       return {
         Name: st.Name, Role: st.Role, StatusLabel: status,
-        presentBg: status === 'Present' ? '#1a7f37' : '#5a5a5a', absentBg: status === 'Absent' ? '#c0392b' : '#5a5a5a',
+        presentBg: status === 'Present' ? '#1a7f37' : '#5a5a5a', halfBg: status === 'Half' ? '#b8860b' : '#5a5a5a', absentBg: status === 'Absent' ? '#c0392b' : '#5a5a5a',
         onMarkPresent: function () { self.markAttendance(st.Name, toolDateResolved, 'Present'); },
+        onMarkHalf: function () { self.markAttendance(st.Name, toolDateResolved, 'Half'); },
         onMarkAbsent: function () { self.markAttendance(st.Name, toolDateResolved, 'Absent'); }
       };
     });
-    const toolPresentCountLabel = attendanceToolRows.filter(function (r) { return r.StatusLabel === 'Present'; }).length + ' of ' + attendanceToolRows.length + ' present';
+    const toolPresentCountLabel = attendanceToolRows.filter(function (r) { return r.StatusLabel === 'Present'; }).length + ' present, ' + attendanceToolRows.filter(function (r) { return r.StatusLabel === 'Half'; }).length + ' half, of ' + attendanceToolRows.length;
     const attendanceLogRows = attendanceDeduped.slice().sort(function (a, b) { return a.Date < b.Date ? 1 : -1; }).slice(0, 40).map(function (r) {
-      return Object.assign({}, r, { onMarkPresent: function () { self.markAttendance(r.StaffName, r.Date, 'Present'); }, onMarkAbsent: function () { self.markAttendance(r.StaffName, r.Date, 'Absent'); } });
+      return Object.assign({}, r, { onMarkPresent: function () { self.markAttendance(r.StaffName, r.Date, 'Present'); }, onMarkHalf: function () { self.markAttendance(r.StaffName, r.Date, 'Half'); }, onMarkAbsent: function () { self.markAttendance(r.StaffName, r.Date, 'Absent'); } });
     });
 
     let staffDetail = { Name: '', Role: '', ContactNumber: '', basisLabel: '', bfFmt: fmt(0), monthEarnedFmt: fmt(0), totalDueFmt: fmt(0), totalPaidFmt: fmt(0), outstandingFmt: fmt(0), salaryRows: [], paymentRows: [], attendanceRows: [], rateHint: '', presentDaysThisMonthFmt: '0', attendanceDateResolved: s.attendanceDate || todayStr, todayAttendanceStatus: 'Not marked' };
@@ -2044,9 +2099,9 @@ class Component extends DCLogic {
       const attendanceDateResolved = s.attendanceDate || todayStr;
       const attRowsAll = attendanceDeduped.filter(function (r) { return r.StaffName === stName; });
       const curMonthKey = todayStr.slice(0, 7);
-      presentDaysThisMonth = attRowsAll.filter(function (r) { return r.Status === 'Present' && String(r.Date).slice(0, 7) === curMonthKey; }).length;
-      const monthEarned = stRow.SalaryBasis === 'Daily' ? presentDaysThisMonth * (Number(stRow.DailyRate) || 0) : 0;
-      defaultBasicFromAttendance = stRow.SalaryBasis === 'Daily' ? monthEarned : '';
+      presentDaysThisMonth = self.sum(attRowsAll.filter(function (r) { return String(r.Date).slice(0, 7) === curMonthKey; }).map(function (r) { return { v: dayValue(r.Status) }; }), 'v');
+      const monthEarned = (stRow.SalaryBasis === 'Daily' && !hasSlipThisMonth(stName)) ? presentDaysThisMonth * (Number(stRow.DailyRate) || 0) : 0;
+      defaultBasicFromAttendance = stRow.SalaryBasis === 'Daily' ? presentDaysThisMonth * (Number(stRow.DailyRate) || 0) : '';
       const todayAtt = attRowsAll.find(function (r) { return r.Date === attendanceDateResolved; });
       staffDetail = {
         Name: stRow.Name || stName, Role: stRow.Role || '', ContactNumber: stRow.ContactNumber || '',
@@ -2056,8 +2111,8 @@ class Component extends DCLogic {
         presentDaysThisMonthFmt: String(presentDaysThisMonth), attendanceDateResolved: attendanceDateResolved, todayAttendanceStatus: todayAtt ? todayAtt.Status : 'Not marked',
         onMarkPresentToday: function () { self.markAttendance(stName, attendanceDateResolved, 'Present'); },
         onMarkAbsentToday: function () { self.markAttendance(stName, attendanceDateResolved, 'Absent'); },
-        salaryRows: salRows.slice().reverse().map(function (r) { return Object.assign({}, r, { BasicFmt: fmt(r.Basic), DAFmt: fmt(r.DA), DeductionsFmt: fmt(r.Deductions), BFDueFmt: fmt(r.BFDue), NetSalaryFmt: fmt(r.NetSalary), onEdit: function () { self.openModal('staffSalary', r); }, onExport: function () { self.exportSalarySlipPDF(stRow, r); } }); }),
-        paymentRows: payRows2.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('staffPayment', r); } }); }),
+        salaryRows: salRows.slice().reverse().map(function (r) { return Object.assign({}, r, { BasicFmt: fmt(r.Basic), DAFmt: fmt(r.DA), DeductionsFmt: fmt(r.Deductions), NetSalaryFmt: fmt(r.NetSalary), onEdit: function () { self.openModal('staffSalary', r); }, onExport: function () { self.exportSalarySlipPDF(stRow, r); } }); }),
+        paymentRows: payRows2.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('staffPayment', r); }, onExport: function () { self.exportPaymentSlipPDF(stRow, r); } }); }),
         attendanceRows: attRowsAll.slice().sort(function (a, b) { return a.Date < b.Date ? 1 : -1; }).slice(0, 31).map(function (r) {
           return Object.assign({}, r, { onMarkPresent: function () { self.markAttendance(stName, r.Date, 'Present'); }, onMarkAbsent: function () { self.markAttendance(stName, r.Date, 'Absent'); } });
         })
@@ -2234,14 +2289,10 @@ class Component extends DCLogic {
       reportFilters: s.reportFilters, onReportFrom: this.setReportFilter('from'), onReportTo: this.setReportFilter('to'), onReportMonth: this.setReportFilter('month'), onReportYear: this.setReportFilter('year'), onReportSite: this.setReportFilter('site'), onReportSupplier: this.setReportFilter('supplier'), onReportMaterial: this.setReportFilter('material'), onReportDieselSupplier: this.setReportFilter('dieselSupplier'), yearOptions: yearOptions, monthOptions: monthOptions,
       exportReportExcel: this.exportReportExcel.bind(this), exportReportPDF: this.exportReportPDF.bind(this), printReport: this.printReport.bind(this),
       taskDateResolved: taskDateResolved, onTaskDate: this.setTaskDate.bind(this), taskRows: taskRows, noTaskAdmins: noTaskAdmins,
+      myRoleIsAdmin23: myRoleIsAdmin23, myTaskCompletedToday: myTaskCompletedToday, myTaskNotCompletedToday: myTaskNotCompletedToday, onMarkTaskCompleted: this.markTaskCompleted.bind(this), onNotifyOwnerCompleted: this.notifyOwnerCompleted.bind(this),
       onAttendanceDate: this.setAttendanceDate.bind(this),
       toolAttendanceDateResolved: s.attendanceDate || todayStr,
       attendanceToolRows: attendanceToolRows, attendanceLogRows: attendanceLogRows, toolPresentCountLabel: toolPresentCountLabel,
-      bulkAttendanceDateResolved: s.attendanceDate || todayStr,
-      allStaffSelected: (s.selectedStaffIds || []).length === s.staff.length && s.staff.length > 0,
-      onToggleSelectAllStaff: function () { self.toggleSelectAllStaff(s.staff.map(function (st) { return st.Name; })); },
-      selectedStaffCountLabel: (s.selectedStaffIds || []).length + ' selected',
-      onBulkMarkPresent: function () { self.bulkMarkAttendance('Present'); }, onBulkMarkAbsent: function () { self.bulkMarkAttendance('Absent'); },
       attendanceExportMonthResolved: s.attendanceExportMonth || todayStr.slice(0, 7), onAttendanceExportMonth: this.setAttendanceExportMonth.bind(this), exportMonthlyAttendance: this.exportMonthlyAttendance.bind(this),
       staffCards: staffCards, staffDetail: staffDetail, staffDefaults: staffDefaults, staffSalaryDefaults: staffSalaryDefaults, staffPaymentDefaults: staffPaymentDefaults, userContactDefaults: userContactDefaults, staffRateReadOnly: staffRateReadOnly,
       myFundBalanceFmt: fmt(myFundBalanceN), showMyFundBalance: showMyFundBalance, fundTransferRows: fundTransferRows, allocationRows: allocationRows, fundTransferDefaults: fundTransferDefaults, siteAllocationDefaults: siteAllocationDefaults, fundRecipientOptions: fundRecipientOptions,
