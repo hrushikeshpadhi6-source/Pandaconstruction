@@ -114,6 +114,7 @@
       <button onClick="{{ navMaterials }}" style="{{ navStyle.materials }}">Materials</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Staff & Payroll</div>
       <button onClick="{{ navStaff }}" style="{{ navStyle.staff }}">Staff</button>
+      <button onClick="{{ navStaffPayments }}" style="{{ navStyle.staffPayments }}">Staff Payments</button>
       <button onClick="{{ navAttendance }}" style="{{ navStyle.attendance }}">Attendance</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Fund Distribution</div>
       <button onClick="{{ navFunds }}" style="{{ navStyle.funds }}">Money & Sites</button>
@@ -167,14 +168,14 @@
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" data-stat-grid>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Supplier Purchase</div><div style="font-size:22px;font-weight:800;">{{ totalSupplierPurchase }}</div></div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Supplier Paid</div><div style="font-size:22px;font-weight:800;">{{ totalSupplierPaid }}</div></div>
-        <div style="background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Supplier Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalSupplierOutstanding }}</div></div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Cost</div><div style="font-size:22px;font-weight:800;">{{ totalDieselCost }}</div></div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Paid</div><div style="font-size:22px;font-weight:800;">{{ totalDieselPaid }}</div></div>
-        <div style="background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalDieselOutstanding }}</div></div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Current Month Expenditure</div><div style="font-size:22px;font-weight:800;">{{ currentMonthExpenditure }}</div></div>
-        <div style="background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Staff Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalStaffOutstanding }}</div></div>
+        <div onClick="{{ onOpenSupplierPurchase }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Supplier Purchase</div><div style="font-size:22px;font-weight:800;">{{ totalSupplierPurchase }}</div></div>
+        <div onClick="{{ onOpenSupplierPaid }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Supplier Paid</div><div style="font-size:22px;font-weight:800;">{{ totalSupplierPaid }}</div></div>
+        <div onClick="{{ onOpenSupplierOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Supplier Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalSupplierOutstanding }}</div></div>
+        <div onClick="{{ onOpenDieselCost }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Cost</div><div style="font-size:22px;font-weight:800;">{{ totalDieselCost }}</div></div>
+        <div onClick="{{ onOpenDieselPaid }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Paid</div><div style="font-size:22px;font-weight:800;">{{ totalDieselPaid }}</div></div>
+        <div onClick="{{ onOpenDieselOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalDieselOutstanding }}</div></div>
+        <div onClick="{{ onOpenCurrentMonth }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Current Month Expenditure</div><div style="font-size:22px;font-weight:800;">{{ currentMonthExpenditure }}</div></div>
+        <div onClick="{{ onOpenStaffOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Staff Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalStaffOutstanding }}</div></div>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;">
@@ -777,6 +778,44 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ viewIs.staffPayments }}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" onChange="{{ onStaffPaymentsFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" onChange="{{ onStaffPaymentsTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onClick="{{ exportStaffPaymentsExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
+          <button onClick="{{ exportStaffPaymentsPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;font-size:13px;color:var(--muted);">Total paid in range: <span style="font-weight:700;color:#d4af37;">{{ staffPaymentsTotalFmt }}</span></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:760px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Staff Name</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Amount Paid</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Method</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Reference</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Remarks</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ staffPaymentsListRows }}" as="r" hint-placeholder-count="5">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.StaffName }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;font-weight:700;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
     <sc-if value="{{ viewIs.attendance }}">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
         <label style="font-size:13px;color:var(--muted);">Date</label>
@@ -915,6 +954,7 @@
           <button onClick="{{ setReportMaterial }}" style="{{ reportTabStyle.material }}">Material Report</button>
           <button onClick="{{ setReportMonthly }}" style="{{ reportTabStyle.monthly }}">Monthly Report</button>
           <button onClick="{{ setReportDiesel }}" style="{{ reportTabStyle.diesel }}">Diesel Report</button>
+          <button onClick="{{ setReportStaffDue }}" style="{{ reportTabStyle.staffDue }}">Staff Due Report</button>
         </div>
         <div style="display:flex;gap:8px;">
           <button onClick="{{ exportReportExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
@@ -1079,6 +1119,33 @@
           </table>
         </div>
       </sc-if>
+      <sc-if value="{{ reportTabIs.staffDue }}">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+          <table style="width:100%;border-collapse:collapse;min-width:760px;">
+            <thead><tr>
+              <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Staff Name</th>
+              <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Month</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Basic</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Addition</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Deduction</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Net Salary</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ staffDueReportRows }}" as="r" hint-placeholder-count="6">
+                <tr style="{{ r.rowStyle }}">
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:{{ r.nameWeight }};">{{ r.StaffName }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Month }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Basic }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Addition }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Deduction }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:700;">{{ r.NetSalary }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="color:var(--muted2);font-size:12px;margin-top:10px;">Each staff member's salary slips are listed by month, followed by their Total Outstanding (BF + all dues − all payments).</div>
+      </sc-if>
     </sc-if>
 
     <sc-if value="{{ viewIs.settings }}">
@@ -1154,6 +1221,20 @@
         <div style="width:32px;height:32px;border-radius:50%;background:#1a7f37;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;">✓</div>
         <div style="font-size:13px;color:var(--text);font-weight:600;">Saved</div>
       </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ dashboardPopup }}">
+  <div data-app-theme="{{ theme }}" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:410;display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Manrope',sans-serif;" onClick="{{ closeDashPopup }}">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:420px;width:100%;max-height:80vh;overflow:auto;" onClick="{{ stopClickPropagation }}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;">
+        <div style="font-weight:700;font-size:15px;">{{ dashboardPopup.title }}</div>
+        <button onClick="{{ closeDashPopup }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:14px;">✕</button>
+      </div>
+      <sc-for list="{{ dashboardPopup.rows }}" as="row" hint-placeholder-count="3">
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border-soft);"><span>{{ row.label }}</span><span style="font-weight:700;color:#d4af37;">{{ row.value }}</span></div>
+      </sc-for>
     </div>
   </div>
 </sc-if>
@@ -1435,14 +1516,14 @@
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   state = {
-    session: null, view: 'login', loading: true, toast: null, loginError: '', attendanceUnlocked: {}, saveStatus: null,
+    session: null, view: 'login', loading: true, toast: null, loginError: '', attendanceUnlocked: {}, saveStatus: null, dashboardPopup: null,
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [],
     staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], fundTransfers: [], siteAllocations: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false,
     selectedSupplier: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
-    detailFilters: { site: '', material: '', vehicle: '' },
+    detailFilters: { site: '', material: '', vehicle: '' }, staffPaymentsFilter: { from: '', to: '' },
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
     reportTab: 'supplier', showPassword: false, theme: 'light'
   };
@@ -1792,6 +1873,46 @@ class Component extends DCLogic {
     else this.submitGeneric('addSiteAllocation', payload, 'Site allocation saved successfully.');
   }
 
+  exportStaffPaymentsExcel() {
+    const rows = this._lastStaffPaymentRows || [];
+    if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
+    const spf = this.state.staffPaymentsFilter;
+    const aoa = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Staff Payments'], ['Range: ' + (spf.from || 'Start') + ' to ' + (spf.to || 'Today')], ['Generated: ' + new Date().toLocaleString('en-IN')], []];
+    aoa.push(['Date', 'Staff Name', 'Amount Paid', 'Method', 'Reference', 'Remarks']);
+    rows.forEach(function (r) { aoa.push([r.Date, r.StaffName, Number(r.AmountPaid) || 0, r.PaymentMethod || '', r.ReferenceNumber || '', r.Remarks || '']); });
+    let total = 0; rows.forEach(function (r) { total += Number(r.AmountPaid) || 0; });
+    aoa.push(['TOTAL', '', total, '', '', '']);
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!merges'] = [0, 1, 2, 3, 4].map(function (r) { return { s: { r: r, c: 0 }, e: { r: r, c: 5 } }; });
+    ws['!cols'] = [{ wch: 14 }, { wch: 22 }, { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 24 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Staff Payments');
+    XLSX.writeFile(wb, 'panda-construction-staff-payments.xlsx');
+  }
+  async exportStaffPaymentsPDF() {
+    const rows = this._lastStaffPaymentRows || [];
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    const spf = this.state.staffPaymentsFilter;
+    let y = 40;
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y + 10);
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y + 24);
+    y += 50;
+    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Staff Payments', 40, y);
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('Range: ' + (spf.from || 'Start') + ' to ' + (spf.to || 'Today'), 40, y + 14);
+    let total = 0; rows.forEach(function (r) { total += Number(r.AmountPaid) || 0; });
+    doc.autoTable({
+      startY: y + 26,
+      head: [['Date', 'Staff Name', 'Amount Paid', 'Method', 'Reference', 'Remarks']],
+      body: rows.map(function (r) { return [r.Date, r.StaffName, 'Rs. ' + (Number(r.AmountPaid) || 0).toLocaleString('en-IN'), r.PaymentMethod || '', r.ReferenceNumber || '', r.Remarks || '']; }),
+      foot: [['TOTAL', '', 'Rs. ' + total.toLocaleString('en-IN'), '', '', '']],
+      theme: 'grid', styles: { fontSize: 9 }, headStyles: { fillColor: [212, 175, 55], textColor: [20, 20, 20] }, footStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold' },
+      margin: { left: 40, right: 40 }
+    });
+    doc.save('panda-construction-staff-payments.pdf');
+  }
   async exportSalarySlipPDF(staffRow, sal) {
     const self = this;
     if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
@@ -1878,6 +1999,7 @@ class Component extends DCLogic {
 
   setDashFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.dashFilters); nf[key] = e.target.value; return { dashFilters: nf }; }); }.bind(this); }
   setDetailFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.detailFilters); nf[key] = e.target.value; return { detailFilters: nf }; }); }.bind(this); }
+  setStaffPaymentsFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.staffPaymentsFilter); nf[key] = e.target.value; return { staffPaymentsFilter: nf }; }); }.bind(this); }
   setReportFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.reportFilters); nf[key] = e.target.value; return { reportFilters: nf }; }); }.bind(this); }
   buildFilterSummary(rf) {
     const parts = [];
@@ -1943,13 +2065,19 @@ class Component extends DCLogic {
     const headerRowIdx = aoa.length;
     aoa.push(cols.map(function (c) { return c.label; }));
     rows.forEach(function (r) { aoa.push(cols.map(function (c) { return r[c.key]; })); });
+    const isStaffDue = this.state.reportTab === 'staffDue';
     const totalRowIdx = aoa.length;
-    aoa.push(cols.map(function (c, i) {
-      if (i === 0) return 'TOTAL';
-      if (c.type === 'text') return '';
-      let sum = 0; rows.forEach(function (r) { sum += Number(r[c.key]) || 0; });
-      return sum;
-    }));
+    if (!isStaffDue) {
+      aoa.push(cols.map(function (c, i) {
+        if (i === 0) return 'TOTAL';
+        if (c.type === 'text') return '';
+        let sum = 0; rows.forEach(function (r) { sum += Number(r[c.key]) || 0; });
+        return sum;
+      }));
+    } else {
+      let grandOutstanding = 0; rows.forEach(function (r) { if (r._isTotalRow) grandOutstanding += Number(r._NetSalary) || 0; });
+      aoa.push(['GRAND TOTAL OUTSTANDING (ALL STAFF)', '', '', '', '', grandOutstanding]);
+    }
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     ws['!merges'] = [0, 1, 2, 3, 4].map(function (r) { return { s: { r: r, c: 0 }, e: { r: r, c: width } }; });
     cols.forEach(function (c, i) {
@@ -1960,6 +2088,16 @@ class Component extends DCLogic {
         }
       }
     });
+    if (isStaffDue) {
+      rows.forEach(function (r, idx) {
+        if (!r._isTotalRow) return;
+        const rowIdx = headerRowIdx + 1 + idx;
+        cols.forEach(function (c, ci) {
+          const ref = XLSX.utils.encode_cell({ r: rowIdx, c: ci });
+          if (ws[ref]) ws[ref].s = { font: { bold: true }, fill: { fgColor: { rgb: 'F5F0DC' } } };
+        });
+      });
+    }
     ws['!cols'] = cols.map(function () { return { wch: 20 }; });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, title.slice(0, 31));
@@ -1990,9 +2128,15 @@ class Component extends DCLogic {
     y += 40;
 
     const head = [cols.map(function (c) { return c.label; })];
-    const body = rows.map(function (r) { return cols.map(function (c) { if (c.type === 'currency') return self.fmtPdf(r[c.key]); if (c.type === 'number') return (Number(r[c.key]) || 0).toLocaleString('en-IN'); return r[c.key]; }); });
-    const totals = cols.map(function (c, i) { if (i === 0) return 'TOTAL'; if (c.type === 'text') return ''; let sum = 0; rows.forEach(function (r) { sum += Number(r[c.key]) || 0; }); return c.type === 'currency' ? self.fmtPdf(sum) : sum.toLocaleString('en-IN'); });
-    body.push(totals);
+    const body = rows.map(function (r) { return cols.map(function (c) { if (c.type === 'currency') return r[c.key] === '' ? '' : self.fmtPdf(r[c.key]); if (c.type === 'number') return (Number(r[c.key]) || 0).toLocaleString('en-IN'); return r[c.key]; }); });
+    const isStaffDue = this.state.reportTab === 'staffDue';
+    if (!isStaffDue) {
+      const totals = cols.map(function (c, i) { if (i === 0) return 'TOTAL'; if (c.type === 'text') return ''; let sum = 0; rows.forEach(function (r) { sum += Number(r[c.key]) || 0; }); return c.type === 'currency' ? self.fmtPdf(sum) : sum.toLocaleString('en-IN'); });
+      body.push(totals);
+    } else {
+      let grandOutstanding = 0; rows.forEach(function (r) { if (r._isTotalRow) grandOutstanding += Number(r._NetSalary) || 0; });
+      body.push(['GRAND TOTAL OUTSTANDING (ALL STAFF)', '', '', '', '', self.fmtPdf(grandOutstanding)]);
+    }
 
     doc.autoTable({
       head: head, body: body, startY: y,
@@ -2001,7 +2145,14 @@ class Component extends DCLogic {
       headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' },
       styles: { fontSize: 9, cellPadding: 6, overflow: 'linebreak' },
       columnStyles: cols.reduce(function (acc, c, i) { if (c.type !== 'text') acc[i] = { halign: 'right' }; return acc; }, {}),
-      didParseCell: function (data) { if (data.section === 'body' && data.row.index === body.length - 1) { data.cell.styles.fontStyle = 'bold'; data.cell.styles.fillColor = [245, 240, 220]; } }
+      didParseCell: function (data) {
+        if (data.section !== 'body') return;
+        const isLastRow = data.row.index === body.length - 1;
+        const rowData = rows[data.row.index];
+        if (isLastRow || (isStaffDue && rowData && rowData._isTotalRow)) {
+          data.cell.styles.fontStyle = 'bold'; data.cell.styles.fillColor = [245, 240, 220];
+        }
+      }
     });
     const pageCount = doc.internal.getNumberOfPages();
     for (let p = 1; p <= pageCount; p++) {
@@ -2061,6 +2212,37 @@ class Component extends DCLogic {
     const siteExpenditure = withBars(groupSum(txF, 'Site', 'Value'));
     const materialExpenditure = withBars(groupSum(txF, 'Material', 'Value'));
     const dieselExpenditure = withBars(groupSum(dieselTxF, 'Site', 'Value'));
+
+    const supplierPurchaseBreakdown = groupSum(txF, 'Supplier', 'Value');
+    const supplierPaidBreakdown = groupSum(payF, 'Supplier', 'AmountPaid');
+    const supplierOutstandingBreakdown = s.suppliers.filter(function (sp) { return !df.supplier || sp.SupplierName === df.supplier; }).map(function (sp) {
+      const name = sp.SupplierName;
+      const bfAmt = self.sumLatestBF(s.bf.filter(function (b) { return b.Supplier === name; }));
+      const purch = self.sum(txF.filter(function (t) { return t.Supplier === name; }), 'Value');
+      const paid = self.sum(payF.filter(function (p) { return p.Supplier === name; }), 'AmountPaid');
+      return { label: name, value: bfAmt + purch - paid };
+    }).filter(function (r) { return r.value !== 0; }).sort(function (a, b) { return b.value - a.value; });
+    const dieselCostBreakdown = groupSum(dieselTxF, 'Supplier', 'Value');
+    const dieselPaidBreakdown = groupSum(dieselPayF, 'Supplier', 'AmountPaid');
+    const dieselOutstandingBreakdown = Array.from(new Set(s.dieselTx.map(function (t) { return t.Supplier; }).concat(s.dieselBF.map(function (b) { return b.Supplier; })))).filter(function (name) { return name && (!df.supplier || name === df.supplier); }).map(function (name) {
+      const bfAmt = self.sumLatestBF(s.dieselBF.filter(function (b) { return b.Supplier === name; }));
+      const cost = self.sum(dieselTxF.filter(function (t) { return t.Supplier === name; }), 'Value');
+      const paid = self.sum(dieselPayF.filter(function (p) { return p.Supplier === name; }), 'AmountPaid');
+      return { label: name, value: bfAmt + cost - paid };
+    }).filter(function (r) { return r.value !== 0; }).sort(function (a, b) { return b.value - a.value; });
+    const currentMonthBreakdown = [
+      { label: 'Supplier Purchases', value: self.sum(s.transactions.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') },
+      { label: 'Diesel Purchases', value: self.sum(s.dieselTx.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') }
+    ];
+    const toPopupRows = function (rows, field) { return rows.map(function (r) { return { label: r.label, value: fmt(r.value != null ? r.value : r[field]) }; }); };
+    const openDashPopup = function (title, rows) { return function () { self.setState({ dashboardPopup: { title: title, rows: rows.length ? rows : [{ label: 'No data for this filter', value: '' }] } }); }; };
+
+    const spf = s.staffPaymentsFilter;
+    const staffPaymentsListRows = s.staffPayments.filter(function (p) { return self.inRange(p.Date, spf.from, spf.to); })
+      .slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); })
+      .map(function (p) { return Object.assign({}, p, { AmountPaidFmt: fmt(p.AmountPaid) }); });
+    const staffPaymentsTotalFmt = fmt(self.sum(staffPaymentsListRows, 'AmountPaid'));
+    this._lastStaffPaymentRows = staffPaymentsListRows;
 
     const supplierOptions = s.suppliers.map(function (x) { return x.SupplierName; });
     const siteOptions = s.sites.map(function (x) { return x.SiteName; });
@@ -2141,6 +2323,17 @@ class Component extends DCLogic {
     const curMonthLabelAll = (function () { const p = curMonthKeyAll.split('-'); return monthNamesAll[Number(p[1]) - 1] + ' ' + p[0]; })();
     const hasSlipThisMonth = function (name) { return s.staffSalary.some(function (r) { return r.StaffName === name && String(r.Month || '').trim().toLowerCase() === curMonthLabelAll.toLowerCase(); }); };
     const dayValue = function (status) { return status === 'Present' ? 1 : (status === 'Half' ? 0.5 : 0); };
+    const currentMonthStaffCostN = self.sum(s.staff.map(function (st) {
+      const slipsThisMonth = s.staffSalary.filter(function (r) { return r.StaffName === st.Name && String(r.Month || '').trim().toLowerCase() === curMonthLabelAll.toLowerCase(); });
+      if (slipsThisMonth.length) return { v: self.sum(slipsThisMonth, 'NetSalary') };
+      if (st.SalaryBasis === 'Daily') {
+        const presentThisMonth = self.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKeyAll; }).map(function (r) { return { v: dayValue(r.Status) }; }), 'v');
+        return { v: presentThisMonth * (Number(st.DailyRate) || 0) };
+      }
+      return { v: 0 };
+    }), 'v');
+    const currentMonthExpenditureTotalN = currentMonthExpenditureN + currentMonthStaffCostN;
+    currentMonthBreakdown.push({ label: 'Staff Salary (attendance-based)', value: currentMonthStaffCostN });
     const totalStaffOutstandingN = self.sum(s.staff.map(function (st) {
       const due = self.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }), 'NetSalary');
       const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
@@ -2149,6 +2342,14 @@ class Component extends DCLogic {
       const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
       return { v: bfAmt + due + monthEarned - paid };
     }), 'v');
+    const staffOutstandingBreakdown = s.staff.map(function (st) {
+      const due = self.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }), 'NetSalary');
+      const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
+      const bfAmt = Number(st.BFAmount) || 0;
+      const presentThisMonth = self.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKeyAll; }).map(function (r) { return { v: dayValue(r.Status) }; }), 'v');
+      const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
+      return { label: st.Name, value: bfAmt + due + monthEarned - paid };
+    }).filter(function (r) { return r.value !== 0; }).sort(function (a, b) { return b.value - a.value; });
     const staffCards = s.staff.map(function (st) {
       const due = self.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }), 'NetSalary');
       const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
@@ -2273,10 +2474,26 @@ class Component extends DCLogic {
       site: [{ key: 'Site', label: 'Site', type: 'text' }, { key: '_Purchase', label: 'Purchase', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
       material: [{ key: 'Material', label: 'Material', type: 'text' }, { key: '_Quantity', label: 'Quantity', type: 'number' }, { key: '_Value', label: 'Value', type: 'currency' }],
       monthly: [{ key: 'Month', label: 'Month', type: 'text' }, { key: '_Purchase', label: 'Purchase', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
-      diesel: [{ key: 'Supplier', label: 'Fuel Station', type: 'text' }, { key: '_BF', label: 'BF', type: 'currency' }, { key: '_Cost', label: 'Cost', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }]
+      diesel: [{ key: 'Supplier', label: 'Fuel Station', type: 'text' }, { key: '_BF', label: 'BF', type: 'currency' }, { key: '_Cost', label: 'Cost', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
+      staffDue: [{ key: 'StaffName', label: 'Staff Name', type: 'text' }, { key: 'Month', label: 'Month', type: 'text' }, { key: '_Basic', label: 'Basic', type: 'currency' }, { key: '_Addition', label: 'Addition', type: 'currency' }, { key: '_Deduction', label: 'Deduction', type: 'currency' }, { key: '_NetSalary', label: 'Net Salary', type: 'currency' }]
     };
-    const reportTitleMap = { supplier: 'Supplier Report', site: 'Site Report', material: 'Material Report', monthly: 'Monthly Report', diesel: 'Diesel Report' };
-    const reportRowsMap = { supplier: supplierReportRows, site: siteReportRows, material: materialReportRows, monthly: monthlyReportRows, diesel: dieselReportRows };
+    const reportTitleMap = { supplier: 'Supplier Report', site: 'Site Report', material: 'Material Report', monthly: 'Monthly Report', diesel: 'Diesel Report', staffDue: 'Staff Due Report' };
+    const staffDueReportRows = [];
+    s.staff.forEach(function (st) {
+      const slips = s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }).slice().sort(function (a, b) { return (a.Month || '').localeCompare(b.Month || ''); });
+      slips.forEach(function (r) {
+        const basic = Number(r.Basic) || 0, addition = Number(r.DA) || 0, deduction = Number(r.Deductions) || 0, net = Number(r.NetSalary) || 0;
+        staffDueReportRows.push({ StaffName: st.Name, Month: r.Month, Basic: fmt(basic), Addition: fmt(addition), Deduction: fmt(deduction), NetSalary: fmt(net), _Basic: basic, _Addition: addition, _Deduction: deduction, _NetSalary: net, rowStyle: '', nameWeight: '400' });
+      });
+      const due = self.sum(slips, 'NetSalary');
+      const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
+      const bfAmt = Number(st.BFAmount) || 0;
+      const outstanding = bfAmt + due - paid;
+      if (slips.length || bfAmt || paid) {
+        staffDueReportRows.push({ StaffName: st.Name, Month: 'TOTAL OUTSTANDING (incl. BF ' + fmt(bfAmt) + ', Paid ' + fmt(paid) + ')', Basic: '', Addition: '', Deduction: '', NetSalary: fmt(outstanding), _Basic: '', _Addition: '', _Deduction: '', _NetSalary: outstanding, rowStyle: 'background:var(--chip);', nameWeight: '700', _isTotalRow: true });
+      }
+    });
+    const reportRowsMap = { supplier: supplierReportRows, site: siteReportRows, material: materialReportRows, monthly: monthlyReportRows, diesel: dieselReportRows, staffDue: staffDueReportRows };
     this._lastReportRows = reportRowsMap[s.reportTab] || [];
     this._lastReportColumns = reportColumnsMap[s.reportTab] || [];
     this._lastReportTitle = reportTitleMap[s.reportTab] || 'Report';
@@ -2294,9 +2511,9 @@ class Component extends DCLogic {
       transactions: s.view === 'transactions', payments: s.view === 'payments', bf: s.view === 'bf',
       dieselTx: s.view === 'dieselTx', dieselPayments: s.view === 'dieselPayments', dieselBF: s.view === 'dieselBF',
       sites: s.view === 'sites', materials: s.view === 'materials', reports: s.view === 'reports', settings: s.view === 'settings',
-      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', funds: s.view === 'funds', attendance: s.view === 'attendance'
+      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', funds: s.view === 'funds', attendance: s.view === 'attendance'
     };
-    const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel' };
+    const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel', staffDue: s.reportTab === 'staffDue' };
     const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation' };
 
     const editRecordRaw = s.editRecord || {};
@@ -2333,11 +2550,11 @@ class Component extends DCLogic {
     const modalTitle = modalTitleMap[s.modal] || '';
 
     const navBtn = function (active) { return 'display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;margin-bottom:2px;box-sizing:border-box;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? '#d4af37' : 'var(--text)') + ';'; };
-    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), bf: navBtn(viewIs.bf), dieselTx: navBtn(viewIs.dieselTx), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
+    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselTx: navBtn(viewIs.dieselTx), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
     const tabBtn = function (active) { return 'padding:9px 16px;border-radius:20px;border:1px solid ' + (active ? '#d4af37' : 'var(--border)') + ';cursor:pointer;font-size:13px;font-weight:600;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? '#d4af37' : 'var(--text)') + ';'; };
-    const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel) };
+    const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel), staffDue: tabBtn(reportTabIs.staffDue) };
 
-    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', sites: 'Sites', materials: 'Materials', reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, funds: 'Fund Distribution', attendance: 'Attendance' };
+    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', sites: 'Sites', materials: 'Materials', reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', funds: 'Fund Distribution', attendance: 'Attendance' };
 
     return {
       session: s.session, loading: s.loading, toast: s.toast, loginError: s.loginError, isDemo: isDemo, todayStr: todayStr,
@@ -2349,7 +2566,7 @@ class Component extends DCLogic {
       navPayments: function () { self.setView('payments'); }, navBF: function () { self.setView('bf'); }, navDieselTx: function () { self.setView('dieselTx'); },
       navDieselPayments: function () { self.setView('dieselPayments'); }, navDieselBF: function () { self.setView('dieselBF'); }, navSites: function () { self.setView('sites'); },
       navMaterials: function () { self.setView('materials'); }, navReports: function () { self.setView('reports'); }, navSettings: function () { self.setView('settings'); },
-      navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navFunds: function () { self.setView('funds'); }, navAttendance: function () { self.setView('attendance'); },
+      navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navFunds: function () { self.setView('funds'); }, navAttendance: function () { self.setView('attendance'); },
       mobileNavOpen: s.mobileNavOpen, toggleMobileNav: this.toggleMobileNav.bind(this), closeMobileNav: this.closeMobileNav.bind(this),
       isOwnerOrAdmin1: isOwnerOrAdmin1,
       viewIs: viewIs, pageTitle: pageTitles[s.view] || '', navStyle: navStyle, reportTabStyle: reportTabStyle, reportTabIs: reportTabIs, modal: s.modal, modalIs: modalIs,
@@ -2359,7 +2576,20 @@ class Component extends DCLogic {
       onDetailSite: this.setDetailFilter('site'), onDetailMaterial: this.setDetailFilter('material'), onDetailVehicle: this.setDetailFilter('vehicle'),
       totalSupplierPurchase: fmt(totalSupplierPurchaseN), totalSupplierPaid: fmt(totalSupplierPaidN), totalSupplierOutstanding: fmt(totalSupplierOutstandingN),
       totalDieselCost: fmt(totalDieselCostN), totalDieselPaid: fmt(totalDieselPaidN), totalDieselOutstanding: fmt(totalDieselOutstandingN),
-      currentMonthExpenditure: fmt(currentMonthExpenditureN), totalStaffOutstanding: fmt(totalStaffOutstandingN),
+      currentMonthExpenditure: fmt(currentMonthExpenditureTotalN), totalStaffOutstanding: fmt(totalStaffOutstandingN),
+      dashboardPopup: s.dashboardPopup ? { title: s.dashboardPopup.title, rows: s.dashboardPopup.rows } : null,
+      closeDashPopup: function () { self.setState({ dashboardPopup: null }); },
+      onOpenSupplierPurchase: openDashPopup('Total Supplier Purchase — by Supplier', toPopupRows(supplierPurchaseBreakdown)),
+      onOpenSupplierPaid: openDashPopup('Total Supplier Paid — by Supplier', toPopupRows(supplierPaidBreakdown)),
+      onOpenSupplierOutstanding: openDashPopup('Total Supplier Outstanding — by Supplier', toPopupRows(supplierOutstandingBreakdown)),
+      onOpenDieselCost: openDashPopup('Total Diesel Cost — by Fuel Station', toPopupRows(dieselCostBreakdown)),
+      onOpenDieselPaid: openDashPopup('Total Diesel Paid — by Fuel Station', toPopupRows(dieselPaidBreakdown)),
+      onOpenDieselOutstanding: openDashPopup('Total Diesel Outstanding — by Fuel Station', toPopupRows(dieselOutstandingBreakdown)),
+      onOpenCurrentMonth: openDashPopup('Current Month Expenditure — Breakdown', toPopupRows(currentMonthBreakdown)),
+      onOpenStaffOutstanding: openDashPopup('Total Staff Outstanding — by Staff', toPopupRows(staffOutstandingBreakdown)),
+      staffPaymentsFilter: s.staffPaymentsFilter, onStaffPaymentsFrom: this.setStaffPaymentsFilter('from'), onStaffPaymentsTo: this.setStaffPaymentsFilter('to'),
+      staffPaymentsListRows: staffPaymentsListRows, staffPaymentsTotalFmt: staffPaymentsTotalFmt,
+      exportStaffPaymentsExcel: this.exportStaffPaymentsExcel.bind(this), exportStaffPaymentsPDF: this.exportStaffPaymentsPDF.bind(this),
       supplierExpenditure: supplierExpenditure, siteExpenditure: siteExpenditure, materialExpenditure: materialExpenditure, dieselExpenditure: dieselExpenditure,
       supplierCards: supplierCards, openSupplierModal: function () { self.openModal('supplier'); },
       supplierDetail: supplierDetail,
@@ -2374,14 +2604,14 @@ class Component extends DCLogic {
       openTransactionModal: function () { self.openModal('transaction'); }, openPaymentModal: function () { self.openModal('payment'); }, openBFModal: function () { self.openModal('bf'); },
       openDieselTxModal: function () { self.openModal('dieselTx'); }, openDieselPaymentModal: function () { self.openModal('dieselPayment'); }, openDieselBFModal: function () { self.openModal('dieselBF'); },
       openSiteModal: function () { self.openModal('site'); }, openMaterialModal: function () { self.openModal('material'); },
-      closeModal: this.closeModal.bind(this),
+      closeModal: this.closeModal.bind(this), stopClickPropagation: function (e) { e.stopPropagation(); },
       submitTransaction: this.submitTransaction.bind(this), submitPayment: this.submitPayment.bind(this), submitBF: this.submitBF.bind(this),
       submitDieselTx: this.submitDieselTx.bind(this), submitDieselPayment: this.submitDieselPayment.bind(this), submitDieselBF: this.submitDieselBF.bind(this),
       submitSupplier: this.submitSupplier.bind(this), submitSite: this.submitSite.bind(this), submitMaterial: this.submitMaterial.bind(this),
       siteRows: siteRows, materialAnalysis: materialAnalysis,
-      supplierReportRows: supplierReportRows, siteReportRows: siteReportRows, materialReportRows: materialReportRows, monthlyReportRows: monthlyReportRows, dieselReportRows: dieselReportRows,
+      supplierReportRows: supplierReportRows, siteReportRows: siteReportRows, materialReportRows: materialReportRows, monthlyReportRows: monthlyReportRows, dieselReportRows: dieselReportRows, staffDueReportRows: staffDueReportRows,
       setReportSupplier: function () { self.setState({ reportTab: 'supplier' }); }, setReportSite: function () { self.setState({ reportTab: 'site' }); }, setReportMaterial: function () { self.setState({ reportTab: 'material' }); },
-      setReportMonthly: function () { self.setState({ reportTab: 'monthly' }); }, setReportDiesel: function () { self.setState({ reportTab: 'diesel' }); },
+      setReportMonthly: function () { self.setState({ reportTab: 'monthly' }); }, setReportDiesel: function () { self.setState({ reportTab: 'diesel' }); }, setReportStaffDue: function () { self.setState({ reportTab: 'staffDue' }); },
       reportFilters: s.reportFilters, onReportFrom: this.setReportFilter('from'), onReportTo: this.setReportFilter('to'), onReportMonth: this.setReportFilter('month'), onReportYear: this.setReportFilter('year'), onReportSite: this.setReportFilter('site'), onReportSupplier: this.setReportFilter('supplier'), onReportMaterial: this.setReportFilter('material'), onReportDieselSupplier: this.setReportFilter('dieselSupplier'), yearOptions: yearOptions, monthOptions: monthOptions,
       exportReportExcel: this.exportReportExcel.bind(this), exportReportPDF: this.exportReportPDF.bind(this), printReport: this.printReport.bind(this),
       taskDateResolved: taskDateResolved, onTaskDate: this.setTaskDate.bind(this), taskRows: taskRows, noTaskAdmins: noTaskAdmins,
