@@ -1480,7 +1480,7 @@
         <form key="{{ formKey }}" onSubmit="{{ submitStaffSalary }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="hidden" name="StaffName" defaultValue="{{ staffSalaryDefaults.StaffName }}" />
           <div style="color:var(--muted2);font-size:12px;">{{ staffDetail.rateHint }}</div>
-          <input type="text" name="Month" placeholder="Month (e.g. September 2026)" required="true" defaultValue="{{ staffSalaryDefaults.Month }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="month" name="Month" required="true" defaultValue="{{ staffSalaryDefaults.Month }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <div>
             <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Days Worked (from Attendance)</label>
             <input type="number" step="any" name="DaysWorked" readOnly="true" defaultValue="{{ staffSalaryDefaults.DaysWorked }}" style="background:var(--chip);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
@@ -2037,7 +2037,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Month.value || !f.Basic.value) { this.showToast('Month and Basic amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Month: f.Month.value, StaffName: f.StaffName.value, Basic: f.Basic.value, DA: f.DA.value || 0, Deductions: f.Deductions.value || 0, BFDue: 0, DaysWorked: f.DaysWorked.value || '', Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Month: this.monthKeyToLabel(f.Month.value), StaffName: f.StaffName.value, Basic: f.Basic.value, DA: f.DA.value || 0, Deductions: f.Deductions.value || 0, BFDue: 0, DaysWorked: f.DaysWorked.value || '', Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.SalaryID = ed.SalaryID; this.submitGeneric('updateStaffSalary', payload, 'Salary slip updated successfully.'); }
     else this.submitGeneric('addStaffSalary', payload, 'Salary slip saved successfully.');
   }
@@ -2245,6 +2245,8 @@ class Component extends DCLogic {
   inRange(dateStr, from, to) { if (!dateStr) return true; if (from && dateStr < from) return false; if (to && dateStr > to) return false; return true; }
   oc(n) { n = Number(n) || 0; return n > 0 ? '#e2574c' : (n < 0 ? '#2ea043' : 'var(--muted)'); }
   dayValue(status) { return status === 'Present' ? 1 : (status === 'Half' ? 0.5 : 0); }
+  monthKeyToLabel(key) { const names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; const p = String(key || '').split('-'); const idx = Number(p[1]) - 1; return (names[idx] || 'January') + ' ' + (p[0] || new Date().getFullYear()); }
+  monthLabelToKey(label) { const names = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']; const s = String(label || '').trim().toLowerCase(); const yearMatch = s.match(/\d{4}/); const year = yearMatch ? yearMatch[0] : String(new Date().getFullYear()); let idx = names.findIndex(function (m) { return s.indexOf(m) !== -1 || s.indexOf(m.slice(0, 3)) !== -1; }); if (idx === -1) idx = new Date().getMonth(); return year + '-' + String(idx + 1).padStart(2, '0'); }
   // Single source of truth for a staff member's payroll balance — BF + all past salary slips +
   // this month's not-yet-slipped attendance earnings, minus payments made. Used everywhere
   // (dashboard total, staff list, staff detail, Reports > Staff Due) so they never disagree.
@@ -2754,7 +2756,7 @@ class Component extends DCLogic {
     const siteDefaults = { SiteName: editRecordRaw.SiteName || '' };
     const materialDefaults = { MaterialName: editRecordRaw.MaterialName || '', DefaultUnit: editRecordRaw.DefaultUnit || 'TON' };
     const staffDefaults = { Name: editRecordRaw.Name || '', Role: editRecordRaw.Role || '', ContactNumber: editRecordRaw.ContactNumber || '', SalaryBasis: editRecordRaw.SalaryBasis || 'Monthly', MonthlyAmount: editRecordRaw.MonthlyAmount != null ? editRecordRaw.MonthlyAmount : '', DailyRate: editRecordRaw.DailyRate != null ? editRecordRaw.DailyRate : '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '' };
-    const staffSalaryDefaults = { StaffName: s.selectedStaff || '', Month: editRecordRaw.Month || '', DaysWorked: editRecordRaw.DaysWorked != null ? editRecordRaw.DaysWorked : (isEditing ? '' : presentDaysThisMonth || ''), Basic: editRecordRaw.Basic != null ? editRecordRaw.Basic : (isEditing ? '' : defaultBasicFromAttendance), DA: editRecordRaw.DA != null ? editRecordRaw.DA : '', Deductions: editRecordRaw.Deductions != null ? editRecordRaw.Deductions : '', BFDue: editRecordRaw.BFDue != null ? editRecordRaw.BFDue : '', Remarks: editRecordRaw.Remarks || '' };
+    const staffSalaryDefaults = { StaffName: s.selectedStaff || '', Month: isEditing ? this.monthLabelToKey(editRecordRaw.Month) : todayStr.slice(0, 7), DaysWorked: editRecordRaw.DaysWorked != null ? editRecordRaw.DaysWorked : (isEditing ? '' : presentDaysThisMonth || ''), Basic: editRecordRaw.Basic != null ? editRecordRaw.Basic : (isEditing ? '' : defaultBasicFromAttendance), DA: editRecordRaw.DA != null ? editRecordRaw.DA : '', Deductions: editRecordRaw.Deductions != null ? editRecordRaw.Deductions : '', BFDue: editRecordRaw.BFDue != null ? editRecordRaw.BFDue : '', Remarks: editRecordRaw.Remarks || '' };
     const staffPaymentDefaults = { StaffName: s.selectedStaff || '', Date: editRecordRaw.Date || todayStr, AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Remarks: editRecordRaw.Remarks || '' };
     const userContactDefaults = { ContactNumber: editRecordRaw.ContactNumber || '' };
     const staffRateReadOnly = false;
