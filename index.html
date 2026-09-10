@@ -23,7 +23,7 @@
   [data-mobile-overlay] { display: none; }
   [data-stat-grid] [style*="font-weight:800"] { overflow-wrap: anywhere !important; word-break: break-word !important; }
   @media (max-width: 860px) {
-    [data-sidebar-panel] { position: fixed !important; left: 0 !important; top: 0 !important; height: 100vh !important; width: 260px !important; z-index: 300; transform: translateX(-100%); transition: transform 0.25s ease; box-shadow: 0 0 30px rgba(0,0,0,0.35); }
+    [data-sidebar-panel] { position: fixed !important; left: 0 !important; top: 0 !important; height: 100dvh !important; max-height: 100dvh !important; width: 260px !important; z-index: 300; transform: translateX(-100%); transition: transform 0.25s ease; box-shadow: 0 0 30px rgba(0,0,0,0.35); }
     [data-sidebar-panel][data-open="true"] { transform: translateX(0) !important; }
     [data-app-shell] { display: block !important; }
     [data-main-content] { padding: 84px 16px 24px !important; }
@@ -307,10 +307,11 @@
         <button onClick="{{ openTransactionModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;white-space:nowrap;">+ Add Transaction</button>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
-        <table style="width:100%;border-collapse:collapse;min-width:900px;">
+        <table style="width:100%;border-collapse:collapse;min-width:960px;">
           <thead><tr>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">SL</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Time</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Supplier</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Vehicle</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Material</th>
@@ -327,6 +328,7 @@
               <tr>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.SLNo }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Time }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.VehicleNumber }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Material }}</td>
@@ -336,7 +338,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Remarks }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -382,7 +384,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Remarks }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -412,7 +414,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.BFAmountFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Remarks }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -470,7 +472,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Driver }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -500,7 +502,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -528,7 +530,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.BFDate }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.BFAmountFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Edit</button></td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -799,9 +801,12 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Role }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.StatusLabel }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:normal;min-width:220px;">
-                  <button onClick="{{ r.onMarkPresent }}" style="background:{{ r.presentBg }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Present</button>
-                  <button onClick="{{ r.onMarkHalf }}" style="background:{{ r.halfBg }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Half</button>
-                  <button onClick="{{ r.onMarkAbsent }}" style="background:{{ r.absentBg }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Absent</button>
+                  <button disabled="{{ r.btnDisabled }}" onClick="{{ r.onMarkPresent }}" style="background:{{ r.presentBg }};opacity:{{ r.btnOpacity }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Present</button>
+                  <button disabled="{{ r.btnDisabled }}" onClick="{{ r.onMarkHalf }}" style="background:{{ r.halfBg }};opacity:{{ r.btnOpacity }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Half</button>
+                  <button disabled="{{ r.btnDisabled }}" onClick="{{ r.onMarkAbsent }}" style="background:{{ r.absentBg }};opacity:{{ r.btnOpacity }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Absent</button>
+                  <sc-if value="{{ r.isMarked }}">
+                    <button onClick="{{ r.onUnlock }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:11px;margin:2px;">Done for today · Edit</button>
+                  </sc-if>
                 </td>
               </tr>
             </sc-for>
@@ -1138,6 +1143,21 @@
   </div>
 </div>
 
+<sc-if value="{{ saveStatus }}">
+  <div style="position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:400;display:flex;align-items:center;justify-content:center;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 32px;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:160px;">
+      <sc-if value="{{ savingActive }}">
+        <div style="width:32px;height:32px;border-radius:50%;border:3px solid var(--border);border-top-color:#d4af37;animation:pandaSpin 0.8s linear infinite;"></div>
+        <div style="font-size:13px;color:var(--text);font-weight:600;">Saving…</div>
+      </sc-if>
+      <sc-if value="{{ savedActive }}">
+        <div style="width:32px;height:32px;border-radius:50%;background:#1a7f37;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;">✓</div>
+        <div style="font-size:13px;color:var(--text);font-weight:600;">Saved</div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ toast }}">
   <div data-app-theme="{{ theme }}" style="position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);padding:14px 20px;border-radius:8px;color:var(--text);font-size:14px;font-family:'Manrope',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:200;">{{ toast.msg }}</div>
 </sc-if>
@@ -1151,7 +1171,10 @@
         <form key="{{ formKey }}" onSubmit="{{ submitTransaction }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="date" name="Date" required="true" defaultValue="{{ txDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <select name="Supplier" required="true" defaultValue="{{ txDefaults.Supplier }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
-          <input type="text" name="VehicleNumber" placeholder="Vehicle Number" defaultValue="{{ txDefaults.VehicleNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;gap:10px;">
+            <input type="text" name="VehicleNumber" placeholder="Vehicle Number" defaultValue="{{ txDefaults.VehicleNumber }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            <input type="time" name="Time" placeholder="Unload Time" defaultValue="{{ txDefaults.Time }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          </div>
           <input type="text" name="Material" placeholder="Material (pick or type new)" required="true" autocomplete="off" defaultValue="{{ txDefaults.Material }}" list="materialList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="materialList"><sc-for list="{{ materialOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <div style="display:flex;gap:10px;">
@@ -1412,7 +1435,7 @@
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   state = {
-    session: null, view: 'login', loading: true, toast: null, loginError: '',
+    session: null, view: 'login', loading: true, toast: null, loginError: '', attendanceUnlocked: {}, saveStatus: null,
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [],
@@ -1538,6 +1561,13 @@ class Component extends DCLogic {
     XLSX.utils.book_append_sheet(wb, ws, 'Attendance');
     XLSX.writeFile(wb, 'panda-construction-attendance-' + month + '.xlsx');
   }
+  unlockAttendance(staffName, date) {
+    this.setState(function (s) {
+      const u = Object.assign({}, s.attendanceUnlocked);
+      u[staffName + '|' + date] = true;
+      return { attendanceUnlocked: u };
+    });
+  }
   markAttendance(staffName, date, status) {
     const self = this;
     PandaAPI.call('addStaffAttendance', { Date: date, StaffName: staffName, Status: status, CreatedBy: this.currentUserName() }).then(function (res) {
@@ -1547,7 +1577,9 @@ class Component extends DCLogic {
           const idx = list.findIndex(function (a) { return a.StaffName === staffName && a.Date === date; });
           if (idx >= 0) list[idx] = Object.assign({}, list[idx], { Status: status });
           else list.push({ AttendanceID: 'tmp' + Date.now(), Date: date, StaffName: staffName, Status: status, MarkedBy: self.currentUserName(), CreatedAt: new Date().toISOString() });
-          return { staffAttendance: list };
+          const u = Object.assign({}, s.attendanceUnlocked);
+          delete u[staffName + '|' + date];
+          return { staffAttendance: list, attendanceUnlocked: u };
         });
         self.showToast(res.message || 'Attendance saved.');
       } else self.showToast(res.message || 'Save failed.');
@@ -1563,10 +1595,22 @@ class Component extends DCLogic {
   currentUserName() { return this.state.session ? this.state.session.name : ''; }
 
   submitGeneric(action, payload, successMsg) {
+    if (this.state.saveStatus === 'saving') return;
+    this.setState({ saveStatus: 'saving' });
+    const self = this;
     return PandaAPI.call(action, payload).then(function (res) {
-      if (res.success) { this.showToast(res.message || successMsg); this.closeModal(); this.loadAll(); }
-      else this.showToast(res.message || 'Save failed.');
-    }.bind(this));
+      if (res.success) {
+        self.setState({ saveStatus: 'saved' });
+        self.showToast(res.message || successMsg);
+        setTimeout(function () { self.setState({ saveStatus: null }); self.closeModal(); self.loadAll(); }, 700);
+      } else {
+        self.setState({ saveStatus: null });
+        self.showToast(res.message || 'Save failed.');
+      }
+    }).catch(function (e) {
+      self.setState({ saveStatus: null });
+      self.showToast('Save failed: ' + e.message);
+    });
   }
 
   submitTransaction(e) {
@@ -1574,7 +1618,24 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Supplier.value || !f.Material.value.trim() || !f.Quantity.value || !f.Rate.value || !f.Site.value.trim()) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, Material: f.Material.value.trim(), Quantity: f.Quantity.value, Unit: f.Unit.value, Rate: f.Rate.value, Site: f.Site.value.trim(), Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, Time: f.Time.value, Material: f.Material.value.trim(), Quantity: f.Quantity.value, Unit: f.Unit.value, Rate: f.Rate.value, Site: f.Site.value.trim(), Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+
+    // Duplicate check: same date + time is the trigger; only then compare vehicle & weight.
+    if (payload.Time) {
+      const dup = (this.state.transactions || []).find(function (t) {
+        if (ed && t.SLNo === ed.SLNo) return false;
+        return t.Date === payload.Date && t.Time && t.Time === payload.Time;
+      });
+      if (dup) {
+        const sameVehicle = (dup.VehicleNumber || '') === (payload.VehicleNumber || '');
+        const sameWeight = Number(dup.Quantity) === Number(payload.Quantity);
+        if (sameVehicle && sameWeight) {
+          const ok = window.confirm('Possible duplicate entry: another transaction on ' + payload.Date + ' at ' + payload.Time + ' has the same vehicle (' + (payload.VehicleNumber || 'blank') + ') and weight (' + payload.Quantity + '). Save anyway?');
+          if (!ok) return;
+        }
+      }
+    }
+
     if (ed) { payload.SLNo = ed.SLNo; this.submitGeneric('updateTransaction', payload, 'Transaction updated successfully.'); }
     else this.submitGeneric('addTransaction', payload, 'Transaction saved successfully.');
   }
@@ -1622,6 +1683,26 @@ class Component extends DCLogic {
     const payload = { Supplier: f.Supplier.value, BFMonth: f.BFMonth.value, BFDate: f.BFDate.value, BFAmount: f.BFAmount.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.OrigSupplier = ed.Supplier; payload.OrigBFMonth = ed.BFMonth; payload.OrigBFDate = ed.BFDate; this.submitGeneric('updateDieselBF', payload, 'Diesel BF updated successfully.'); }
     else this.submitGeneric('addDieselBF', payload, 'Diesel BF saved successfully.');
+  }
+  deleteRecord(action, idPayload, listKey) {
+    if (!window.confirm('Delete this entry permanently? This cannot be undone.')) return;
+    const payload = Object.assign({}, idPayload, { CreatedBy: this.currentUserName() });
+    if (this.state.saveStatus === 'saving') return;
+    this.setState({ saveStatus: 'saving' });
+    const self = this;
+    PandaAPI.call(action, payload).then(function (res) {
+      if (res.success) {
+        self.setState({ saveStatus: 'saved' });
+        self.showToast(res.message || 'Deleted successfully.');
+        setTimeout(function () { self.setState({ saveStatus: null }); self.loadAll(); }, 700);
+      } else {
+        self.setState({ saveStatus: null });
+        self.showToast(res.message || 'Delete failed.');
+      }
+    }).catch(function (e) {
+      self.setState({ saveStatus: null });
+      self.showToast('Delete failed: ' + e.message);
+    });
   }
   deleteSupplier(sup) {
     if (!window.confirm('Delete supplier "' + sup.SupplierName + '"? This cannot be undone.')) return;
@@ -2082,12 +2163,16 @@ class Component extends DCLogic {
     const attendanceToolRows = s.staff.map(function (st) {
       const rec = attendanceDeduped.find(function (a) { return a.StaffName === st.Name && a.Date === toolDateResolved; });
       const status = rec ? rec.Status : 'Not marked';
+      const isMarked = !!rec && !(s.attendanceUnlocked || {})[st.Name + '|' + toolDateResolved];
       return {
-        Name: st.Name, Role: st.Role, StatusLabel: status,
+        Name: st.Name, Role: st.Role, StatusLabel: status, isMarked: isMarked,
         presentBg: status === 'Present' ? '#1a7f37' : '#5a5a5a', halfBg: status === 'Half' ? '#b8860b' : '#5a5a5a', absentBg: status === 'Absent' ? '#c0392b' : '#5a5a5a',
+        btnDisabled: isMarked,
+        btnOpacity: isMarked ? '0.45' : '1',
         onMarkPresent: function () { self.markAttendance(st.Name, toolDateResolved, 'Present'); },
         onMarkHalf: function () { self.markAttendance(st.Name, toolDateResolved, 'Half'); },
-        onMarkAbsent: function () { self.markAttendance(st.Name, toolDateResolved, 'Absent'); }
+        onMarkAbsent: function () { self.markAttendance(st.Name, toolDateResolved, 'Absent'); },
+        onUnlock: function () { self.unlockAttendance(st.Name, toolDateResolved); }
       };
     });
     const toolPresentCountLabel = attendanceToolRows.filter(function (r) { return r.StatusLabel === 'Present'; }).length + ' present, ' + attendanceToolRows.filter(function (r) { return r.StatusLabel === 'Half'; }).length + ' half, of ' + attendanceToolRows.length;
@@ -2230,7 +2315,7 @@ class Component extends DCLogic {
     const fundRecipientOptions = s.users.filter(function (u) { return u.Name !== myName; }).map(function (u) { return u.Name; });
     const isEditing = !!s.editRecord;
     const formKey = s.modal + ':' + (editRecordRaw.SLNo || editRecordRaw.PaymentID || editRecordRaw.SupplierID || editRecordRaw.SiteID || editRecordRaw.MaterialID || editRecordRaw.StaffID || editRecordRaw.SalaryID || editRecordRaw.Name || (editRecordRaw.Supplier ? editRecordRaw.Supplier + '|' + editRecordRaw.BFDate : 'new'));
-    const txDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const txDefaults = { Date: editRecordRaw.Date || todayStr, Time: editRecordRaw.Time || '', Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const payDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const bfDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const dieselTxDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', DieselQuantity: editRecordRaw.DieselQuantity != null ? editRecordRaw.DieselQuantity : '', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Driver: editRecordRaw.Driver || '', Remarks: editRecordRaw.Remarks || '' };
@@ -2256,6 +2341,7 @@ class Component extends DCLogic {
 
     return {
       session: s.session, loading: s.loading, toast: s.toast, loginError: s.loginError, isDemo: isDemo, todayStr: todayStr,
+      saveStatus: s.saveStatus, savingActive: s.saveStatus === 'saving', savedActive: s.saveStatus === 'saved',
       passwordFieldType: s.showPassword ? 'text' : 'password', showPasswordLabel: s.showPassword ? 'Hide' : 'Show', toggleShowPassword: this.toggleShowPassword.bind(this),
       theme: s.theme, themeToggleLabel: s.theme === 'light' ? 'Dark Mode' : 'Light Mode', toggleTheme: this.toggleTheme.bind(this),
       handleLogin: this.handleLogin.bind(this), logout: this.logout.bind(this),
@@ -2277,12 +2363,12 @@ class Component extends DCLogic {
       supplierExpenditure: supplierExpenditure, siteExpenditure: siteExpenditure, materialExpenditure: materialExpenditure, dieselExpenditure: dieselExpenditure,
       supplierCards: supplierCards, openSupplierModal: function () { self.openModal('supplier'); },
       supplierDetail: supplierDetail,
-      txRows: txF.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); } }); }),
-      payRows: payF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); } }); }),
-      bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); } }); }),
-      dieselTxRows: dieselTxF.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); } }); }),
-      dieselPayRows: dieselPayF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); } }); }),
-      dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); } }); }),
+      txRows: txF.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
+      payRows: payF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
+      bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
+      dieselTxRows: dieselTxF.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }),
+      dieselPayRows: dieselPayF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
+      dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
       formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
       totalDieselQty: totalDieselQty, avgDieselRate: avgDieselRate, currentMonthDiesel: currentMonthDiesel,
       openTransactionModal: function () { self.openModal('transaction'); }, openPaymentModal: function () { self.openModal('payment'); }, openBFModal: function () { self.openModal('bf'); },
