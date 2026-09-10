@@ -78,6 +78,17 @@
 </sc-if>
 
 <sc-if value="{{ session }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ showMaintenanceLock }}">
+  <div data-app-theme="{{ theme }}" style="min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Manrope',sans-serif;">
+    <div style="width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:40px 32px;text-align:center;">
+      <img src="logo.png" alt="Panda Construction" style="max-width:120px;width:100%;height:auto;margin:0 auto 20px;display:block;" />
+      <div style="font-weight:800;font-size:18px;margin-bottom:10px;">Under Maintenance</div>
+      <div style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:24px;">{{ maintenanceMessage }}</div>
+      <button type="button" onClick="{{ logout }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;cursor:pointer;font-size:13px;">Sign Out</button>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{ appAccessible }}">
 <sc-if value="{{ loading }}">
   <div style="position:fixed;top:0;left:0;right:0;height:3px;background:rgba(212,175,55,0.15);z-index:9999;overflow:hidden;">
     <div style="position:absolute;top:0;left:0;height:100%;width:40%;background:#d4af37;animation:pandaLoadBar 1.1s ease-in-out infinite;"></div>
@@ -1176,6 +1187,7 @@
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Role</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Status</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">WhatsApp Number</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Last Login</th>
             <sc-if value="{{ isOwnerOrAdmin1 }}"><th style="padding:12px;border-bottom:1px solid var(--border);"></th></sc-if>
           </tr></thead>
           <tbody>
@@ -1185,12 +1197,28 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ u.Role }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ u.Status }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ u.ContactNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ u.LastLoginFmt }}</td>
                 <sc-if value="{{ isOwnerOrAdmin1 }}"><td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ u.onEditContact }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button></td></sc-if>
               </tr>
             </sc-for>
           </tbody>
         </table>
       </div>
+
+      <sc-if value="{{ isAdmin1 }}">
+        <div style="font-weight:700;margin-bottom:10px;">Maintenance Mode <span style="font-size:11px;color:var(--muted);font-weight:500;">(Admin 1 only)</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px;display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div style="font-size:13px;color:var(--muted);">When ON, every user other than you sees a lock screen and can't use the tool.</div>
+            <button type="button" onClick="{{ onToggleMaintenance }}" style="{{ maintenanceToggleStyle }}">{{ maintenanceToggleLabel }}</button>
+          </div>
+          <form onSubmit="{{ onSaveMaintenanceMessage }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;">
+            <textarea name="Message" placeholder="Message shown to locked-out users" defaultValue="{{ maintenanceMessage }}" style="flex:1;min-width:220px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:13px;resize:vertical;min-height:50px;box-sizing:border-box;"></textarea>
+            <button type="submit" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Save Message</button>
+          </form>
+        </div>
+      </sc-if>
+
       <div style="font-weight:700;margin-bottom:10px;">Recent Activity (Audit Log)</div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
         <table style="width:100%;border-collapse:collapse;">
@@ -1520,6 +1548,7 @@
   </div>
 </sc-if>
 </sc-if>
+</sc-if>
 
 </x-dc>
 <script type="text/x-dc" data-dc-script>
@@ -1534,7 +1563,7 @@ class Component extends DCLogic {
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     detailFilters: { site: '', material: '', vehicle: '' }, staffPaymentsFilter: { from: '', to: '' },
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
-    reportTab: 'supplier', showPassword: false, theme: 'light'
+    reportTab: 'supplier', showPassword: false, theme: 'light', maintenance: { enabled: false, message: '' }
   };
 
   componentDidMount() {
@@ -1566,6 +1595,7 @@ class Component extends DCLogic {
         sites: r.sites || [], materials: r.materials || [], users: r.users || [], auditLog: r.auditLog || [],
         staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [],
         fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
+        maintenance: r.maintenance || { enabled: false, message: '' },
         loading: false
       });
     }.bind(this)).catch(function (e) {
@@ -1581,7 +1611,7 @@ class Component extends DCLogic {
     PandaAPI.call('login', { name: name, password: password }).then(function (res) {
       if (res.success) {
         localStorage.setItem('panda_session', JSON.stringify(res.user));
-        this.setState({ session: res.user, view: 'dashboard', loginError: '' });
+        this.setState({ session: res.user, view: 'dashboard', loginError: '', maintenance: res.maintenance || { enabled: false, message: '' } });
         this.loadAll();
       } else {
         this.setState({ loginError: res.message || 'Login failed.' });
@@ -1590,6 +1620,24 @@ class Component extends DCLogic {
   }
 
   logout() { localStorage.removeItem('panda_session'); this.setState({ session: null, view: 'login' }); }
+  toggleMaintenance() {
+    const self = this;
+    const next = !this.state.maintenance.enabled;
+    if (!window.confirm(next ? 'Turn maintenance mode ON? All other users will be locked out immediately.' : 'Turn maintenance mode OFF?')) return;
+    PandaAPI.call('setMaintenance', { Enabled: next, Message: this.state.maintenance.message, RequestedBy: this.currentUserName() }).then(function (res) {
+      if (res.success) { self.setState({ maintenance: res.maintenance || { enabled: next, message: self.state.maintenance.message } }); self.showToast('Maintenance mode turned ' + (next ? 'ON.' : 'OFF.')); }
+      else self.showToast(res.message || 'Could not update maintenance mode.');
+    });
+  }
+  saveMaintenanceMessage(e) {
+    e.preventDefault();
+    const self = this;
+    const msg = e.target.elements.Message.value;
+    PandaAPI.call('setMaintenance', { Enabled: this.state.maintenance.enabled, Message: msg, RequestedBy: this.currentUserName() }).then(function (res) {
+      if (res.success) { self.setState({ maintenance: res.maintenance || { enabled: self.state.maintenance.enabled, message: msg } }); self.showToast('Maintenance message saved.'); }
+      else self.showToast(res.message || 'Could not save message.');
+    });
+  }
   toggleShowPassword() { this.setState(function (s) { return { showPassword: !s.showPassword }; }); }
   toggleTheme() { this.setState(function (s) { const t = s.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('panda_theme', t); return { theme: t }; }); }
   setView(view) { this.setState({ view: view, selectedSupplier: null, modal: null, mobileNavOpen: false }); }
@@ -2317,9 +2365,14 @@ class Component extends DCLogic {
     const currentMonthExpenditureN = this.sum(s.transactions.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') + this.sum(s.dieselTx.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value');
 
     const groupSum = function (list, key, field) {
-      const map = {};
-      list.forEach(function (r) { const k = r[key] || '—'; map[k] = (map[k] || 0) + (Number(r[field]) || 0); });
-      return Object.keys(map).map(function (k) { return { label: k, value: map[k] }; }).sort(function (a, b) { return b.value - a.value; });
+      const map = {}; const labels = {};
+      list.forEach(function (r) {
+        const raw = String(r[key] || '').trim() || '—';
+        const k = raw.toLowerCase();
+        map[k] = (map[k] || 0) + (Number(r[field]) || 0);
+        if (!labels[k]) labels[k] = raw;
+      });
+      return Object.keys(map).map(function (k) { return { label: labels[k], value: map[k] }; }).sort(function (a, b) { return b.value - a.value; });
     };
     const withBars = function (rows) {
       const max = rows.reduce(function (m, r) { return Math.max(m, r.value); }, 0) || 1;
@@ -2401,7 +2454,7 @@ class Component extends DCLogic {
     }
 
     const materialAnalysis = s.materials.map(function (m) {
-      const rows = s.transactions.filter(function (t) { return t.Material === m.MaterialName; });
+      const rows = s.transactions.filter(function (t) { return String(t.Material || '').trim().toLowerCase() === String(m.MaterialName || '').trim().toLowerCase(); });
       const qty = self.sum(rows, 'Quantity');
       const value = self.sum(rows, 'Value');
       const avgRate = qty ? Math.round(value / qty) : 0;
@@ -2415,7 +2468,11 @@ class Component extends DCLogic {
     });
 
     const isOwnerOrAdmin1 = !!(s.session && (s.session.role === 'Owner' || s.session.role === 'Admin 1'));
-    const usersWithContact = s.users.map(function (u) { return Object.assign({}, u, { onEditContact: function () { self.openModal('userContact', u); } }); });
+    const isAdmin1 = !!(s.session && s.session.role === 'Admin 1');
+    const showMaintenanceLock = !!(s.session && s.maintenance && s.maintenance.enabled && s.session.role !== 'Admin 1');
+    const appAccessible = !showMaintenanceLock;
+    const fmtLastLogin = function (v) { if (!v) return '—'; const d = new Date(v); return isNaN(d.getTime()) ? String(v) : d.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
+    const usersWithContact = s.users.map(function (u) { return Object.assign({}, u, { LastLoginFmt: fmtLastLogin(u.LastLogin), onEditContact: function () { self.openModal('userContact', u); } }); });
 
     const taskDateResolved = s.taskDate || todayStr;
     const taskAdmins = s.users.filter(function (u) { return u.Role === 'Admin 2' || u.Role === 'Admin 3'; });
@@ -2571,7 +2628,7 @@ class Component extends DCLogic {
       return { Site: site.SiteName, Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(outstanding), _Purchase: purchase, _Paid: paid, _Outstanding: outstanding };
     });
     const materialReportRows = rMaterialsF.map(function (m) {
-      const rows = rTxF.filter(function (t) { return t.Material === m.MaterialName; });
+      const rows = rTxF.filter(function (t) { return String(t.Material || '').trim().toLowerCase() === String(m.MaterialName || '').trim().toLowerCase(); });
       const qty = self.sum(rows, 'Quantity'); const value = self.sum(rows, 'Value');
       return { Material: m.MaterialName, Quantity: qty, Value: fmt(value), _Quantity: qty, _Value: value };
     });
@@ -2691,7 +2748,11 @@ class Component extends DCLogic {
       navMaterials: function () { self.setView('materials'); }, navReports: function () { self.setView('reports'); }, navSettings: function () { self.setView('settings'); },
       navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navFunds: function () { self.setView('funds'); }, navAttendance: function () { self.setView('attendance'); },
       mobileNavOpen: s.mobileNavOpen, toggleMobileNav: this.toggleMobileNav.bind(this), closeMobileNav: this.closeMobileNav.bind(this),
-      isOwnerOrAdmin1: isOwnerOrAdmin1,
+      isOwnerOrAdmin1: isOwnerOrAdmin1, isAdmin1: isAdmin1, showMaintenanceLock: showMaintenanceLock, appAccessible: appAccessible,
+      maintenanceMessage: (s.maintenance && s.maintenance.message) || 'We\'re doing scheduled maintenance. Please check back shortly.',
+      maintenanceToggleLabel: (s.maintenance && s.maintenance.enabled) ? 'Turn Maintenance OFF' : 'Turn Maintenance ON',
+      maintenanceToggleStyle: 'padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:' + ((s.maintenance && s.maintenance.enabled) ? '#e2574c' : '#2ea043') + ';color:#fff;',
+      onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this),
       viewIs: viewIs, pageTitle: pageTitles[s.view] || '', navStyle: navStyle, reportTabStyle: reportTabStyle, reportTabIs: reportTabIs, modal: s.modal, modalIs: modalIs,
       users: usersWithContact, auditLog: s.auditLog, dataSourceLabel: isDemo ? 'Demo mode — data stored in this browser only. Paste your Apps Script Web App URL into config.js to switch to live Google Sheet.' : 'Connected to Google Sheets via Apps Script.',
       dashFilters: s.dashFilters, supplierOptions: supplierOptions, siteOptions: siteOptions, materialOptions: materialOptions, dieselSupplierOptions: dieselSupplierOptions, unitOptions: unitOptions, paymentMethodOptions: paymentMethodOptions,
