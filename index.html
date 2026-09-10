@@ -181,12 +181,12 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" data-stat-grid>
         <div onClick="{{ onOpenSupplierPurchase }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Supplier Purchase</div><div style="font-size:22px;font-weight:800;">{{ totalSupplierPurchase }}</div></div>
         <div onClick="{{ onOpenSupplierPaid }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Supplier Paid</div><div style="font-size:22px;font-weight:800;">{{ totalSupplierPaid }}</div></div>
-        <div onClick="{{ onOpenSupplierOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Supplier Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalSupplierOutstanding }}</div></div>
+        <div onClick="{{ onOpenSupplierOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Supplier Outstanding</div><div style="font-size:22px;font-weight:800;color:{{ totalSupplierOutstandingColor }};">{{ totalSupplierOutstanding }}</div></div>
         <div onClick="{{ onOpenDieselCost }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Cost</div><div style="font-size:22px;font-weight:800;">{{ totalDieselCost }}</div></div>
         <div onClick="{{ onOpenDieselPaid }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Paid</div><div style="font-size:22px;font-weight:800;">{{ totalDieselPaid }}</div></div>
-        <div onClick="{{ onOpenDieselOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalDieselOutstanding }}</div></div>
+        <div onClick="{{ onOpenDieselOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Outstanding</div><div style="font-size:22px;font-weight:800;color:{{ totalDieselOutstandingColor }};">{{ totalDieselOutstanding }}</div></div>
         <div onClick="{{ onOpenCurrentMonth }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Current Month Expenditure</div><div style="font-size:22px;font-weight:800;">{{ currentMonthExpenditure }}</div></div>
-        <div onClick="{{ onOpenStaffOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Staff Outstanding</div><div style="font-size:22px;font-weight:800;color:#d4af37;">{{ totalStaffOutstanding }}</div></div>
+        <div onClick="{{ onOpenStaffOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Staff Outstanding</div><div style="font-size:22px;font-weight:800;color:{{ totalStaffOutstandingColor }};">{{ totalStaffOutstanding }}</div></div>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;">
@@ -227,7 +227,7 @@
             <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">{{ sup.ContactPerson }} · {{ sup.ContactNumber }}</div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Purchase</span><span>{{ sup.purchase }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Paid</span><span>{{ sup.paid }}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:14px;"><span style="color:var(--muted);">Outstanding</span><span style="color:#d4af37;font-weight:700;">{{ sup.outstanding }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:14px;"><span style="color:var(--muted);">Outstanding</span><span style="color:{{ sup.outstandingColor }};font-weight:700;">{{ sup.outstanding }}</span></div>
             <div style="display:flex;gap:8px;">
               <button onClick="{{ sup.onOpen }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:9px;border-radius:6px;cursor:pointer;font-size:13px;">View Details</button>
               <button onClick="{{ sup.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:9px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Edit</button>
@@ -248,7 +248,7 @@
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">BF Balance</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.bfFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Purchase</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.purchaseFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Paid</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.paidFmt }}</div></div>
-        <div style="background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Outstanding</div><div style="font-size:20px;font-weight:800;color:#d4af37;">{{ supplierDetail.outstandingFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Outstanding</div><div style="font-size:20px;font-weight:800;color:{{ supplierDetail.outstandingColor }};">{{ supplierDetail.outstandingFmt }}</div></div>
       </div>
       <div style="color:var(--muted2);font-size:12px;margin-bottom:20px;">Outstanding = BF Balance + Total Purchase − Total Paid</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
@@ -277,6 +277,7 @@
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Qty</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Unit</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Rate</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Fare</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Value</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Site</th>
           </tr></thead>
@@ -289,6 +290,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Quantity }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Unit }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.RateFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:var(--muted);">{{ r.FareFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
               </tr>
@@ -334,6 +336,7 @@
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Qty</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Unit</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Rate</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Fare</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Value</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Site</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Remarks</th>
@@ -342,7 +345,7 @@
           <tbody>
             <sc-for list="{{ txRows }}" as="r" hint-placeholder-count="5">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.SLNo }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DisplaySL }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Time }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
@@ -351,6 +354,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Quantity }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Unit }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.RateFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:var(--muted);">{{ r.FareFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Remarks }}</td>
@@ -469,6 +473,8 @@
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Date</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Fuel Station</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Vehicle</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Chalan No.</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Time</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Qty (L)</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Rate</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Value</th>
@@ -479,10 +485,12 @@
           <tbody>
             <sc-for list="{{ dieselTxRows }}" as="r" hint-placeholder-count="4">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.SLNo }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DisplaySL }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.VehicleNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ChalanNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Time }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.DieselQuantity }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.RateFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
@@ -572,9 +580,9 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.SiteName }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.purchaseFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.paidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.outstandingFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Status }}</td>
-                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button></td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -602,7 +610,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DefaultUnit }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.avgRate }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.value }}</td>
-                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button></td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -689,8 +697,8 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.bfFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalDueFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalPaidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.outstandingFmt }}</td>
-                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onView }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">View</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button></td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onView }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">View</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -709,7 +717,7 @@
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Net Due</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.totalDueFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">BF Balance</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.bfFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Paid</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.totalPaidFmt }}</div></div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Outstanding</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:#d4af37;">{{ staffDetail.outstandingFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Outstanding</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:{{ staffDetail.outstandingColor }};">{{ staffDetail.outstandingFmt }}</div></div>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -736,7 +744,8 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.NetSalaryFmt }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;">
                   <button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button>
-                  <button onClick="{{ r.onExport }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Export PDF</button>
+                  <button onClick="{{ r.onExport }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Export PDF</button>
+                  <button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button>
                 </td>
               </tr>
             </sc-for>
@@ -764,7 +773,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
-                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onExport }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">PDF</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button></td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onExport }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">PDF</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -1043,7 +1052,7 @@
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BF }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Purchase }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Paid }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.Outstanding }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.OutstandingColor }};font-weight:600;">{{ r.Outstanding }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1065,7 +1074,7 @@
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Purchase }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Paid }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.Outstanding }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.OutstandingColor }};font-weight:600;">{{ r.Outstanding }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1107,7 +1116,7 @@
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Month }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Purchase }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Paid }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.Outstanding }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.OutstandingColor }};font-weight:600;">{{ r.Outstanding }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1132,7 +1141,7 @@
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BF }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Cost }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Paid }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.Outstanding }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.OutstandingColor }};font-weight:600;">{{ r.Outstanding }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1158,7 +1167,7 @@
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Basic }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Addition }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Deduction }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:700;">{{ r.NetSalary }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.NetSalaryColor }};font-weight:700;">{{ r.NetSalary }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1299,7 +1308,10 @@
             <input type="number" step="any" name="Quantity" placeholder="Quantity" required="true" defaultValue="{{ txDefaults.Quantity }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
             <select name="Unit" defaultValue="{{ txDefaults.Unit }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ unitOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           </div>
-          <input type="number" step="any" name="Rate" placeholder="Rate (₹)" required="true" defaultValue="{{ txDefaults.Rate }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;gap:10px;">
+            <input type="number" step="any" name="Rate" placeholder="Rate (₹)" required="true" defaultValue="{{ txDefaults.Rate }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            <input type="number" step="any" name="Fare" placeholder="Fare per unit (₹, 0 if none)" defaultValue="{{ txDefaults.Fare }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          </div>
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ txDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ txDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
@@ -1319,8 +1331,6 @@
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ payDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <select name="PaymentMethod" defaultValue="{{ payDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ payDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ payDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ payDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -1357,6 +1367,10 @@
             <input type="number" step="any" name="DieselQuantity" placeholder="Quantity (Litres)" required="true" defaultValue="{{ dieselTxDefaults.DieselQuantity }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
             <input type="number" step="any" name="Rate" placeholder="Rate (₹)" required="true" defaultValue="{{ dieselTxDefaults.Rate }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           </div>
+          <div style="display:flex;gap:10px;">
+            <input type="text" name="ChalanNumber" placeholder="Chalan Number" defaultValue="{{ dieselTxDefaults.ChalanNumber }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            <input type="time" name="Time" placeholder="Time" defaultValue="{{ dieselTxDefaults.Time }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          </div>
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ dieselTxDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="text" name="Driver" placeholder="Driver / Operator" defaultValue="{{ dieselTxDefaults.Driver }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
@@ -1377,8 +1391,6 @@
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ dieselPayDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <select name="PaymentMethod" defaultValue="{{ dieselPayDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ dieselPayDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ dieselPayDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ dieselPayDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -1865,7 +1877,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Supplier.value || !f.Material.value.trim() || !f.Quantity.value || !f.Rate.value || !f.Site.value.trim()) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, Time: f.Time.value, Material: f.Material.value.trim(), Quantity: f.Quantity.value, Unit: f.Unit.value, Rate: f.Rate.value, Site: f.Site.value.trim(), Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, Time: f.Time.value, Material: f.Material.value.trim(), Quantity: f.Quantity.value, Unit: f.Unit.value, Rate: f.Rate.value, Fare: f.Fare.value || 0, Site: f.Site.value.trim(), Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
 
     // Duplicate check: same date + time is the trigger; only then compare vehicle & weight.
     if (payload.Time) {
@@ -1889,9 +1901,9 @@ class Component extends DCLogic {
   submitPayment(e) {
     e.preventDefault();
     const f = e.target.elements;
-    if (!f.Date.value || !f.Supplier.value || !f.AmountPaid.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    if (!f.Date.value || !f.Supplier.value || !f.AmountPaid.value) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updatePayment', payload, 'Payment updated successfully.'); }
     else this.submitGeneric('addPayment', payload, 'Payment saved successfully.');
   }
@@ -1909,16 +1921,16 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Supplier.value || !f.DieselQuantity.value || !f.Rate.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, DieselQuantity: f.DieselQuantity.value, Rate: f.Rate.value, Site: f.Site.value, Driver: f.Driver.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, ChalanNumber: f.ChalanNumber.value, Time: f.Time.value, DieselQuantity: f.DieselQuantity.value, Rate: f.Rate.value, Site: f.Site.value, Driver: f.Driver.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.SLNo = ed.SLNo; this.submitGeneric('updateDieselTransaction', payload, 'Diesel transaction updated successfully.'); }
     else this.submitGeneric('addDieselTransaction', payload, 'Diesel transaction saved successfully.');
   }
   submitDieselPayment(e) {
     e.preventDefault();
     const f = e.target.elements;
-    if (!f.Date.value || !f.Supplier.value || !f.AmountPaid.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    if (!f.Date.value || !f.Supplier.value || !f.AmountPaid.value) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateDieselPayment', payload, 'Diesel payment updated successfully.'); }
     else this.submitGeneric('addDieselPayment', payload, 'Diesel payment saved successfully.');
   }
@@ -1995,6 +2007,22 @@ class Component extends DCLogic {
   deleteStaff(st) {
     if (!window.confirm('Delete staff "' + st.Name + '"? This cannot be undone.')) return;
     this.submitGeneric('deleteStaff', { StaffID: st.StaffID, Name: st.Name, CreatedBy: this.currentUserName() }, 'Staff deleted successfully.');
+  }
+  deleteSite(site) {
+    if (!window.confirm('Delete site "' + site.SiteName + '"? This cannot be undone.')) return;
+    this.submitGeneric('deleteSite', { SiteID: site.SiteID, CreatedBy: this.currentUserName() }, 'Site deleted successfully.');
+  }
+  deleteMaterial(m) {
+    if (!window.confirm('Delete material "' + m.MaterialName + '"? This cannot be undone.')) return;
+    this.submitGeneric('deleteMaterial', { MaterialID: m.MaterialID, CreatedBy: this.currentUserName() }, 'Material deleted successfully.');
+  }
+  deleteStaffSalary(sal) {
+    if (!window.confirm('Delete this salary slip? This cannot be undone.')) return;
+    this.submitGeneric('deleteStaffSalary', { SalaryID: sal.SalaryID, CreatedBy: this.currentUserName() }, 'Salary slip deleted successfully.');
+  }
+  deleteStaffPayment(pay) {
+    if (!window.confirm('Delete this payment? This cannot be undone.')) return;
+    this.submitGeneric('deleteStaffPayment', { PaymentID: pay.PaymentID, CreatedBy: this.currentUserName() }, 'Payment deleted successfully.');
   }
   submitStaffSalary(e) {
     e.preventDefault();
@@ -2207,6 +2235,8 @@ class Component extends DCLogic {
   fmtPdf(n) { n = Number(n) || 0; return 'Rs. ' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 }); }
   sum(list, field) { return (list || []).reduce(function (a, r) { return a + (Number(r[field]) || 0); }, 0); }
   inRange(dateStr, from, to) { if (!dateStr) return true; if (from && dateStr < from) return false; if (to && dateStr > to) return false; return true; }
+  oc(n) { n = Number(n) || 0; return n > 0 ? '#e2574c' : (n < 0 ? '#2ea043' : 'var(--muted)'); }
+  byDateTime(a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? -1 : 1; const at = a.Time || '', bt = b.Time || ''; return at < bt ? -1 : (at > bt ? 1 : 0); }
 
   exportCSV(rows, headers, filename) {
     const esc = function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
@@ -2427,7 +2457,7 @@ class Component extends DCLogic {
       const paid = self.sum(s.payments.filter(function (p) { return p.Supplier === sup.SupplierName; }), 'AmountPaid');
       const bfAmt = self.latestBFFor(s.bf, sup.SupplierName);
       const outstanding = bfAmt + purchase - paid;
-      return Object.assign({}, sup, { purchase: fmt(purchase), paid: fmt(paid), outstanding: fmt(outstanding), onOpen: function () { self.openSupplier(sup.SupplierName); }, onEdit: function () { self.openModal('supplier', sup); }, onDelete: function () { self.deleteSupplier(sup); } });
+      return Object.assign({}, sup, { purchase: fmt(purchase), paid: fmt(paid), outstanding: fmt(outstanding), outstandingColor: self.oc(outstanding), onOpen: function () { self.openSupplier(sup.SupplierName); }, onEdit: function () { self.openModal('supplier', sup); }, onDelete: function () { self.deleteSupplier(sup); } });
     });
 
     let supplierDetail = { name: '', bfFmt: fmt(0), purchaseFmt: fmt(0), paidFmt: fmt(0), outstandingFmt: fmt(0), rows: [] };
@@ -2443,8 +2473,8 @@ class Component extends DCLogic {
       const bfAmt = this.latestBFFor(bfEntries, name);
       const outstanding = bfAmt + purchase - paid;
       supplierDetail = {
-        name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding),
-        rows: filteredTx.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value) }); }),
+        name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding), outstandingColor: this.oc(outstanding),
+        rows: filteredTx.slice().sort(this.byDateTime.bind(this)).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value) }); }),
         allTxRaw: allTx.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         payRaw: pay.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, outstandingN: outstanding,
@@ -2458,13 +2488,13 @@ class Component extends DCLogic {
       const qty = self.sum(rows, 'Quantity');
       const value = self.sum(rows, 'Value');
       const avgRate = qty ? Math.round(value / qty) : 0;
-      return Object.assign({}, m, { qty: qty, value: fmt(value), avgRate: fmt(avgRate), onEdit: function () { self.openModal('material', m); } });
+      return Object.assign({}, m, { qty: qty, value: fmt(value), avgRate: fmt(avgRate), onEdit: function () { self.openModal('material', m); }, onDelete: function () { self.deleteMaterial(m); } });
     });
 
     const siteRows = s.sites.map(function (site) {
       const purchase = self.sum(s.transactions.filter(function (t) { return t.Site === site.SiteName; }), 'Value');
       const paid = self.sum(s.payments.filter(function (p) { return p.Site === site.SiteName; }), 'AmountPaid');
-      return Object.assign({}, site, { purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(purchase - paid), onEdit: function () { self.openModal('site', site); } });
+      return Object.assign({}, site, { purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(purchase - paid), outstandingColor: self.oc(purchase - paid), onEdit: function () { self.openModal('site', site); }, onDelete: function () { self.deleteSite(site); } });
     });
 
     const isOwnerOrAdmin1 = !!(s.session && (s.session.role === 'Owner' || s.session.role === 'Admin 1'));
@@ -2537,7 +2567,7 @@ class Component extends DCLogic {
       const presentThisMonth = self.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKeyAll; }).map(function (r) { return { v: dayValue(r.Status) }; }), 'v');
       const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
       const rate = st.SalaryBasis === 'Daily' ? fmt(st.DailyRate) + '/day' : fmt(st.MonthlyAmount) + '/month';
-      return Object.assign({}, st, { rateFmt: rate, bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(bfAmt + due + monthEarned - paid), onView: function () { self.openStaffDetail(st.Name); }, onEdit: function () { self.openModal('staff', st); } });
+      return Object.assign({}, st, { rateFmt: rate, bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(bfAmt + due + monthEarned - paid), outstandingColor: self.oc(bfAmt + due + monthEarned - paid), onDelete: function () { self.deleteStaff(st); }, onView: function () { self.openStaffDetail(st.Name); }, onEdit: function () { self.openModal('staff', st); } });
     });
 
     const toolDateResolved = s.attendanceDate || todayStr;
@@ -2582,13 +2612,13 @@ class Component extends DCLogic {
       staffDetail = {
         Name: stRow.Name || stName, Role: stRow.Role || '', ContactNumber: stRow.ContactNumber || '',
         basisLabel: stRow.SalaryBasis === 'Daily' ? ('Daily — ' + fmt(stRow.DailyRate) + '/day') : ('Monthly — ' + fmt(stRow.MonthlyAmount) + '/month'),
-        bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(bfAmt + due + monthEarned - paid),
+        bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(bfAmt + due + monthEarned - paid), outstandingColor: self.oc(bfAmt + due + monthEarned - paid),
         rateHint: 'Configured rate: ' + (stRow.SalaryBasis === 'Daily' ? fmt(stRow.DailyRate) + '/day' : fmt(stRow.MonthlyAmount) + '/month'),
         presentDaysThisMonthFmt: String(presentDaysThisMonth), attendanceDateResolved: attendanceDateResolved, todayAttendanceStatus: todayAtt ? todayAtt.Status : 'Not marked',
         onMarkPresentToday: function () { self.markAttendance(stName, attendanceDateResolved, 'Present'); },
         onMarkAbsentToday: function () { self.markAttendance(stName, attendanceDateResolved, 'Absent'); },
-        salaryRows: salRows.slice().reverse().map(function (r) { return Object.assign({}, r, { BasicFmt: fmt(r.Basic), DAFmt: fmt(r.DA), DeductionsFmt: fmt(r.Deductions), NetSalaryFmt: fmt(r.NetSalary), onEdit: function () { self.openModal('staffSalary', r); }, onExport: function () { self.exportSalarySlipPDF(stRow, r); } }); }),
-        paymentRows: payRows2.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('staffPayment', r); }, onExport: function () { self.exportPaymentSlipPDF(stRow, r); } }); }),
+        salaryRows: salRows.slice().reverse().map(function (r) { return Object.assign({}, r, { BasicFmt: fmt(r.Basic), DAFmt: fmt(r.DA), DeductionsFmt: fmt(r.Deductions), NetSalaryFmt: fmt(r.NetSalary), onEdit: function () { self.openModal('staffSalary', r); }, onDelete: function () { self.deleteStaffSalary(r); }, onExport: function () { self.exportSalarySlipPDF(stRow, r); } }); }),
+        paymentRows: payRows2.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('staffPayment', r); }, onDelete: function () { self.deleteStaffPayment(r); }, onExport: function () { self.exportPaymentSlipPDF(stRow, r); } }); }),
         attendanceRows: attRowsAll.slice().sort(function (a, b) { return a.Date < b.Date ? 1 : -1; }).slice(0, 31).map(function (r) {
           return Object.assign({}, r, { onMarkPresent: function () { self.markAttendance(stName, r.Date, 'Present'); }, onMarkAbsent: function () { self.markAttendance(stName, r.Date, 'Absent'); } });
         })
@@ -2619,13 +2649,13 @@ class Component extends DCLogic {
       const paid = self.sum(rPayF.filter(function (p) { return p.Supplier === sup.SupplierName; }), 'AmountPaid');
       const bfAmt = self.latestBFFor(rBFF, sup.SupplierName);
       const outstanding = bfAmt + purchase - paid;
-      return { Supplier: sup.SupplierName, BF: fmt(bfAmt), Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(outstanding), _BF: bfAmt, _Purchase: purchase, _Paid: paid, _Outstanding: outstanding };
+      return { Supplier: sup.SupplierName, BF: fmt(bfAmt), Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(outstanding), OutstandingColor: self.oc(outstanding), _BF: bfAmt, _Purchase: purchase, _Paid: paid, _Outstanding: outstanding };
     });
     const siteReportRows = rSitesF.map(function (site) {
       const purchase = self.sum(rTxF.filter(function (t) { return t.Site === site.SiteName; }), 'Value');
       const paid = self.sum(rPayF.filter(function (p) { return p.Site === site.SiteName; }), 'AmountPaid');
       const outstanding = purchase - paid;
-      return { Site: site.SiteName, Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(outstanding), _Purchase: purchase, _Paid: paid, _Outstanding: outstanding };
+      return { Site: site.SiteName, Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(outstanding), OutstandingColor: self.oc(outstanding), _Purchase: purchase, _Paid: paid, _Outstanding: outstanding };
     });
     const materialReportRows = rMaterialsF.map(function (m) {
       const rows = rTxF.filter(function (t) { return String(t.Material || '').trim().toLowerCase() === String(m.MaterialName || '').trim().toLowerCase(); });
@@ -2637,7 +2667,7 @@ class Component extends DCLogic {
       const purchase = self.sum(rTxF.filter(function (t) { return String(t.Date || '').slice(0, 7) === mo; }), 'Value');
       const paid = self.sum(rPayF.filter(function (p) { return String(p.Date || '').slice(0, 7) === mo; }), 'AmountPaid');
       const outstanding = purchase - paid;
-      return { Month: mo, Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(outstanding), _Purchase: purchase, _Paid: paid, _Outstanding: outstanding };
+      return { Month: mo, Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(outstanding), OutstandingColor: self.oc(outstanding), _Purchase: purchase, _Paid: paid, _Outstanding: outstanding };
     });
     const dieselReportRows = dieselSupplierOptions.filter(function (name) { return !rf.dieselSupplier || name === rf.dieselSupplier; }).map(function (name) {
       const rows = rDieselTxF.filter(function (t) { return t.Supplier === name; });
@@ -2646,7 +2676,7 @@ class Component extends DCLogic {
       const paid = self.sum(payRows, 'AmountPaid');
       const bfAmt = self.latestBFFor(rDieselBFF, name);
       const outstanding = bfAmt + cost - paid;
-      return { Supplier: name, BF: fmt(bfAmt), Cost: fmt(cost), Paid: fmt(paid), Outstanding: fmt(outstanding), _BF: bfAmt, _Cost: cost, _Paid: paid, _Outstanding: outstanding };
+      return { Supplier: name, BF: fmt(bfAmt), Cost: fmt(cost), Paid: fmt(paid), Outstanding: fmt(outstanding), OutstandingColor: self.oc(outstanding), _BF: bfAmt, _Cost: cost, _Paid: paid, _Outstanding: outstanding };
     });
 
     const reportColumnsMap = {
@@ -2663,14 +2693,14 @@ class Component extends DCLogic {
       const slips = s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }).slice().sort(function (a, b) { return (a.Month || '').localeCompare(b.Month || ''); });
       slips.forEach(function (r) {
         const basic = Number(r.Basic) || 0, addition = Number(r.DA) || 0, deduction = Number(r.Deductions) || 0, net = Number(r.NetSalary) || 0;
-        staffDueReportRows.push({ StaffName: st.Name, Month: r.Month, Basic: fmt(basic), Addition: fmt(addition), Deduction: fmt(deduction), NetSalary: fmt(net), _Basic: basic, _Addition: addition, _Deduction: deduction, _NetSalary: net, rowStyle: '', nameWeight: '400' });
+        staffDueReportRows.push({ StaffName: st.Name, Month: r.Month, Basic: fmt(basic), Addition: fmt(addition), Deduction: fmt(deduction), NetSalary: fmt(net), NetSalaryColor: 'var(--text)', _Basic: basic, _Addition: addition, _Deduction: deduction, _NetSalary: net, rowStyle: '', nameWeight: '400' });
       });
       const due = self.sum(slips, 'NetSalary');
       const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
       const bfAmt = Number(st.BFAmount) || 0;
       const outstanding = bfAmt + due - paid;
       if (slips.length || bfAmt || paid) {
-        staffDueReportRows.push({ StaffName: st.Name, Month: 'TOTAL OUTSTANDING (incl. BF ' + fmt(bfAmt) + ', Paid ' + fmt(paid) + ')', Basic: '', Addition: '', Deduction: '', NetSalary: fmt(outstanding), _Basic: '', _Addition: '', _Deduction: '', _NetSalary: outstanding, rowStyle: 'background:var(--chip);', nameWeight: '700', _isTotalRow: true });
+        staffDueReportRows.push({ StaffName: st.Name, Month: 'TOTAL OUTSTANDING (incl. BF ' + fmt(bfAmt) + ', Paid ' + fmt(paid) + ')', Basic: '', Addition: '', Deduction: '', NetSalary: fmt(outstanding), NetSalaryColor: self.oc(outstanding), _Basic: '', _Addition: '', _Deduction: '', _NetSalary: outstanding, rowStyle: 'background:var(--chip);', nameWeight: '700', _isTotalRow: true });
       }
     });
     const reportRowsMap = { supplier: supplierReportRows, site: siteReportRows, material: materialReportRows, monthly: monthlyReportRows, diesel: dieselReportRows, staffDue: staffDueReportRows };
@@ -2712,10 +2742,10 @@ class Component extends DCLogic {
     const fundRecipientOptions = s.users.filter(function (u) { return u.Name !== myName; }).map(function (u) { return u.Name; });
     const isEditing = !!s.editRecord;
     const formKey = s.modal + ':' + (editRecordRaw.SLNo || editRecordRaw.PaymentID || editRecordRaw.SupplierID || editRecordRaw.SiteID || editRecordRaw.MaterialID || editRecordRaw.StaffID || editRecordRaw.SalaryID || editRecordRaw.Name || (editRecordRaw.Supplier ? editRecordRaw.Supplier + '|' + editRecordRaw.BFDate : 'new'));
-    const txDefaults = { Date: editRecordRaw.Date || todayStr, Time: editRecordRaw.Time || '', Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const txDefaults = { Date: editRecordRaw.Date || todayStr, Time: editRecordRaw.Time || '', Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Fare: editRecordRaw.Fare != null ? editRecordRaw.Fare : 0, Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const payDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const bfDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
-    const dieselTxDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', DieselQuantity: editRecordRaw.DieselQuantity != null ? editRecordRaw.DieselQuantity : '', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Driver: editRecordRaw.Driver || '', Remarks: editRecordRaw.Remarks || '' };
+    const dieselTxDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', ChalanNumber: editRecordRaw.ChalanNumber || '', Time: editRecordRaw.Time || '', DieselQuantity: editRecordRaw.DieselQuantity != null ? editRecordRaw.DieselQuantity : '', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Driver: editRecordRaw.Driver || '', Remarks: editRecordRaw.Remarks || '' };
     const dieselPayDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const dieselBFDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const supplierDefaults = { SupplierName: editRecordRaw.SupplierName || '', ContactPerson: editRecordRaw.ContactPerson || '', ContactNumber: editRecordRaw.ContactNumber || '', MaterialType: editRecordRaw.MaterialType || '' };
@@ -2758,9 +2788,9 @@ class Component extends DCLogic {
       dashFilters: s.dashFilters, supplierOptions: supplierOptions, siteOptions: siteOptions, materialOptions: materialOptions, dieselSupplierOptions: dieselSupplierOptions, unitOptions: unitOptions, paymentMethodOptions: paymentMethodOptions,
       onDashFrom: this.setDashFilter('from'), onDashTo: this.setDashFilter('to'), onDashSupplier: this.setDashFilter('supplier'), onDashSite: this.setDashFilter('site'), onDashMaterial: this.setDashFilter('material'), onDashVehicle: this.setDashFilter('vehicle'),
       onDetailSite: this.setDetailFilter('site'), onDetailMaterial: this.setDetailFilter('material'), onDetailVehicle: this.setDetailFilter('vehicle'),
-      totalSupplierPurchase: fmt(totalSupplierPurchaseN), totalSupplierPaid: fmt(totalSupplierPaidN), totalSupplierOutstanding: fmt(totalSupplierOutstandingN),
-      totalDieselCost: fmt(totalDieselCostN), totalDieselPaid: fmt(totalDieselPaidN), totalDieselOutstanding: fmt(totalDieselOutstandingN),
-      currentMonthExpenditure: fmt(currentMonthExpenditureTotalN), totalStaffOutstanding: fmt(totalStaffOutstandingN),
+      totalSupplierPurchase: fmt(totalSupplierPurchaseN), totalSupplierPaid: fmt(totalSupplierPaidN), totalSupplierOutstanding: fmt(totalSupplierOutstandingN), totalSupplierOutstandingColor: self.oc(totalSupplierOutstandingN),
+      totalDieselCost: fmt(totalDieselCostN), totalDieselPaid: fmt(totalDieselPaidN), totalDieselOutstanding: fmt(totalDieselOutstandingN), totalDieselOutstandingColor: self.oc(totalDieselOutstandingN),
+      currentMonthExpenditure: fmt(currentMonthExpenditureTotalN), totalStaffOutstanding: fmt(totalStaffOutstandingN), totalStaffOutstandingColor: self.oc(totalStaffOutstandingN),
       dashboardPopup: s.dashboardPopup ? { title: s.dashboardPopup.title, rows: s.dashboardPopup.rows } : null,
       closeDashPopup: function () { self.setState({ dashboardPopup: null }); },
       onOpenSupplierPurchase: openDashPopup('Total Supplier Purchase — by Supplier', toPopupRows(supplierPurchaseBreakdown)),
@@ -2777,10 +2807,10 @@ class Component extends DCLogic {
       supplierExpenditure: supplierExpenditure, siteExpenditure: siteExpenditure, materialExpenditure: materialExpenditure, dieselExpenditure: dieselExpenditure,
       supplierCards: supplierCards, openSupplierModal: function () { self.openModal('supplier'); },
       supplierDetail: supplierDetail,
-      txRows: txF.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
+      txRows: txF.slice().sort(this.byDateTime).map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
       payRows: payF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
       bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
-      dieselTxRows: dieselTxF.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }),
+      dieselTxRows: dieselTxF.slice().sort(this.byDateTime).map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }),
       dieselPayRows: dieselPayF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
       dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
       formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
