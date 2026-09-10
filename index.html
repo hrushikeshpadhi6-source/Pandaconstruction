@@ -1487,7 +1487,7 @@
           </div>
           <div>
             <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Basic / Gross (₹, from Attendance)</label>
-            <input type="number" step="any" name="Basic" readOnly="true" required="true" defaultValue="{{ staffSalaryDefaults.Basic }}" style="background:var(--chip);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            <input type="number" step="any" name="Basic" required="true" defaultValue="{{ staffSalaryDefaults.Basic }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           </div>
           <input type="number" step="any" name="DA" placeholder="Addition / DA (₹)" defaultValue="{{ staffSalaryDefaults.DA }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="number" step="any" name="Deductions" placeholder="Deduction (₹)" defaultValue="{{ staffSalaryDefaults.Deductions }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
@@ -1829,6 +1829,8 @@ class Component extends DCLogic {
   }
   markAttendance(staffName, date, status) {
     const self = this;
+    if (this.state.saveStatus === 'saving') return;
+    this.setState({ saveStatus: 'saving' });
     PandaAPI.call('addStaffAttendance', { Date: date, StaffName: staffName, Status: status, CreatedBy: this.currentUserName() }).then(function (res) {
       if (res.success) {
         self.setState(function (s) {
@@ -1838,10 +1840,16 @@ class Component extends DCLogic {
           else list.push({ AttendanceID: 'tmp' + Date.now(), Date: date, StaffName: staffName, Status: status, MarkedBy: self.currentUserName(), CreatedAt: new Date().toISOString() });
           const u = Object.assign({}, s.attendanceUnlocked);
           delete u[staffName + '|' + date];
-          return { staffAttendance: list, attendanceUnlocked: u };
+          return { staffAttendance: list, attendanceUnlocked: u, saveStatus: 'saved' };
         });
-        self.showToast(res.message || 'Attendance saved.');
-      } else self.showToast(res.message || 'Save failed.');
+        setTimeout(function () { self.setState({ saveStatus: null }); }, 700);
+      } else {
+        self.setState({ saveStatus: null });
+        self.showToast(res.message || 'Save failed.');
+      }
+    }).catch(function (e) {
+      self.setState({ saveStatus: null });
+      self.showToast('Save failed: ' + e.message);
     });
   }
   sendWhatsApp(contact, message) {
@@ -2029,7 +2037,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Month.value || !f.Basic.value) { this.showToast('Month and Basic amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Month: f.Month.value, StaffName: f.StaffName.value, Basic: f.Basic.value, DA: f.DA.value || 0, Deductions: f.Deductions.value || 0, BFDue: f.BFDue.value || 0, DaysWorked: f.DaysWorked.value || '', Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Month: f.Month.value, StaffName: f.StaffName.value, Basic: f.Basic.value, DA: f.DA.value || 0, Deductions: f.Deductions.value || 0, BFDue: 0, DaysWorked: f.DaysWorked.value || '', Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.SalaryID = ed.SalaryID; this.submitGeneric('updateStaffSalary', payload, 'Salary slip updated successfully.'); }
     else this.submitGeneric('addStaffSalary', payload, 'Salary slip saved successfully.');
   }
@@ -2236,6 +2244,20 @@ class Component extends DCLogic {
   sum(list, field) { return (list || []).reduce(function (a, r) { return a + (Number(r[field]) || 0); }, 0); }
   inRange(dateStr, from, to) { if (!dateStr) return true; if (from && dateStr < from) return false; if (to && dateStr > to) return false; return true; }
   oc(n) { n = Number(n) || 0; return n > 0 ? '#e2574c' : (n < 0 ? '#2ea043' : 'var(--muted)'); }
+  dayValue(status) { return status === 'Present' ? 1 : (status === 'Half' ? 0.5 : 0); }
+  // Single source of truth for a staff member's payroll balance — BF + all past salary slips +
+  // this month's not-yet-slipped attendance earnings, minus payments made. Used everywhere
+  // (dashboard total, staff list, staff detail, Reports > Staff Due) so they never disagree.
+  staffFinancials(st, s, attendanceDeduped, curMonthKey, hasSlipThisMonth) {
+    const self = this;
+    const due = this.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }), 'NetSalary');
+    const paid = this.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
+    const bfAmt = Number(st.BFAmount) || 0;
+    const presentThisMonth = this.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKey; }).map(function (r) { return { v: self.dayValue(r.Status) }; }), 'v');
+    const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
+    const outstanding = bfAmt + due + monthEarned - paid;
+    return { bfAmt: bfAmt, due: due, paid: paid, monthEarned: monthEarned, presentThisMonth: presentThisMonth, outstanding: outstanding };
+  }
   byDateTime(a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? -1 : 1; const at = a.Time || '', bt = b.Time || ''; return at < bt ? -1 : (at > bt ? 1 : 0); }
 
   exportCSV(rows, headers, filename) {
@@ -2544,30 +2566,14 @@ class Component extends DCLogic {
     }), 'v');
     const currentMonthExpenditureTotalN = currentMonthExpenditureN + currentMonthStaffCostN;
     currentMonthBreakdown.push({ label: 'Staff Salary (attendance-based)', value: currentMonthStaffCostN });
-    const totalStaffOutstandingN = self.sum(s.staff.map(function (st) {
-      const due = self.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }), 'NetSalary');
-      const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
-      const bfAmt = Number(st.BFAmount) || 0;
-      const presentThisMonth = self.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKeyAll; }).map(function (r) { return { v: dayValue(r.Status) }; }), 'v');
-      const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
-      return { v: bfAmt + due + monthEarned - paid };
-    }), 'v');
+    const totalStaffOutstandingN = self.sum(s.staff.map(function (st) { return { v: self.staffFinancials(st, s, attendanceDeduped, curMonthKeyAll, hasSlipThisMonth).outstanding }; }), 'v');
     const staffOutstandingBreakdown = s.staff.map(function (st) {
-      const due = self.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }), 'NetSalary');
-      const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
-      const bfAmt = Number(st.BFAmount) || 0;
-      const presentThisMonth = self.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKeyAll; }).map(function (r) { return { v: dayValue(r.Status) }; }), 'v');
-      const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
-      return { label: st.Name, value: bfAmt + due + monthEarned - paid };
+      return { label: st.Name, value: self.staffFinancials(st, s, attendanceDeduped, curMonthKeyAll, hasSlipThisMonth).outstanding };
     }).filter(function (r) { return r.value !== 0; }).sort(function (a, b) { return b.value - a.value; });
     const staffCards = s.staff.map(function (st) {
-      const due = self.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }), 'NetSalary');
-      const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
-      const bfAmt = Number(st.BFAmount) || 0;
-      const presentThisMonth = self.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKeyAll; }).map(function (r) { return { v: dayValue(r.Status) }; }), 'v');
-      const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
+      const fin = self.staffFinancials(st, s, attendanceDeduped, curMonthKeyAll, hasSlipThisMonth);
       const rate = st.SalaryBasis === 'Daily' ? fmt(st.DailyRate) + '/day' : fmt(st.MonthlyAmount) + '/month';
-      return Object.assign({}, st, { rateFmt: rate, bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(bfAmt + due + monthEarned - paid), outstandingColor: self.oc(bfAmt + due + monthEarned - paid), onDelete: function () { self.deleteStaff(st); }, onView: function () { self.openStaffDetail(st.Name); }, onEdit: function () { self.openModal('staff', st); } });
+      return Object.assign({}, st, { rateFmt: rate, bfFmt: fmt(fin.bfAmt), monthEarnedFmt: fmt(fin.monthEarned), totalDueFmt: fmt(fin.due + fin.monthEarned), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteStaff(st); }, onView: function () { self.openStaffDetail(st.Name); }, onEdit: function () { self.openModal('staff', st); } });
     });
 
     const toolDateResolved = s.attendanceDate || todayStr;
@@ -2599,20 +2605,18 @@ class Component extends DCLogic {
       const stRow = s.staff.find(function (x) { return x.Name === stName; }) || {};
       const salRows = s.staffSalary.filter(function (r) { return r.StaffName === stName; });
       const payRows2 = s.staffPayments.filter(function (r) { return r.StaffName === stName; });
-      const due = self.sum(salRows, 'NetSalary');
-      const paid = self.sum(payRows2, 'AmountPaid');
-      const bfAmt = Number(stRow.BFAmount) || 0;
       const attendanceDateResolved = s.attendanceDate || todayStr;
       const attRowsAll = attendanceDeduped.filter(function (r) { return r.StaffName === stName; });
       const curMonthKey = todayStr.slice(0, 7);
-      presentDaysThisMonth = self.sum(attRowsAll.filter(function (r) { return String(r.Date).slice(0, 7) === curMonthKey; }).map(function (r) { return { v: dayValue(r.Status) }; }), 'v');
-      const monthEarned = (stRow.SalaryBasis === 'Daily' && !hasSlipThisMonth(stName)) ? presentDaysThisMonth * (Number(stRow.DailyRate) || 0) : 0;
+      const fin = self.staffFinancials(stRow, s, attendanceDeduped, curMonthKey, hasSlipThisMonth);
+      const due = fin.due, paid = fin.paid, bfAmt = fin.bfAmt, monthEarned = fin.monthEarned;
+      presentDaysThisMonth = fin.presentThisMonth;
       defaultBasicFromAttendance = stRow.SalaryBasis === 'Daily' ? presentDaysThisMonth * (Number(stRow.DailyRate) || 0) : '';
       const todayAtt = attRowsAll.find(function (r) { return r.Date === attendanceDateResolved; });
       staffDetail = {
         Name: stRow.Name || stName, Role: stRow.Role || '', ContactNumber: stRow.ContactNumber || '',
         basisLabel: stRow.SalaryBasis === 'Daily' ? ('Daily — ' + fmt(stRow.DailyRate) + '/day') : ('Monthly — ' + fmt(stRow.MonthlyAmount) + '/month'),
-        bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(bfAmt + due + monthEarned - paid), outstandingColor: self.oc(bfAmt + due + monthEarned - paid),
+        bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding),
         rateHint: 'Configured rate: ' + (stRow.SalaryBasis === 'Daily' ? fmt(stRow.DailyRate) + '/day' : fmt(stRow.MonthlyAmount) + '/month'),
         presentDaysThisMonthFmt: String(presentDaysThisMonth), attendanceDateResolved: attendanceDateResolved, todayAttendanceStatus: todayAtt ? todayAtt.Status : 'Not marked',
         onMarkPresentToday: function () { self.markAttendance(stName, attendanceDateResolved, 'Present'); },
@@ -2695,12 +2699,10 @@ class Component extends DCLogic {
         const basic = Number(r.Basic) || 0, addition = Number(r.DA) || 0, deduction = Number(r.Deductions) || 0, net = Number(r.NetSalary) || 0;
         staffDueReportRows.push({ StaffName: st.Name, Month: r.Month, Basic: fmt(basic), Addition: fmt(addition), Deduction: fmt(deduction), NetSalary: fmt(net), NetSalaryColor: 'var(--text)', _Basic: basic, _Addition: addition, _Deduction: deduction, _NetSalary: net, rowStyle: '', nameWeight: '400' });
       });
-      const due = self.sum(slips, 'NetSalary');
-      const paid = self.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
-      const bfAmt = Number(st.BFAmount) || 0;
-      const outstanding = bfAmt + due - paid;
+      const fin = self.staffFinancials(st, s, attendanceDeduped, curMonthKeyAll, hasSlipThisMonth);
+      const bfAmt = fin.bfAmt, paid = fin.paid, outstanding = fin.outstanding;
       if (slips.length || bfAmt || paid) {
-        staffDueReportRows.push({ StaffName: st.Name, Month: 'TOTAL OUTSTANDING (incl. BF ' + fmt(bfAmt) + ', Paid ' + fmt(paid) + ')', Basic: '', Addition: '', Deduction: '', NetSalary: fmt(outstanding), NetSalaryColor: self.oc(outstanding), _Basic: '', _Addition: '', _Deduction: '', _NetSalary: outstanding, rowStyle: 'background:var(--chip);', nameWeight: '700', _isTotalRow: true });
+        staffDueReportRows.push({ StaffName: st.Name, Month: 'TOTAL OUTSTANDING (incl. BF ' + fmt(bfAmt) + ', Paid ' + fmt(paid) + (fin.monthEarned ? ', this month\u2019s attendance ' + fmt(fin.monthEarned) : '') + ')', Basic: '', Addition: '', Deduction: '', NetSalary: fmt(outstanding), NetSalaryColor: self.oc(outstanding), _Basic: '', _Addition: '', _Deduction: '', _NetSalary: outstanding, rowStyle: 'background:var(--chip);', nameWeight: '700', _isTotalRow: true });
       }
     });
     const reportRowsMap = { supplier: supplierReportRows, site: siteReportRows, material: materialReportRows, monthly: monthlyReportRows, diesel: dieselReportRows, staffDue: staffDueReportRows };
