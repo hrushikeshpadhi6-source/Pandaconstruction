@@ -229,6 +229,10 @@
 
     <sc-if value="{{ viewIs.supplierDetail }}">
       <button onClick="{{ navSuppliers }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:20px;">← All Suppliers</button>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px;">
+        <button onClick="{{ supplierDetail.onExportExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
+        <button onClick="{{ supplierDetail.onExportPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button>
+      </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" data-stat-grid>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">BF Balance</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.bfFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Purchase</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.purchaseFmt }}</div></div>
@@ -822,7 +826,12 @@
         <input type="date" value="{{ toolAttendanceDateResolved }}" onChange="{{ onAttendanceDate }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:9px 10px;font-size:13px;" />
         <span style="font-size:13px;color:var(--muted);">{{ toolPresentCountLabel }}</span>
         <span style="flex:1;"></span>
-        <input type="month" value="{{ attendanceExportMonthResolved }}" onChange="{{ onAttendanceExportMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:9px 10px;font-size:13px;" />
+        <select value="{{ attendanceExportMonthSel }}" onChange="{{ onAttendanceExportMonthNum }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:9px 10px;font-size:13px;">
+          <sc-for list="{{ monthNumOptions }}" as="opt" hint-placeholder-count="12"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+        </select>
+        <select value="{{ attendanceExportYearSel }}" onChange="{{ onAttendanceExportYear }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:9px 10px;font-size:13px;">
+          <sc-for list="{{ attendanceYearOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+        </select>
         <button onClick="{{ exportMonthlyAttendance }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:8px;cursor:pointer;font-size:14px;">Export Attendance (Excel)</button>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;margin-bottom:24px;">
@@ -1211,7 +1220,7 @@
 </div>
 
 <sc-if value="{{ saveStatus }}">
-  <div style="position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:400;display:flex;align-items:center;justify-content:center;">
+  <div data-app-theme="{{ theme }}" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;display:flex;align-items:center;justify-content:center;font-family:'Manrope',sans-serif;">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 32px;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:160px;">
       <sc-if value="{{ savingActive }}">
         <div style="width:32px;height:32px;border-radius:50%;border:3px solid var(--border);border-top-color:#d4af37;animation:pandaSpin 0.8s linear infinite;"></div>
@@ -1605,11 +1614,120 @@ class Component extends DCLogic {
     const today = new Date().toISOString().slice(0, 10);
     this.sendWhatsApp('919938353942', 'Hi, this is ' + this.currentUserName() + '. I have completed my tasks for ' + today + ' in the Panda Construction app.');
   }
+  exportSupplierExcel(name) {
+    const d = this._lastSupplierDetail;
+    if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
+    const wb = XLSX.utils.book_new();
+    const summaryAoa = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Supplier Statement — ' + name], ['Generated: ' + new Date().toLocaleString('en-IN')], [],
+      ['BF Balance', d.bfAmt], ['Total Purchase', d.purchaseN], ['Total Paid', d.paidN], ['Outstanding (BF + Purchase - Paid)', d.outstandingN]];
+    const wsSummary = XLSX.utils.aoa_to_sheet(summaryAoa);
+    wsSummary['!cols'] = [{ wch: 30 }, { wch: 18 }];
+    XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+
+    const txAoa = [['Date', 'Vehicle', 'Material', 'Quantity', 'Unit', 'Rate', 'Value', 'Site', 'Remarks']];
+    d.allTxRaw.forEach(function (r) { txAoa.push([r.Date, r.VehicleNumber || '', r.Material, Number(r.Quantity) || 0, r.Unit || '', Number(r.Rate) || 0, Number(r.Value) || 0, r.Site || '', r.Remarks || '']); });
+    const wsTx = XLSX.utils.aoa_to_sheet(txAoa);
+    wsTx['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 16 }, { wch: 10 }, { wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 16 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, wsTx, 'Material Transactions');
+
+    const payAoa = [['Date', 'Amount Paid', 'Payment Method', 'Reference', 'Remarks']];
+    d.payRaw.forEach(function (r) { payAoa.push([r.Date, Number(r.AmountPaid) || 0, r.PaymentMethod || '', r.ReferenceNumber || '', r.Remarks || '']); });
+    const wsPay = XLSX.utils.aoa_to_sheet(payAoa);
+    wsPay['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 24 }];
+    XLSX.utils.book_append_sheet(wb, wsPay, 'Payments');
+
+    const bfAoa = [['BF Month', 'BF Date', 'BF Amount']];
+    d.bfRaw.forEach(function (r) { bfAoa.push([r.BFMonth || '', r.BFDate || '', Number(r.BFAmount) || 0]); });
+    const wsBF = XLSX.utils.aoa_to_sheet(bfAoa);
+    wsBF['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }];
+    XLSX.utils.book_append_sheet(wb, wsBF, 'BF History');
+
+    XLSX.writeFile(wb, 'panda-construction-' + name.replace(/\s+/g, '-') + '-statement.xlsx');
+  }
+  async exportSupplierPDF(name) {
+    const d = this._lastSupplierDetail;
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const self = this;
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let y = 40;
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(20, 20, 20); doc.text('PANDA CONSTRUCTION', 120, y + 10);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(90, 90, 90); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y + 24);
+    y += 50;
+    doc.setDrawColor(212, 175, 55); doc.setLineWidth(1.2); doc.line(40, y, pageWidth - 40, y);
+    y += 20;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(20, 20, 20); doc.text('Supplier Statement — ' + name, 40, y);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(110, 110, 110); doc.text('Generated: ' + new Date().toLocaleString('en-IN'), 40, y + 14);
+    y += 30;
+
+    doc.autoTable({
+      startY: y, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 9, cellPadding: 6 },
+      head: [['BF Balance', 'Total Purchase', 'Total Paid', 'Outstanding']],
+      body: [[this.fmtPdf(d.bfAmt), this.fmtPdf(d.purchaseN), this.fmtPdf(d.paidN), this.fmtPdf(d.outstandingN)]],
+      headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' },
+      columnStyles: { 0: { halign: 'right' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' } }
+    });
+    y = doc.lastAutoTable.finalY + 24;
+
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text('Material Transactions', 40, y); y += 10;
+    doc.autoTable({
+      startY: y, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 8, cellPadding: 5 },
+      head: [['Date', 'Vehicle', 'Material', 'Qty', 'Unit', 'Rate', 'Value', 'Site']],
+      body: d.allTxRaw.map(function (r) { return [r.Date, r.VehicleNumber || '', r.Material, r.Quantity, r.Unit || '', self.fmtPdf(r.Rate), self.fmtPdf(r.Value), r.Site || '']; }),
+      headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' },
+      columnStyles: { 3: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } }
+    });
+    y = doc.lastAutoTable.finalY + 24;
+    if (y > doc.internal.pageSize.getHeight() - 150) { doc.addPage(); y = 40; }
+
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text('Payments', 40, y); y += 10;
+    doc.autoTable({
+      startY: y, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 8, cellPadding: 5 },
+      head: [['Date', 'Amount Paid', 'Method', 'Reference', 'Remarks']],
+      body: d.payRaw.map(function (r) { return [r.Date, self.fmtPdf(r.AmountPaid), r.PaymentMethod || '', r.ReferenceNumber || '', r.Remarks || '']; }),
+      headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' },
+      columnStyles: { 1: { halign: 'right' } }
+    });
+    y = doc.lastAutoTable.finalY + 24;
+    if (y > doc.internal.pageSize.getHeight() - 120) { doc.addPage(); y = 40; }
+
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text('BF History', 40, y); y += 10;
+    doc.autoTable({
+      startY: y, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 8, cellPadding: 5 },
+      head: [['BF Month', 'BF Date', 'BF Amount']],
+      body: d.bfRaw.map(function (r) { return [r.BFMonth || '', r.BFDate || '', self.fmtPdf(r.BFAmount)]; }),
+      headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' },
+      columnStyles: { 2: { halign: 'right' } }
+    });
+
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let p = 1; p <= pageCount; p++) {
+      doc.setPage(p);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(140, 140, 140);
+      doc.text('Panda Construction — Site Support Management System', 40, doc.internal.pageSize.getHeight() - 24);
+      doc.text('Page ' + p + ' of ' + pageCount, pageWidth - 90, doc.internal.pageSize.getHeight() - 24);
+    }
+    doc.save('panda-construction-' + name.replace(/\s+/g, '-') + '-statement.pdf');
+  }
   setAttendanceExportMonth(e) { this.setState({ attendanceExportMonth: e.target.value }); }
+  setAttendanceExportMonthNum(e) {
+    this.setState(function (s) {
+      const yr = (s.attendanceExportMonth || new Date().toISOString().slice(0, 7)).slice(0, 4);
+      return { attendanceExportMonth: yr + '-' + e.target.value };
+    });
+  }
+  setAttendanceExportYear(e) {
+    this.setState(function (s) {
+      const mo = (s.attendanceExportMonth || new Date().toISOString().slice(0, 7)).slice(5, 7) || '01';
+      return { attendanceExportMonth: e.target.value + '-' + mo };
+    });
+  }
   exportMonthlyAttendance() {
     if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
     const s = this.state;
-    const month = s.attendanceExportMonth || new Date().toISOString().slice(0, 7);
+    const month = /^\d{4}-\d{2}$/.test(s.attendanceExportMonth || '') ? s.attendanceExportMonth : new Date().toISOString().slice(0, 7);
     const daysInMonth = new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0).getDate();
     const aoa = [];
     aoa.push(['PANDA CONSTRUCTION — Monthly Attendance — ' + month]);
@@ -2273,8 +2391,13 @@ class Component extends DCLogic {
       const outstanding = bfAmt + purchase - paid;
       supplierDetail = {
         name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding),
-        rows: filteredTx.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value) }); })
+        rows: filteredTx.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value) }); }),
+        allTxRaw: allTx.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
+        payRaw: pay.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
+        bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, outstandingN: outstanding,
+        onExportExcel: function () { self.exportSupplierExcel(name); }, onExportPDF: function () { self.exportSupplierPDF(name); }
       };
+      this._lastSupplierDetail = supplierDetail;
     }
 
     const materialAnalysis = s.materials.map(function (m) {
@@ -2620,6 +2743,10 @@ class Component extends DCLogic {
       toolAttendanceDateResolved: s.attendanceDate || todayStr,
       attendanceToolRows: attendanceToolRows, attendanceLogRows: attendanceLogRows, toolPresentCountLabel: toolPresentCountLabel,
       attendanceExportMonthResolved: s.attendanceExportMonth || todayStr.slice(0, 7), onAttendanceExportMonth: this.setAttendanceExportMonth.bind(this), exportMonthlyAttendance: this.exportMonthlyAttendance.bind(this),
+      attendanceExportMonthSel: (s.attendanceExportMonth || todayStr.slice(0, 7)).slice(5, 7), attendanceExportYearSel: (s.attendanceExportMonth || todayStr.slice(0, 7)).slice(0, 4),
+      onAttendanceExportMonthNum: this.setAttendanceExportMonthNum.bind(this), onAttendanceExportYear: this.setAttendanceExportYear.bind(this),
+      monthNumOptions: [{ v: '01', l: 'January' }, { v: '02', l: 'February' }, { v: '03', l: 'March' }, { v: '04', l: 'April' }, { v: '05', l: 'May' }, { v: '06', l: 'June' }, { v: '07', l: 'July' }, { v: '08', l: 'August' }, { v: '09', l: 'September' }, { v: '10', l: 'October' }, { v: '11', l: 'November' }, { v: '12', l: 'December' }],
+      attendanceYearOptions: (function () { const cur = Number(todayStr.slice(0, 4)); return [cur - 1, cur, cur + 1]; })(),
       staffCards: staffCards, staffDetail: staffDetail, staffDefaults: staffDefaults, staffSalaryDefaults: staffSalaryDefaults, staffPaymentDefaults: staffPaymentDefaults, userContactDefaults: userContactDefaults, staffRateReadOnly: staffRateReadOnly,
       myFundBalanceFmt: fmt(myFundBalanceN), showMyFundBalance: showMyFundBalance, fundTransferRows: fundTransferRows, allocationRows: allocationRows, fundTransferDefaults: fundTransferDefaults, siteAllocationDefaults: siteAllocationDefaults, fundRecipientOptions: fundRecipientOptions,
       openStaffModal: function () { self.openModal('staff'); }, openStaffSalaryModal: function () { self.openModal('staffSalary'); }, openStaffPaymentModal: function () { self.openModal('staffPayment'); },
