@@ -69,7 +69,10 @@
         <sc-if value="{{ loginError }}">
           <div style="color:#e2574c;font-size:13px;">{{ loginError }}</div>
         </sc-if>
-        <button type="submit" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:12px;border-radius:8px;border:none;cursor:pointer;font-size:14px;margin-top:6px;">Sign In</button>
+        <button type="submit" disabled="{{ loggingIn }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:12px;border-radius:8px;border:none;cursor:pointer;font-size:14px;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:10px;opacity:{{ loginBtnOpacity }};">
+          <sc-if value="{{ loggingIn }}"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(14,14,16,0.3);border-top-color:#0e0e10;animation:pandaSpin 0.7s linear infinite;display:inline-block;"></span></sc-if>
+          <span>{{ loginBtnLabel }}</span>
+        </button>
 
       </form>
       <button type="button" onClick="{{ toggleTheme }}" style="margin-top:20px;background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">{{ themeToggleLabel }}</button>
@@ -127,6 +130,7 @@
       <button onClick="{{ navStaff }}" style="{{ navStyle.staff }}">Staff</button>
       <button onClick="{{ navStaffPayments }}" style="{{ navStyle.staffPayments }}">Staff Payments</button>
       <button onClick="{{ navMistri }}" style="{{ navStyle.mistri }}">Mistri</button>
+      <button onClick="{{ navLabour }}" style="{{ navStyle.labour }}">Labour</button>
       <button onClick="{{ navAttendance }}" style="{{ navStyle.attendance }}">Attendance</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Fund Distribution</div>
       <button onClick="{{ navFunds }}" style="{{ navStyle.funds }}">Money & Sites</button>
@@ -347,7 +351,7 @@
             <sc-for list="{{ txRows }}" as="r" hint-placeholder-count="5">
               <tr>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DisplaySL }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Time }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.VehicleNumber }}</td>
@@ -487,7 +491,7 @@
             <sc-for list="{{ dieselTxRows }}" as="r" hint-placeholder-count="4">
               <tr>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DisplaySL }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.VehicleNumber }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ChalanNumber }}</td>
@@ -929,6 +933,140 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ viewIs.labour }}">
+      <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <button onClick="{{ openLabourModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add Labour</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:860px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Name</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Contact</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Default Site</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">BF</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Net Due</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Paid</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Outstanding</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ labourCards }}" as="r" hint-placeholder-count="3">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;cursor:pointer;color:#d4af37;" onClick="{{ r.onView }}">{{ r.Name }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ContactNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DefaultSite }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.bfFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalDueFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalPaidFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onView }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">View</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.labourDetail }}">
+      <button onClick="{{ navLabour }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:16px;">&larr; Back to Labour</button>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;">
+        <div style="font-weight:700;font-size:18px;">{{ labourDetail.Name }}</div>
+        <div style="color:var(--muted);font-size:13px;margin-top:4px;">{{ labourDetail.ContactNumber }}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Net Due</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ labourDetail.totalDueFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">BF Balance</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ labourDetail.bfFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Paid</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ labourDetail.totalPaidFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Outstanding</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:{{ labourDetail.outstandingColor }};">{{ labourDetail.outstandingFmt }}</div></div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-weight:700;font-size:15px;">Entries <span style="font-size:12px;color:var(--muted2);font-weight:400;">(daily or contract work, per site)</span></div>
+        <button onClick="{{ openLabourEntryModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Add Entry</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;margin-bottom:24px;">
+        <table style="width:100%;border-collapse:collapse;min-width:900px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Month</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Type</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Site</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Remarks</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Net Amount</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ labourDetail.entryRows }}" as="r" hint-placeholder-count="2">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Month }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Type }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.NetAmountFmt }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-weight:700;font-size:15px;">Payments</div>
+        <button onClick="{{ openLabourPaymentModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Add Payment</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;margin-bottom:24px;">
+        <table style="width:100%;border-collapse:collapse;min-width:780px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Site</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Amount</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Method</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Reference</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ labourDetail.paymentRows }}" as="r" hint-placeholder-count="2">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="font-weight:700;font-size:15px;margin:24px 0 12px;">Advances</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:700px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Site</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Amount</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">From</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Remarks</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ labourDetail.advanceRows }}" as="r" hint-placeholder-count="2">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.From }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
     <sc-if value="{{ viewIs.staffPayments }}">
       <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
@@ -1054,6 +1192,7 @@
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Diesel</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Staff</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Mistri</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Labour</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Site</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Balance</th>
             </tr></thead>
@@ -1066,6 +1205,7 @@
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toDieselFmt }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toStaffFmt }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toMistriFmt }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toLabourFmt }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toSiteFmt }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.balanceColor }};font-weight:700;">{{ r.balanceFmt }}</td>
                 </tr>
@@ -1125,6 +1265,7 @@
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Sent</span><span>{{ sc.receivedFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Other Expenditure</span><span>{{ sc.expendFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Mistri</span><span>{{ sc.mistriPaidFmt }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Labour</span><span>{{ sc.labourPaidFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:8px;border-top:1px solid var(--border-soft);"><span style="color:var(--muted);">Balance</span><span style="color:{{ sc.balanceColor }};font-weight:700;">{{ sc.balanceFmt }}</span></div>
           </div>
         </sc-for>
@@ -1196,6 +1337,7 @@
           <button onClick="{{ setReportMonthly }}" style="{{ reportTabStyle.monthly }}">Monthly Report</button>
           <button onClick="{{ setReportDiesel }}" style="{{ reportTabStyle.diesel }}">Diesel Report</button>
           <button onClick="{{ setReportStaffDue }}" style="{{ reportTabStyle.staffDue }}">Staff Due Report</button>
+          <button onClick="{{ setReportLabour }}" style="{{ reportTabStyle.labour }}">Labour Report</button>
         </div>
         <div style="display:flex;gap:8px;">
           <button onClick="{{ exportReportExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
@@ -1279,6 +1421,7 @@
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Material</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Other Expenditure</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Mistri</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Labour</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Total Expenditure</th>
             </tr></thead>
             <tbody>
@@ -1288,13 +1431,14 @@
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Material }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.OtherExpenditure }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Mistri }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Labour }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:700;">{{ r.Expenditure }}</td>
                 </tr>
               </sc-for>
             </tbody>
           </table>
         </div>
-        <div style="color:var(--muted2);font-size:12px;margin-top:10px;">Total Expenditure = Material cost + Other Expenditure + Mistri payments for this site.</div>
+        <div style="color:var(--muted2);font-size:12px;margin-top:10px;">Total Expenditure = Material cost + Other Expenditure + Mistri payments + Labour payments for this site.</div>
       </sc-if>
       <sc-if value="{{ reportTabIs.material }}">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
@@ -1389,6 +1533,32 @@
           </table>
         </div>
         <div style="color:var(--muted2);font-size:12px;margin-top:10px;">Each staff member's salary slips are listed by month, followed by their Total Outstanding (BF + all dues − all payments).</div>
+      </sc-if>
+      <sc-if value="{{ reportTabIs.labour }}">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Labour</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">BF</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Due</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Advances</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Paid</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Outstanding</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ labourReportRows }}" as="r" hint-placeholder-count="4">
+                <tr>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Name }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BF }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Due }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Advances }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Paid }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.OutstandingColor }};font-weight:700;">{{ r.Outstanding }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
       </sc-if>
     </sc-if>
 
@@ -1529,7 +1699,7 @@
           </div>
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ txDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ txDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ txDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="color:var(--muted2);font-size:12px;">Value is calculated automatically as Quantity × Rate.</div>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -1546,7 +1716,7 @@
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ payDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <select name="PaymentMethod" defaultValue="{{ payDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ payDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ payDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ payDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1563,7 +1733,7 @@
           <input type="number" step="any" name="BFAmount" placeholder="BF Amount (₹)" required="true" defaultValue="{{ bfDefaults.BFAmount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ bfDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ bfDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ bfDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1589,7 +1759,7 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ dieselTxDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="text" name="Driver" placeholder="Driver / Operator" defaultValue="{{ dieselTxDefaults.Driver }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ dieselTxDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ dieselTxDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1606,7 +1776,7 @@
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ dieselPayDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <select name="PaymentMethod" defaultValue="{{ dieselPayDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ dieselPayDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ dieselPayDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ dieselPayDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1624,7 +1794,7 @@
           <input type="number" step="any" name="BFAmount" placeholder="BF Amount (₹)" required="true" defaultValue="{{ dieselBFDefaults.BFAmount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ dieselBFDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ dieselBFDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ dieselBFDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1707,7 +1877,7 @@
           </div>
           <input type="number" step="any" name="DA" placeholder="Addition / DA (₹)" defaultValue="{{ staffSalaryDefaults.DA }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="number" step="any" name="Deductions" placeholder="Deduction (₹)" defaultValue="{{ staffSalaryDefaults.Deductions }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ staffSalaryDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ staffSalaryDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="color:var(--muted2);font-size:12px;">Net Salary = Basic (from attendance) + Addition − Deduction, calculated automatically. BF balance stays tracked separately at staff level.</div>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -1729,7 +1899,7 @@
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ staffPaymentDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <select name="PaymentMethod" defaultValue="{{ staffPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ staffPaymentDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ staffPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ staffPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1752,12 +1922,12 @@
         <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
         <form key="{{ formKey }}" onSubmit="{{ submitFundTransfer }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="date" name="Date" required="true" defaultValue="{{ fundTransferDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
-          <select name="To" required="true" defaultValue="{{ fundTransferDefaults.To }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Send To</option><sc-if value="{{ isOwnerOrAdmin1 }}"><optgroup label="Users"><sc-for list="{{ fundRecipientOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></optgroup></sc-if><optgroup label="Mistris (advance)"><sc-for list="{{ mistriOptions }}" as="opt" hint-placeholder-count="3"><option value="MISTRI::{{ opt }}">{{ opt }}</option></sc-for></optgroup></select>
-          <input type="text" name="Site" placeholder="Site (required only when sending to a Mistri)" autocomplete="off" list="fundTransferSiteList" defaultValue="{{ fundTransferDefaults.Site }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <select name="To" required="true" defaultValue="{{ fundTransferDefaults.To }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Send To</option><sc-if value="{{ isOwnerOrAdmin1 }}"><optgroup label="Users"><sc-for list="{{ fundRecipientOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></optgroup></sc-if><optgroup label="Mistris (advance)"><sc-for list="{{ mistriOptions }}" as="opt" hint-placeholder-count="3"><option value="MISTRI::{{ opt }}">{{ opt }}</option></sc-for></optgroup><optgroup label="Labour (advance)"><sc-for list="{{ labourOptions }}" as="opt" hint-placeholder-count="3"><option value="LABOUR::{{ opt }}">{{ opt }}</option></sc-for></optgroup></select>
+          <input type="text" name="Site" placeholder="Site (required only when sending to a Mistri or Labour)" autocomplete="off" list="fundTransferSiteList" defaultValue="{{ fundTransferDefaults.Site }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="fundTransferSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="Amount" placeholder="Amount (₹)" required="true" defaultValue="{{ fundTransferDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <select name="PaymentMethod" defaultValue="{{ fundTransferDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ fundTransferDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ fundTransferDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1772,7 +1942,7 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ siteAllocationDefaults.Site }}" list="allocSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="allocSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="Amount" placeholder="Amount (₹)" required="true" defaultValue="{{ siteAllocationDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ siteAllocationDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ siteAllocationDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1787,7 +1957,7 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ siteExpenseDefaults.Site }}" list="expenseSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="expenseSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="Amount" placeholder="Amount (₹)" required="true" defaultValue="{{ siteExpenseDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ siteExpenseDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ siteExpenseDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1816,7 +1986,7 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ mistriDueDefaults.Site }}" list="mistriDueSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="mistriDueSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="Amount" placeholder="Amount Due (₹)" required="true" defaultValue="{{ mistriDueDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ mistriDueDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ mistriDueDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1839,7 +2009,83 @@
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ mistriPaymentDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <select name="PaymentMethod" defaultValue="{{ mistriPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ mistriPaymentDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ mistriPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ mistriPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.labour }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitLabour }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" name="Name" placeholder="Labour Name" required="true" defaultValue="{{ labourDefaults.Name }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="ContactNumber" placeholder="Contact Number" defaultValue="{{ labourDefaults.ContactNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="DefaultSite" placeholder="Default Site (pick or type new)" autocomplete="off" list="labourDefaultSiteList" defaultValue="{{ labourDefaults.DefaultSite }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="labourDefaultSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <input type="number" step="any" name="BFAmount" placeholder="BF / Advance Balance (₹)" defaultValue="{{ labourDefaults.BFAmount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.labourEntry }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitLabourEntry }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="hidden" name="LabourName" defaultValue="{{ labourEntryDefaults.LabourName }}" />
+          <div style="display:flex;gap:10px;">
+            <input type="date" name="Date" required="true" defaultValue="{{ labourEntryDefaults.Date }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
+            <input type="month" name="Month" required="true" defaultValue="{{ labourEntryDefaults.Month }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
+          </div>
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ labourEntryDefaults.Site }}" list="labourEntrySiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="labourEntrySiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <select name="Type" onChange="{{ onLabourEntryTypeChange }}" defaultValue="{{ labourEntryDefaults.Type }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;">
+            <option value="Daily">Daily</option>
+            <option value="Contract">Contract</option>
+          </select>
+          <sc-if value="{{ isLabourEntryDaily }}">
+            <div style="display:flex;gap:10px;">
+              <input type="number" step="any" name="DailyPrice" placeholder="Daily Price (₹)" defaultValue="{{ labourEntryDefaults.DailyPrice }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+              <input type="number" step="any" name="HowManyLabour" placeholder="How Many Labour" defaultValue="{{ labourEntryDefaults.HowManyLabour }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            </div>
+          </sc-if>
+          <sc-if value="{{ !isLabourEntryDaily }}">
+            <div style="display:flex;gap:10px;">
+              <input type="number" step="any" name="WorkMeter" placeholder="Work Meter (quantity)" defaultValue="{{ labourEntryDefaults.WorkMeter }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+              <input type="number" step="any" name="Price" placeholder="Price (₹ per unit)" defaultValue="{{ labourEntryDefaults.Price }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            </div>
+          </sc-if>
+          <div style="display:flex;gap:10px;">
+            <input type="number" step="any" name="AdditionalAmount" placeholder="Additional Amount (₹, can be 0)" defaultValue="{{ labourEntryDefaults.AdditionalAmount }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            <input type="number" step="any" name="Fare" placeholder="Fare (₹, can be 0)" defaultValue="{{ labourEntryDefaults.Fare }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          </div>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ labourEntryDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.labourPayment }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitLabourPayment }}" style="display:flex;flex-direction:column;gap:12px;">
+          <sc-if value="{{ showLabourPicker }}">
+            <select name="LabourName" required="true" defaultValue="{{ labourPaymentDefaults.LabourName }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Labour</option><sc-for list="{{ labourOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          </sc-if>
+          <sc-if value="{{ !showLabourPicker }}">
+            <input type="hidden" name="LabourName" defaultValue="{{ labourPaymentDefaults.LabourName }}" />
+          </sc-if>
+          <input type="date" name="Date" required="true" defaultValue="{{ labourPaymentDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ labourPaymentDefaults.Site }}" list="labourPaySiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="labourPaySiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ labourPaymentDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <select name="PaymentMethod" defaultValue="{{ labourPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ labourPaymentDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ labourPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -1857,12 +2103,12 @@
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   state = {
-    session: null, view: 'login', loading: true, toast: null, loginError: '', attendanceUnlocked: {}, saveStatus: null, dashboardPopup: null,
+    session: null, view: 'login', loading: true, loggingIn: false, toast: null, loginError: '', attendanceUnlocked: {}, saveStatus: null, dashboardPopup: null,
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [],
-    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false,
-    selectedSupplier: null, selectedMistri: null, modal: null, editRecord: null,
+    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
+    selectedSupplier: null, selectedMistri: null, selectedLabour: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     detailFilters: { site: '', material: '', vehicle: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' },
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
@@ -1898,6 +2144,7 @@ class Component extends DCLogic {
         sites: r.sites || [], materials: r.materials || [], users: r.users || [], auditLog: r.auditLog || [],
         staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [],
         mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [],
+        labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [],
         fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
         maintenance: r.maintenance || { enabled: false, message: '' },
         loading: false
@@ -1912,15 +2159,19 @@ class Component extends DCLogic {
     e.preventDefault();
     const name = e.target.elements.name.value;
     const password = e.target.elements.password.value;
+    this.setState({ loggingIn: true, loginError: '' });
+    const self = this;
     PandaAPI.call('login', { name: name, password: password }).then(function (res) {
       if (res.success) {
         localStorage.setItem('panda_session', JSON.stringify(res.user));
-        this.setState({ session: res.user, view: 'dashboard', loginError: '', maintenance: res.maintenance || { enabled: false, message: '' } });
-        this.loadAll();
+        self.setState({ session: res.user, view: 'dashboard', loginError: '', loggingIn: false, maintenance: res.maintenance || { enabled: false, message: '' } });
+        self.loadAll();
       } else {
-        this.setState({ loginError: res.message || 'Login failed.' });
+        self.setState({ loginError: res.message || 'Login failed.', loggingIn: false });
       }
-    }.bind(this));
+    }).catch(function (e) {
+      self.setState({ loginError: 'Could not reach backend: ' + e.message, loggingIn: false });
+    });
   }
 
   logout() { localStorage.removeItem('panda_session'); this.setState({ session: null, view: 'login' }); }
@@ -1950,6 +2201,7 @@ class Component extends DCLogic {
   openSupplier(name) { this.setState({ view: 'supplierDetail', selectedSupplier: name, mobileNavOpen: false }); }
   openStaffDetail(name) { this.setState({ view: 'staffDetail', selectedStaff: name, modal: null, mobileNavOpen: false }); }
   openMistriDetail(name) { this.setState({ view: 'mistriDetail', selectedMistri: name, modal: null, mobileNavOpen: false }); }
+  openLabourDetail(name) { this.setState({ view: 'labourDetail', selectedLabour: name, modal: null, mobileNavOpen: false }); }
   setTaskDate(e) { this.setState({ taskDate: e.target.value }); }
   setAttendanceDate(e) { this.setState({ attendanceDate: e.target.value }); }
   markTaskCompleted() {
@@ -2133,9 +2385,8 @@ class Component extends DCLogic {
           else list.push({ AttendanceID: 'tmp' + Date.now(), Date: date, StaffName: staffName, Status: status, MarkedBy: self.currentUserName(), CreatedAt: new Date().toISOString() });
           const u = Object.assign({}, s.attendanceUnlocked);
           delete u[staffName + '|' + date];
-          return { staffAttendance: list, attendanceUnlocked: u, saveStatus: 'saved' };
+          return { staffAttendance: list, attendanceUnlocked: u, saveStatus: null };
         });
-        setTimeout(function () { self.setState({ saveStatus: null }); }, 700);
       } else {
         self.setState({ saveStatus: null });
         self.showToast(res.message || 'Save failed.');
@@ -2151,6 +2402,8 @@ class Component extends DCLogic {
     window.open('https://wa.me/' + digits + '?text=' + encodeURIComponent(message), '_blank');
   }
   openModal(type, record) { this.setState({ modal: type, editRecord: record || null }); }
+  onRemarksKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (e.target.form) e.target.form.requestSubmit(); } }
+  openLabourEntryModal(record) { this.setState({ modal: 'labourEntry', editRecord: record || null, labourEntryTypeUI: (record && record.Type) || 'Daily' }); }
   closeModal() { this.setState({ modal: null, editRecord: null }); }
   currentUserName() { return this.state.session ? this.state.session.name : ''; }
 
@@ -2160,9 +2413,9 @@ class Component extends DCLogic {
     const self = this;
     return PandaAPI.call(action, payload).then(function (res) {
       if (res.success) {
-        self.setState({ saveStatus: 'saved' });
         self.showToast(res.message || successMsg);
-        setTimeout(function () { self.setState({ saveStatus: null }); self.closeModal(); self.loadAll(); }, 700);
+        self.closeModal();
+        self.loadAll().then(function () { self.setState({ saveStatus: null }); });
       } else {
         self.setState({ saveStatus: null });
         self.showToast(res.message || 'Save failed.');
@@ -2252,9 +2505,8 @@ class Component extends DCLogic {
     const self = this;
     PandaAPI.call(action, payload).then(function (res) {
       if (res.success) {
-        self.setState({ saveStatus: 'saved' });
         self.showToast(res.message || 'Deleted successfully.');
-        setTimeout(function () { self.setState({ saveStatus: null }); self.loadAll(); }, 700);
+        self.loadAll().then(function () { self.setState({ saveStatus: null }); });
       } else {
         self.setState({ saveStatus: null });
         self.showToast(res.message || 'Delete failed.');
@@ -2352,6 +2604,50 @@ class Component extends DCLogic {
     if (!window.confirm('Delete this payment? This cannot be undone.')) return;
     this.submitGeneric('deleteMistriPayment', { PaymentID: rec.PaymentID, CreatedBy: this.currentUserName() }, 'Mistri payment deleted successfully.');
   }
+  submitLabour(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Name.value) { this.showToast('Name is required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Name: f.Name.value, ContactNumber: f.ContactNumber.value, DefaultSite: f.DefaultSite.value, BFAmount: f.BFAmount.value || 0, CreatedBy: this.currentUserName() };
+    if (ed) { payload.LabourID = ed.LabourID; this.submitGeneric('updateLabour', payload, 'Labour updated successfully.'); }
+    else this.submitGeneric('addLabour', payload, 'Labour saved successfully.');
+  }
+  deleteLabour(l) {
+    if (!window.confirm('Delete labour "' + l.Name + '"? This cannot be undone.')) return;
+    this.submitGeneric('deleteLabour', { LabourID: l.LabourID, Name: l.Name, CreatedBy: this.currentUserName() }, 'Labour deleted successfully.');
+  }
+  onLabourEntryTypeChange(e) { this.setState({ labourEntryTypeUI: e.target.value }); }
+  submitLabourEntry(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value || !f.Month.value || !f.Site.value.trim()) { this.showToast('Date, month and site are required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, Month: this.monthKeyToLabel(f.Month.value), LabourName: f.LabourName.value, Site: f.Site.value.trim(), Type: f.Type.value, DailyPrice: f.DailyPrice ? (f.DailyPrice.value || 0) : 0, HowManyLabour: f.HowManyLabour ? (f.HowManyLabour.value || 0) : 0, WorkMeter: f.WorkMeter ? (f.WorkMeter.value || 0) : 0, Price: f.Price ? (f.Price.value || 0) : 0, AdditionalAmount: f.AdditionalAmount.value || 0, Fare: f.Fare.value || 0, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.EntryID = ed.EntryID; this.submitGeneric('updateLabourEntry', payload, 'Labour entry updated successfully.'); }
+    else this.submitGeneric('addLabourEntry', payload, 'Labour entry saved successfully.');
+  }
+  deleteLabourEntry(rec) {
+    if (!window.confirm('Delete this entry? This cannot be undone.')) return;
+    this.submitGeneric('deleteLabourEntry', { EntryID: rec.EntryID, CreatedBy: this.currentUserName() }, 'Labour entry deleted successfully.');
+  }
+  submitLabourPayment(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value || !f.LabourName.value || !f.Site.value.trim() || !f.AmountPaid.value) { this.showToast('Date, labour, site and amount are required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, LabourName: f.LabourName.value, Site: f.Site.value.trim(), AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateLabourPayment', payload, 'Labour payment updated successfully.'); }
+    else this.submitGeneric('addLabourPayment', payload, 'Labour payment saved successfully.');
+  }
+  deleteLabourPayment(rec) {
+    if (!window.confirm('Delete this payment? This cannot be undone.')) return;
+    this.submitGeneric('deleteLabourPayment', { PaymentID: rec.PaymentID, CreatedBy: this.currentUserName() }, 'Labour payment deleted successfully.');
+  }
+  deleteLabourAdvance(rec) {
+    if (!window.confirm('Delete this advance? This cannot be undone.')) return;
+    this.submitGeneric('deleteLabourAdvance', { AdvanceID: rec.AdvanceID, CreatedBy: this.currentUserName() }, 'Advance deleted successfully.');
+  }
   deleteSite(site) {
     if (!window.confirm('Delete site "' + site.SiteName + '"? This cannot be undone.')) return;
     this.submitGeneric('deleteSite', { SiteID: site.SiteID, CreatedBy: this.currentUserName() }, 'Site deleted successfully.');
@@ -2403,6 +2699,14 @@ class Component extends DCLogic {
       const payload = { Date: f.Date.value, From: this.currentUserName(), MistriName: mistriName, Site: f.Site.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
       if (ed && ed._isAdvance) { payload.AdvanceID = ed.AdvanceID; this.submitGeneric('updateMistriAdvance', payload, 'Advance updated successfully.'); }
       else this.submitGeneric('addMistriAdvance', payload, 'Advance sent successfully.');
+      return;
+    }
+    if (f.To.value.indexOf('LABOUR::') === 0) {
+      const labourName = f.To.value.slice(8);
+      if (!f.Site.value.trim()) { this.showToast('Site is required for a Labour advance.'); return; }
+      const payload = { Date: f.Date.value, From: this.currentUserName(), LabourName: labourName, Site: f.Site.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+      if (ed && ed._isLabourAdvance) { payload.AdvanceID = ed.AdvanceID; this.submitGeneric('updateLabourAdvance', payload, 'Advance updated successfully.'); }
+      else this.submitGeneric('addLabourAdvance', payload, 'Advance sent successfully.');
       return;
     }
     const payload = { Date: f.Date.value, From: this.currentUserName(), To: f.To.value, Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
@@ -2623,6 +2927,15 @@ class Component extends DCLogic {
     const outstanding = bfAmt + due + advances - paid;
     return { bfAmt: bfAmt, due: due, advances: advances, paid: paid, outstanding: outstanding };
   }
+  // Same idea for Labour: BF + all entries (daily or contract, across every site) + advances minus payments.
+  labourFinancials(l, s) {
+    const due = this.sum(s.labourEntries.filter(function (r) { return r.LabourName === l.Name; }), 'NetAmount');
+    const advances = this.sum(s.labourAdvances.filter(function (r) { return r.LabourName === l.Name; }), 'Amount');
+    const paid = this.sum(s.labourPayments.filter(function (r) { return r.LabourName === l.Name; }), 'AmountPaid');
+    const bfAmt = Number(l.BFAmount) || 0;
+    const outstanding = bfAmt + due + advances - paid;
+    return { bfAmt: bfAmt, due: due, advances: advances, paid: paid, outstanding: outstanding };
+  }
   byDateTime(a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? -1 : 1; const at = a.Time || '', bt = b.Time || ''; return at < bt ? -1 : (at > bt ? 1 : 0); }
   // Single source of truth for "how much has this site spent from Site Expenditure" — used by
   // both the Funds page Site Balances cards and the Reports Site tab, so they never disagree.
@@ -2633,6 +2946,10 @@ class Component extends DCLogic {
   siteMistriPaid(siteName, s, from, to) {
     const self = this;
     return this.sum(s.mistriPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, from, to); }), 'AmountPaid');
+  }
+  siteLabourPaid(siteName, s, from, to) {
+    const self = this;
+    return this.sum(s.labourPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, from, to); }), 'AmountPaid');
   }
 
   exportCSV(rows, headers, filename) {
@@ -2956,6 +3273,10 @@ class Component extends DCLogic {
       const fin = self.mistriFinancials(m, s);
       return Object.assign({}, m, { bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteMistri(m); }, onView: function () { self.openMistriDetail(m.Name); }, onEdit: function () { self.openModal('mistri', m); } });
     });
+    const labourCards = s.labour.map(function (l) {
+      const fin = self.labourFinancials(l, s);
+      return Object.assign({}, l, { bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteLabour(l); }, onView: function () { self.openLabourDetail(l.Name); }, onEdit: function () { self.openModal('labour', l); } });
+    });
 
     const toolDateResolved = s.attendanceDate || todayStr;
     const attendanceToolRows = s.staff.map(function (st) {
@@ -3024,6 +3345,20 @@ class Component extends DCLogic {
       };
     }
 
+    let labourDetail = { Name: '', ContactNumber: '', bfFmt: fmt(0), totalDueFmt: fmt(0), totalPaidFmt: fmt(0), outstandingFmt: fmt(0), outstandingColor: 'var(--muted)', entryRows: [], paymentRows: [], advanceRows: [] };
+    if (s.selectedLabour) {
+      const lbName = s.selectedLabour;
+      const lbRow = s.labour.find(function (x) { return x.Name === lbName; }) || {};
+      const finL = self.labourFinancials(lbRow, s);
+      labourDetail = {
+        Name: lbRow.Name || lbName, ContactNumber: lbRow.ContactNumber || '',
+        bfFmt: fmt(finL.bfAmt), totalDueFmt: fmt(finL.due), totalPaidFmt: fmt(finL.paid), outstandingFmt: fmt(finL.outstanding), outstandingColor: self.oc(finL.outstanding),
+        entryRows: s.labourEntries.filter(function (r) { return r.LabourName === lbName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { NetAmountFmt: fmt(r.NetAmount), onEdit: function () { self.openLabourEntryModal(r); }, onDelete: function () { self.deleteLabourEntry(r); } }); }),
+        paymentRows: s.labourPayments.filter(function (r) { return r.LabourName === lbName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('labourPayment', r); }, onDelete: function () { self.deleteLabourPayment(r); } }); }),
+        advanceRows: s.labourAdvances.filter(function (r) { return r.LabourName === lbName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isLabourAdvance: true })); }, onDelete: function () { self.deleteLabourAdvance(r); } }); })
+      };
+    }
+
     const rf = s.reportFilters;
     const matchesPeriod = function (dateStr) {
       if (!dateStr) return true;
@@ -3054,8 +3389,9 @@ class Component extends DCLogic {
       const purchase = self.sum(rTxF.filter(function (t) { return t.Site === site.SiteName; }), 'Value');
       const otherExpenditure = self.siteOtherExpenditure(site.SiteName, s, rf.from, rf.to);
       const mistriPaid = self.siteMistriPaid(site.SiteName, s, rf.from, rf.to);
-      const expenditure = purchase + otherExpenditure + mistriPaid;
-      return { Site: site.SiteName, Material: fmt(purchase), Expenditure: fmt(expenditure), OtherExpenditure: fmt(otherExpenditure), Mistri: fmt(mistriPaid), _Material: purchase, _Expenditure: expenditure, _OtherExpenditure: otherExpenditure, _Mistri: mistriPaid };
+      const labourPaid = self.siteLabourPaid(site.SiteName, s, rf.from, rf.to);
+      const expenditure = purchase + otherExpenditure + mistriPaid + labourPaid;
+      return { Site: site.SiteName, Material: fmt(purchase), Expenditure: fmt(expenditure), OtherExpenditure: fmt(otherExpenditure), Mistri: fmt(mistriPaid), Labour: fmt(labourPaid), _Material: purchase, _Expenditure: expenditure, _OtherExpenditure: otherExpenditure, _Mistri: mistriPaid, _Labour: labourPaid };
     });
     const materialReportRows = rMaterialsF.map(function (m) {
       const rows = rTxF.filter(function (t) { return String(t.Material || '').trim().toLowerCase() === String(m.MaterialName || '').trim().toLowerCase(); });
@@ -3081,13 +3417,18 @@ class Component extends DCLogic {
 
     const reportColumnsMap = {
       supplier: [{ key: 'Supplier', label: 'Supplier', type: 'text' }, { key: '_BF', label: 'BF', type: 'currency' }, { key: '_Purchase', label: 'Purchase', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
-      site: [{ key: 'Site', label: 'Site', type: 'text' }, { key: '_Material', label: 'Material', type: 'currency' }, { key: '_OtherExpenditure', label: 'Other Expenditure', type: 'currency' }, { key: '_Mistri', label: 'Mistri', type: 'currency' }, { key: '_Expenditure', label: 'Total Expenditure', type: 'currency' }],
+      site: [{ key: 'Site', label: 'Site', type: 'text' }, { key: '_Material', label: 'Material', type: 'currency' }, { key: '_OtherExpenditure', label: 'Other Expenditure', type: 'currency' }, { key: '_Mistri', label: 'Mistri', type: 'currency' }, { key: '_Labour', label: 'Labour', type: 'currency' }, { key: '_Expenditure', label: 'Total Expenditure', type: 'currency' }],
       material: [{ key: 'Material', label: 'Material', type: 'text' }, { key: '_Quantity', label: 'Quantity', type: 'number' }, { key: '_Value', label: 'Value', type: 'currency' }],
       monthly: [{ key: 'Month', label: 'Month', type: 'text' }, { key: '_Purchase', label: 'Purchase', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
       diesel: [{ key: 'Supplier', label: 'Fuel Station', type: 'text' }, { key: '_BF', label: 'BF', type: 'currency' }, { key: '_Cost', label: 'Cost', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
-      staffDue: [{ key: 'StaffName', label: 'Staff Name', type: 'text' }, { key: 'Month', label: 'Month', type: 'text' }, { key: '_Basic', label: 'Basic', type: 'currency' }, { key: '_Addition', label: 'Addition', type: 'currency' }, { key: '_Deduction', label: 'Deduction', type: 'currency' }, { key: '_NetSalary', label: 'Net Salary', type: 'currency' }]
+      staffDue: [{ key: 'StaffName', label: 'Staff Name', type: 'text' }, { key: 'Month', label: 'Month', type: 'text' }, { key: '_Basic', label: 'Basic', type: 'currency' }, { key: '_Addition', label: 'Addition', type: 'currency' }, { key: '_Deduction', label: 'Deduction', type: 'currency' }, { key: '_NetSalary', label: 'Net Salary', type: 'currency' }],
+      labour: [{ key: 'Name', label: 'Labour', type: 'text' }, { key: '_BF', label: 'BF', type: 'currency' }, { key: '_Due', label: 'Due', type: 'currency' }, { key: '_Advances', label: 'Advances', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }]
     };
-    const reportTitleMap = { supplier: 'Supplier Report', site: 'Site Report', material: 'Material Report', monthly: 'Monthly Report', diesel: 'Diesel Report', staffDue: 'Staff Due Report' };
+    const reportTitleMap = { supplier: 'Supplier Report', site: 'Site Report', material: 'Material Report', monthly: 'Monthly Report', diesel: 'Diesel Report', staffDue: 'Staff Due Report', labour: 'Labour Report' };
+    const labourReportRows = s.labour.map(function (l) {
+      const finL2 = self.labourFinancials(l, s);
+      return { Name: l.Name, BF: fmt(finL2.bfAmt), Due: fmt(finL2.due), Advances: fmt(finL2.advances), Paid: fmt(finL2.paid), Outstanding: fmt(finL2.outstanding), OutstandingColor: self.oc(finL2.outstanding), _BF: finL2.bfAmt, _Due: finL2.due, _Advances: finL2.advances, _Paid: finL2.paid, _Outstanding: finL2.outstanding };
+    });
     const staffDueReportRows = [];
     s.staff.forEach(function (st) {
       const slips = s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }).slice().sort(function (a, b) { return (a.Month || '').localeCompare(b.Month || ''); });
@@ -3101,7 +3442,7 @@ class Component extends DCLogic {
         staffDueReportRows.push({ StaffName: st.Name, Month: 'TOTAL OUTSTANDING (incl. BF ' + fmt(bfAmt) + ', Paid ' + fmt(paid) + (fin.monthEarned ? ', this month\u2019s attendance ' + fmt(fin.monthEarned) : '') + ')', Basic: '', Addition: '', Deduction: '', NetSalary: fmt(outstanding), NetSalaryColor: self.oc(outstanding), _Basic: '', _Addition: '', _Deduction: '', _NetSalary: outstanding, rowStyle: 'background:var(--chip);', nameWeight: '700', _isTotalRow: true });
       }
     });
-    const reportRowsMap = { supplier: supplierReportRows, site: siteReportRows, material: materialReportRows, monthly: monthlyReportRows, diesel: dieselReportRows, staffDue: staffDueReportRows };
+    const reportRowsMap = { supplier: supplierReportRows, site: siteReportRows, material: materialReportRows, monthly: monthlyReportRows, diesel: dieselReportRows, staffDue: staffDueReportRows, labour: labourReportRows };
     this._lastReportRows = reportRowsMap[s.reportTab] || [];
     this._lastReportColumns = reportColumnsMap[s.reportTab] || [];
     this._lastReportTitle = reportTitleMap[s.reportTab] || 'Report';
@@ -3119,11 +3460,10 @@ class Component extends DCLogic {
       transactions: s.view === 'transactions', payments: s.view === 'payments', bf: s.view === 'bf',
       dieselTx: s.view === 'dieselTx', dieselPayments: s.view === 'dieselPayments', dieselBF: s.view === 'dieselBF',
       sites: s.view === 'sites', materials: s.view === 'materials', reports: s.view === 'reports', settings: s.view === 'settings',
-      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', funds: s.view === 'funds', attendance: s.view === 'attendance'
+      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', labour: s.view === 'labour', labourDetail: s.view === 'labourDetail', funds: s.view === 'funds', attendance: s.view === 'attendance'
     };
-    const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel', staffDue: s.reportTab === 'staffDue' };
-    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment' };
-
+    const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel', staffDue: s.reportTab === 'staffDue', labour: s.reportTab === 'labour' };
+    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment', labour: s.modal === 'labour', labourEntry: s.modal === 'labourEntry', labourPayment: s.modal === 'labourPayment' };
     const editRecordRaw = s.editRecord || {};
     const myName = s.session ? s.session.name : '';
     const fundReceivedN = self.sum(s.fundTransfers.filter(function (t) { return t.To === myName; }), 'Amount');
@@ -3145,8 +3485,9 @@ class Component extends DCLogic {
       const received = self.sum(receivedRows, 'Amount');
       const expend = self.siteOtherExpenditure(site.SiteName, s, swf.from, swf.to);
       const mistriPaid = self.siteMistriPaid(site.SiteName, s, swf.from, swf.to);
-      const balance = received - expend - mistriPaid;
-      return { SiteName: site.SiteName, receivedFmt: fmt(received), expendFmt: fmt(expend), mistriPaidFmt: fmt(mistriPaid), balanceFmt: fmt(balance), balanceColor: self.oc(-balance), hasActivity: received !== 0 || expend !== 0 || mistriPaid !== 0 };
+      const labourPaid = self.siteLabourPaid(site.SiteName, s, swf.from, swf.to);
+      const balance = received - expend - mistriPaid - labourPaid;
+      return { SiteName: site.SiteName, receivedFmt: fmt(received), expendFmt: fmt(expend), mistriPaidFmt: fmt(mistriPaid), labourPaidFmt: fmt(labourPaid), balanceFmt: fmt(balance), balanceColor: self.oc(-balance), hasActivity: received !== 0 || expend !== 0 || mistriPaid !== 0 || labourPaid !== 0 };
     }).filter(function (r) { return r.hasActivity; });
     const siteExpenseRows = s.siteExpenses.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('siteExpense', r); }, onDelete: function () { self.deleteRecord('deleteSiteExpense', { ExpenseID: r.ExpenseID }, 'siteExpenses'); } }); });
     const userBalanceBreakdown = canSeeAllFunds ? s.users.map(function (u) {
@@ -3157,17 +3498,18 @@ class Component extends DCLogic {
       const toDiesel = self.sum(s.dieselPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
       const toStaff = self.sum(s.staffPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
       const toMistri = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid') + self.sum(s.mistriAdvances.filter(function (p) { return p.CreatedBy === u.Name; }), 'Amount');
-      const balance = received - sentOut - toSite - toSupplier - toDiesel - toStaff - toMistri;
-      return { Name: u.Name, receivedFmt: fmt(received), toSupplierFmt: fmt(toSupplier), toDieselFmt: fmt(toDiesel), toStaffFmt: fmt(toStaff), toMistriFmt: fmt(toMistri), toSiteFmt: fmt(toSite), balanceFmt: fmt(balance), balanceColor: self.oc(-balance) };
+      const toLabour = self.sum(s.labourPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid') + self.sum(s.labourAdvances.filter(function (p) { return p.CreatedBy === u.Name; }), 'Amount');
+      const balance = received - sentOut - toSite - toSupplier - toDiesel - toStaff - toMistri - toLabour;
+      return { Name: u.Name, receivedFmt: fmt(received), toSupplierFmt: fmt(toSupplier), toDieselFmt: fmt(toDiesel), toStaffFmt: fmt(toStaff), toMistriFmt: fmt(toMistri), toLabourFmt: fmt(toLabour), toSiteFmt: fmt(toSite), balanceFmt: fmt(balance), balanceColor: self.oc(-balance) };
     }).filter(function (r) { return r.receivedFmt !== fmt(0); }) : [];
-    const fundTransferDefaults = { Date: editRecordRaw.Date || todayStr, To: editRecordRaw._isAdvance ? ('MISTRI::' + editRecordRaw.MistriName) : (editRecordRaw.To || ''), Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '', Site: editRecordRaw.Site || '' };
+    const fundTransferDefaults = { Date: editRecordRaw.Date || todayStr, To: editRecordRaw._isAdvance ? ('MISTRI::' + editRecordRaw.MistriName) : (editRecordRaw._isLabourAdvance ? ('LABOUR::' + editRecordRaw.LabourName) : (editRecordRaw.To || '')), Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '', Site: editRecordRaw.Site || '' };
     const siteAllocationDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
     const siteExpenseDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
     const fundRecipientOptions = s.users.filter(function (u) { return u.Name !== myName; }).map(function (u) { return u.Name; });
     const staffOptions = s.staff.map(function (st) { return st.Name; });
     const showStaffPicker = !s.selectedStaff;
     const isEditing = !!s.editRecord;
-    const formKey = s.modal + ':' + (editRecordRaw.SLNo || editRecordRaw.PaymentID || editRecordRaw.SupplierID || editRecordRaw.SiteID || editRecordRaw.MaterialID || editRecordRaw.StaffID || editRecordRaw.SalaryID || editRecordRaw.Name || (editRecordRaw.Supplier ? editRecordRaw.Supplier + '|' + editRecordRaw.BFDate : 'new'));
+    const formKey = s.modal + ':' + (editRecordRaw.SLNo || editRecordRaw.PaymentID || editRecordRaw.SupplierID || editRecordRaw.SiteID || editRecordRaw.MaterialID || editRecordRaw.StaffID || editRecordRaw.SalaryID || editRecordRaw.MistriID || editRecordRaw.DueID || editRecordRaw.LabourID || editRecordRaw.EntryID || editRecordRaw.AdvanceID || editRecordRaw.Name || (editRecordRaw.Supplier ? editRecordRaw.Supplier + '|' + editRecordRaw.BFDate : 'new'));
     const txDefaults = { Date: editRecordRaw.Date || todayStr, Time: editRecordRaw.Time || '', Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Fare: editRecordRaw.Fare != null ? editRecordRaw.Fare : 0, Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const payDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const bfDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
@@ -3186,19 +3528,26 @@ class Component extends DCLogic {
     const mistriPaymentDefaults = { MistriName: s.selectedMistri || editRecordRaw.MistriName || '', Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Remarks: editRecordRaw.Remarks || '' };
     const showMistriPicker = !s.selectedMistri;
     const mistriOptions = s.mistri.map(function (m) { return m.Name; });
+    const labourDefaults = { Name: editRecordRaw.Name || '', ContactNumber: editRecordRaw.ContactNumber || '', DefaultSite: editRecordRaw.DefaultSite || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '' };
+    const labourEntryDefaults = { LabourName: s.selectedLabour || '', Date: editRecordRaw.Date || todayStr, Month: isEditing ? this.monthLabelToKey(editRecordRaw.Month) : todayStr.slice(0, 7), Site: editRecordRaw.Site || s.labour.find(function (x) { return x.Name === s.selectedLabour; }) && (s.labour.find(function (x) { return x.Name === s.selectedLabour; }).DefaultSite) || '', Type: s.labourEntryTypeUI || 'Daily', DailyPrice: editRecordRaw.DailyPrice != null ? editRecordRaw.DailyPrice : '', HowManyLabour: editRecordRaw.HowManyLabour != null ? editRecordRaw.HowManyLabour : '', WorkMeter: editRecordRaw.WorkMeter != null ? editRecordRaw.WorkMeter : '', Price: editRecordRaw.Price != null ? editRecordRaw.Price : '', AdditionalAmount: editRecordRaw.AdditionalAmount != null ? editRecordRaw.AdditionalAmount : 0, Fare: editRecordRaw.Fare != null ? editRecordRaw.Fare : 0, Remarks: editRecordRaw.Remarks || '' };
+    const isLabourEntryDaily = (s.labourEntryTypeUI || 'Daily') !== 'Contract';
+    const labourPaymentDefaults = { LabourName: s.selectedLabour || editRecordRaw.LabourName || '', Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Remarks: editRecordRaw.Remarks || '' };
+    const showLabourPicker = !s.selectedLabour;
+    const labourOptions = s.labour.map(function (l) { return l.Name; });
     const staffRateReadOnly = false;
-    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment' };
+    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment', labour: isEditing ? 'Edit Labour' : 'Add Labour', labourEntry: isEditing ? 'Edit Labour Entry' : 'Add Labour Entry', labourPayment: isEditing ? 'Edit Labour Payment' : 'Add Labour Payment' };
     const modalTitle = modalTitleMap[s.modal] || '';
 
     const navBtn = function (active) { return 'display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;margin-bottom:2px;box-sizing:border-box;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? '#d4af37' : 'var(--text)') + ';'; };
-    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselTx: navBtn(viewIs.dieselTx), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
+    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselTx: navBtn(viewIs.dieselTx), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), labour: navBtn(viewIs.labour || viewIs.labourDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
     const tabBtn = function (active) { return 'padding:9px 16px;border-radius:20px;border:1px solid ' + (active ? '#d4af37' : 'var(--border)') + ';cursor:pointer;font-size:13px;font-weight:600;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? '#d4af37' : 'var(--text)') + ';'; };
-    const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel), staffDue: tabBtn(reportTabIs.staffDue) };
+    const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel), staffDue: tabBtn(reportTabIs.staffDue), labour: tabBtn(reportTabIs.labour) };
 
-    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', sites: 'Sites', materials: 'Materials', reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', mistri: 'Mistri', mistriDetail: mistriDetail.Name, funds: 'Fund Distribution', attendance: 'Attendance' };
+    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', sites: 'Sites', materials: 'Materials', reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', mistri: 'Mistri', mistriDetail: mistriDetail.Name, labour: 'Labour', labourDetail: labourDetail.Name, funds: 'Fund Distribution', attendance: 'Attendance' };
 
     return {
       session: s.session, loading: s.loading, toast: s.toast, loginError: s.loginError, isDemo: isDemo, todayStr: todayStr,
+      loggingIn: s.loggingIn, loginBtnOpacity: s.loggingIn ? '0.7' : '1', loginBtnLabel: s.loggingIn ? 'Signing in…' : 'Sign In', onRemarksKeyDown: this.onRemarksKeyDown.bind(this),
       saveStatus: s.saveStatus, savingActive: s.saveStatus === 'saving', savedActive: s.saveStatus === 'saved',
       passwordFieldType: s.showPassword ? 'text' : 'password', showPasswordLabel: s.showPassword ? 'Hide' : 'Show', toggleShowPassword: this.toggleShowPassword.bind(this),
       theme: s.theme, themeToggleLabel: s.theme === 'light' ? 'Dark Mode' : 'Light Mode', toggleTheme: this.toggleTheme.bind(this),
@@ -3238,10 +3587,10 @@ class Component extends DCLogic {
       supplierExpenditure: supplierExpenditure, siteExpenditure: siteExpenditure, materialExpenditure: materialExpenditure, dieselExpenditure: dieselExpenditure,
       supplierCards: supplierCards, openSupplierModal: function () { self.openModal('supplier'); },
       supplierDetail: supplierDetail,
-      txRows: txF.slice().sort(this.byDateTime).map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
+      txRows: txF.slice().sort(this.byDateTime).map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }).reverse(),
       payRows: payF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
       bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
-      dieselTxRows: dieselTxF.slice().sort(this.byDateTime).map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }),
+      dieselTxRows: dieselTxF.slice().sort(this.byDateTime).map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }).reverse(),
       dieselPayRows: dieselPayF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
       dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
       formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
@@ -3256,7 +3605,8 @@ class Component extends DCLogic {
       siteRows: siteRows, materialAnalysis: materialAnalysis,
       supplierReportRows: supplierReportRows, siteReportRows: siteReportRows, materialReportRows: materialReportRows, monthlyReportRows: monthlyReportRows, dieselReportRows: dieselReportRows, staffDueReportRows: staffDueReportRows,
       setReportSupplier: function () { self.setState({ reportTab: 'supplier' }); }, setReportSite: function () { self.setState({ reportTab: 'site' }); }, setReportMaterial: function () { self.setState({ reportTab: 'material' }); },
-      setReportMonthly: function () { self.setState({ reportTab: 'monthly' }); }, setReportDiesel: function () { self.setState({ reportTab: 'diesel' }); }, setReportStaffDue: function () { self.setState({ reportTab: 'staffDue' }); },
+      setReportMonthly: function () { self.setState({ reportTab: 'monthly' }); }, setReportDiesel: function () { self.setState({ reportTab: 'diesel' }); }, setReportStaffDue: function () { self.setState({ reportTab: 'staffDue' }); }, setReportLabour: function () { self.setState({ reportTab: 'labour' }); },
+      labourReportRows: labourReportRows,
       reportFilters: s.reportFilters, onReportFrom: this.setReportFilter('from'), onReportTo: this.setReportFilter('to'), onReportMonth: this.setReportFilter('month'), onReportYear: this.setReportFilter('year'), onReportSite: this.setReportFilter('site'), onReportSupplier: this.setReportFilter('supplier'), onReportMaterial: this.setReportFilter('material'), onReportDieselSupplier: this.setReportFilter('dieselSupplier'), yearOptions: yearOptions, monthOptions: monthOptions,
       exportReportExcel: this.exportReportExcel.bind(this), exportReportPDF: this.exportReportPDF.bind(this), printReport: this.printReport.bind(this),
       taskDateResolved: taskDateResolved, onTaskDate: this.setTaskDate.bind(this), taskRows: taskRows, noTaskAdmins: noTaskAdmins,
@@ -3273,6 +3623,9 @@ class Component extends DCLogic {
       mistriCards: mistriCards, mistriDetail: mistriDetail, mistriDefaults: mistriDefaults, mistriDueDefaults: mistriDueDefaults, mistriPaymentDefaults: mistriPaymentDefaults, showMistriPicker: showMistriPicker, mistriOptions: mistriOptions,
       openMistriModal: function () { self.openModal('mistri'); }, openMistriDueModal: function () { self.openModal('mistriDue'); }, openMistriPaymentModal: function () { self.openModal('mistriPayment'); },
       submitMistri: this.submitMistri.bind(this), submitMistriDue: this.submitMistriDue.bind(this), submitMistriPayment: this.submitMistriPayment.bind(this),
+      labourCards: labourCards, labourDetail: labourDetail, labourDefaults: labourDefaults, labourEntryDefaults: labourEntryDefaults, labourPaymentDefaults: labourPaymentDefaults, showLabourPicker: showLabourPicker, labourOptions: labourOptions, isLabourEntryDaily: isLabourEntryDaily, onLabourEntryTypeChange: this.onLabourEntryTypeChange.bind(this),
+      navLabour: function () { self.setView('labour'); }, openLabourModal: function () { self.openModal('labour'); }, openLabourEntryModal: this.openLabourEntryModal.bind(this), openLabourPaymentModal: function () { self.openModal('labourPayment'); },
+      submitLabour: this.submitLabour.bind(this), submitLabourEntry: this.submitLabourEntry.bind(this), submitLabourPayment: this.submitLabourPayment.bind(this),
       myFundBalanceFmt: fmt(myFundBalanceN), showMyFundBalance: showMyFundBalance, userBalanceBreakdown: userBalanceBreakdown, siteWalletCards: siteWalletCards, siteWalletFilter: s.siteWalletFilter, onSiteWalletFrom: this.setSiteWalletFilter('from'), onSiteWalletTo: this.setSiteWalletFilter('to'), siteExpenseRows: siteExpenseRows, siteExpenseDefaults: siteExpenseDefaults, openSiteExpenseModal: function () { self.openModal('siteExpense'); }, showStaffPicker: showStaffPicker, staffOptions: staffOptions, fundTransferRows: fundTransferRows, allocationRows: allocationRows, fundTransferDefaults: fundTransferDefaults, siteAllocationDefaults: siteAllocationDefaults, fundRecipientOptions: fundRecipientOptions,
       openStaffModal: function () { self.openModal('staff'); }, openStaffSalaryModal: function () { self.openModal('staffSalary'); }, openStaffPaymentModal: function () { self.openModal('staffPayment'); },
       openFundTransferModal: function () { self.openModal('fundTransfer'); }, openSiteAllocationModal: function () { self.openModal('siteAllocation'); },
