@@ -126,6 +126,7 @@
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Staff & Payroll</div>
       <button onClick="{{ navStaff }}" style="{{ navStyle.staff }}">Staff</button>
       <button onClick="{{ navStaffPayments }}" style="{{ navStyle.staffPayments }}">Staff Payments</button>
+      <button onClick="{{ navMistri }}" style="{{ navStyle.mistri }}">Mistri</button>
       <button onClick="{{ navAttendance }}" style="{{ navStyle.attendance }}">Attendance</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Fund Distribution</div>
       <button onClick="{{ navFunds }}" style="{{ navStyle.funds }}">Money & Sites</button>
@@ -802,6 +803,114 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ viewIs.mistri }}">
+      <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <button onClick="{{ openMistriModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add Mistri</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:820px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Name</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Contact</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Rate</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">BF</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Net Due</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Paid</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Outstanding</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ mistriCards }}" as="r" hint-placeholder-count="3">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;cursor:pointer;color:#d4af37;" onClick="{{ r.onView }}">{{ r.Name }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ContactNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.rateFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.bfFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalDueFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalPaidFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onView }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">View</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.mistriDetail }}">
+      <button onClick="{{ navMistri }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:16px;">&larr; Back to Mistri</button>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;">
+        <div style="font-weight:700;font-size:18px;">{{ mistriDetail.Name }}</div>
+        <div style="color:var(--muted);font-size:13px;margin-top:4px;">{{ mistriDetail.ContactNumber }} &middot; {{ mistriDetail.rateFmt }}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Net Due</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ mistriDetail.totalDueFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">BF Balance</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ mistriDetail.bfFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Paid</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ mistriDetail.totalPaidFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Outstanding</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:{{ mistriDetail.outstandingColor }};">{{ mistriDetail.outstandingFmt }}</div></div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-weight:700;font-size:15px;">Due Entries <span style="font-size:12px;color:var(--muted2);font-weight:400;">(a mistri can have entries for more than one site)</span></div>
+        <button onClick="{{ openMistriDueModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Add Due Entry</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;margin-bottom:24px;">
+        <table style="width:100%;border-collapse:collapse;min-width:860px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Month</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Site</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Basic</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">DA</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Deductions</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Net Due</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ mistriDetail.dueRows }}" as="r" hint-placeholder-count="2">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Month }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BasicFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.DAFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.DeductionsFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.NetDueFmt }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-weight:700;font-size:15px;">Payments</div>
+        <button onClick="{{ openMistriPaymentModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Add Payment</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:780px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Site</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Amount</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Method</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Reference</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ mistriDetail.paymentRows }}" as="r" hint-placeholder-count="2">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
     <sc-if value="{{ viewIs.staffPayments }}">
       <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
@@ -926,6 +1035,7 @@
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Supplier</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Diesel</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Staff</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Mistri</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Site</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Balance</th>
             </tr></thead>
@@ -937,6 +1047,7 @@
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toSupplierFmt }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toDieselFmt }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toStaffFmt }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toMistriFmt }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toSiteFmt }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.balanceColor }};font-weight:700;">{{ r.balanceFmt }}</td>
                 </tr>
@@ -953,6 +1064,7 @@
           <button onClick="{{ openPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Supplier</button>
           <button onClick="{{ openDieselPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Diesel</button>
           <button onClick="{{ openStaffPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Staff</button>
+          <button onClick="{{ openMistriPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Mistri</button>
         </div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;margin-bottom:24px;">
@@ -993,6 +1105,7 @@
             <div style="font-weight:700;font-size:15px;margin-bottom:14px;">{{ sc.SiteName }}</div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Sent</span><span>{{ sc.receivedFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Other Expenditure</span><span>{{ sc.expendFmt }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Mistri</span><span>{{ sc.mistriPaidFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:8px;border-top:1px solid var(--border-soft);"><span style="color:var(--muted);">Balance</span><span style="color:{{ sc.balanceColor }};font-weight:700;">{{ sc.balanceFmt }}</span></div>
           </div>
         </sc-for>
@@ -1146,6 +1259,7 @@
               <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Site</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Material</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Other Expenditure</th>
+              <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Mistri</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Total Expenditure</th>
             </tr></thead>
             <tbody>
@@ -1154,13 +1268,14 @@
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Material }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.OtherExpenditure }}</td>
+                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Mistri }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:700;">{{ r.Expenditure }}</td>
                 </tr>
               </sc-for>
             </tbody>
           </table>
         </div>
-        <div style="color:var(--muted2);font-size:12px;margin-top:10px;">Total Expenditure = Material cost + Other Expenditure (site-level spending logged on the Funds page).</div>
+        <div style="color:var(--muted2);font-size:12px;margin-top:10px;">Total Expenditure = Material cost + Other Expenditure + Mistri payments for this site.</div>
       </sc-if>
       <sc-if value="{{ reportTabIs.material }}">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
@@ -1659,6 +1774,61 @@
         </form>
       </sc-if>
 
+      <sc-if value="{{ modalIs.mistri }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitMistri }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" name="Name" placeholder="Mistri Name" required="true" defaultValue="{{ mistriDefaults.Name }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="ContactNumber" placeholder="Contact Number" defaultValue="{{ mistriDefaults.ContactNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="number" step="any" name="DailyRate" placeholder="Daily Rate (₹)" defaultValue="{{ mistriDefaults.DailyRate }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="number" step="any" name="BFAmount" placeholder="BF / Advance Balance (₹)" defaultValue="{{ mistriDefaults.BFAmount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.mistriDue }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitMistriDue }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="hidden" name="MistriName" defaultValue="{{ mistriDueDefaults.MistriName }}" />
+          <input type="month" name="Month" required="true" defaultValue="{{ mistriDueDefaults.Month }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ mistriDueDefaults.Site }}" list="mistriDueSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="mistriDueSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <input type="number" step="any" name="Basic" placeholder="Basic (₹)" required="true" defaultValue="{{ mistriDueDefaults.Basic }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="number" step="any" name="DA" placeholder="Addition / DA (₹)" defaultValue="{{ mistriDueDefaults.DA }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="number" step="any" name="Deductions" placeholder="Deduction (₹)" defaultValue="{{ mistriDueDefaults.Deductions }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ mistriDueDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.mistriPayment }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitMistriPayment }}" style="display:flex;flex-direction:column;gap:12px;">
+          <sc-if value="{{ showMistriPicker }}">
+            <select name="MistriName" required="true" defaultValue="{{ mistriPaymentDefaults.MistriName }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Mistri</option><sc-for list="{{ mistriOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          </sc-if>
+          <sc-if value="{{ !showMistriPicker }}">
+            <input type="hidden" name="MistriName" defaultValue="{{ mistriPaymentDefaults.MistriName }}" />
+          </sc-if>
+          <input type="date" name="Date" required="true" defaultValue="{{ mistriPaymentDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ mistriPaymentDefaults.Site }}" list="mistriPaySiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="mistriPaySiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ mistriPaymentDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <select name="PaymentMethod" defaultValue="{{ mistriPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ mistriPaymentDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ mistriPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
     </div>
   </div>
 </sc-if>
@@ -1673,8 +1843,8 @@ class Component extends DCLogic {
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [],
-    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false,
-    selectedSupplier: null, modal: null, editRecord: null,
+    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false,
+    selectedSupplier: null, selectedMistri: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     detailFilters: { site: '', material: '', vehicle: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' },
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
@@ -1709,6 +1879,7 @@ class Component extends DCLogic {
         dieselTx: r.dieselTx || [], dieselPayments: r.dieselPayments || [], dieselBF: r.dieselBF || [],
         sites: r.sites || [], materials: r.materials || [], users: r.users || [], auditLog: r.auditLog || [],
         staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [],
+        mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [],
         fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
         maintenance: r.maintenance || { enabled: false, message: '' },
         loading: false
@@ -1760,6 +1931,7 @@ class Component extends DCLogic {
   closeMobileNav() { this.setState({ mobileNavOpen: false }); }
   openSupplier(name) { this.setState({ view: 'supplierDetail', selectedSupplier: name, mobileNavOpen: false }); }
   openStaffDetail(name) { this.setState({ view: 'staffDetail', selectedStaff: name, modal: null, mobileNavOpen: false }); }
+  openMistriDetail(name) { this.setState({ view: 'mistriDetail', selectedMistri: name, modal: null, mobileNavOpen: false }); }
   setTaskDate(e) { this.setState({ taskDate: e.target.value }); }
   setAttendanceDate(e) { this.setState({ attendanceDate: e.target.value }); }
   markTaskCompleted() {
@@ -2119,6 +2291,45 @@ class Component extends DCLogic {
     if (!window.confirm('Delete staff "' + st.Name + '"? This cannot be undone.')) return;
     this.submitGeneric('deleteStaff', { StaffID: st.StaffID, Name: st.Name, CreatedBy: this.currentUserName() }, 'Staff deleted successfully.');
   }
+  submitMistri(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Name.value) { this.showToast('Name is required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Name: f.Name.value, ContactNumber: f.ContactNumber.value, DailyRate: f.DailyRate.value || 0, BFAmount: f.BFAmount.value || 0, CreatedBy: this.currentUserName() };
+    if (ed) { payload.MistriID = ed.MistriID; this.submitGeneric('updateMistri', payload, 'Mistri updated successfully.'); }
+    else this.submitGeneric('addMistri', payload, 'Mistri saved successfully.');
+  }
+  deleteMistri(m) {
+    if (!window.confirm('Delete mistri "' + m.Name + '"? This cannot be undone.')) return;
+    this.submitGeneric('deleteMistri', { MistriID: m.MistriID, Name: m.Name, CreatedBy: this.currentUserName() }, 'Mistri deleted successfully.');
+  }
+  submitMistriDue(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Month.value || !f.Site.value.trim() || !f.Basic.value) { this.showToast('Month, site and basic amount are required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Month: this.monthKeyToLabel(f.Month.value), MistriName: f.MistriName.value, Site: f.Site.value.trim(), Basic: f.Basic.value, DA: f.DA.value || 0, Deductions: f.Deductions.value || 0, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.DueID = ed.DueID; this.submitGeneric('updateMistriDue', payload, 'Mistri due updated successfully.'); }
+    else this.submitGeneric('addMistriDue', payload, 'Mistri due saved successfully.');
+  }
+  deleteMistriDue(rec) {
+    if (!window.confirm('Delete this due entry? This cannot be undone.')) return;
+    this.submitGeneric('deleteMistriDue', { DueID: rec.DueID, CreatedBy: this.currentUserName() }, 'Mistri due deleted successfully.');
+  }
+  submitMistriPayment(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value || !f.MistriName.value || !f.Site.value.trim() || !f.AmountPaid.value) { this.showToast('Date, mistri, site and amount are required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, MistriName: f.MistriName.value, Site: f.Site.value.trim(), AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateMistriPayment', payload, 'Mistri payment updated successfully.'); }
+    else this.submitGeneric('addMistriPayment', payload, 'Mistri payment saved successfully.');
+  }
+  deleteMistriPayment(rec) {
+    if (!window.confirm('Delete this payment? This cannot be undone.')) return;
+    this.submitGeneric('deleteMistriPayment', { PaymentID: rec.PaymentID, CreatedBy: this.currentUserName() }, 'Mistri payment deleted successfully.');
+  }
   deleteSite(site) {
     if (!window.confirm('Delete site "' + site.SiteName + '"? This cannot be undone.')) return;
     this.submitGeneric('deleteSite', { SiteID: site.SiteID, CreatedBy: this.currentUserName() }, 'Site deleted successfully.');
@@ -2373,12 +2584,24 @@ class Component extends DCLogic {
     const outstanding = bfAmt + due + monthEarned - paid;
     return { bfAmt: bfAmt, due: due, paid: paid, monthEarned: monthEarned, presentThisMonth: presentThisMonth, outstanding: outstanding };
   }
+  // Same idea for Mistri: BF + all due entries (across every site they've worked) minus payments.
+  mistriFinancials(m, s) {
+    const due = this.sum(s.mistriDue.filter(function (r) { return r.MistriName === m.Name; }), 'NetDue');
+    const paid = this.sum(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name; }), 'AmountPaid');
+    const bfAmt = Number(m.BFAmount) || 0;
+    const outstanding = bfAmt + due - paid;
+    return { bfAmt: bfAmt, due: due, paid: paid, outstanding: outstanding };
+  }
   byDateTime(a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? -1 : 1; const at = a.Time || '', bt = b.Time || ''; return at < bt ? -1 : (at > bt ? 1 : 0); }
   // Single source of truth for "how much has this site spent from Site Expenditure" — used by
   // both the Funds page Site Balances cards and the Reports Site tab, so they never disagree.
   siteOtherExpenditure(siteName, s, from, to) {
     const self = this;
     return this.sum(s.siteExpenses.filter(function (e) { return e.Site === siteName && self.inRange(e.Date, from, to); }), 'Amount');
+  }
+  siteMistriPaid(siteName, s, from, to) {
+    const self = this;
+    return this.sum(s.mistriPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, from, to); }), 'AmountPaid');
   }
 
   exportCSV(rows, headers, filename) {
@@ -2698,6 +2921,11 @@ class Component extends DCLogic {
       return Object.assign({}, st, { rateFmt: rate, bfFmt: fmt(fin.bfAmt), monthEarnedFmt: fmt(fin.monthEarned), totalDueFmt: fmt(fin.due + fin.monthEarned), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteStaff(st); }, onView: function () { self.openStaffDetail(st.Name); }, onEdit: function () { self.openModal('staff', st); } });
     });
 
+    const mistriCards = s.mistri.map(function (m) {
+      const fin = self.mistriFinancials(m, s);
+      return Object.assign({}, m, { rateFmt: fmt(m.DailyRate) + '/day', bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteMistri(m); }, onView: function () { self.openMistriDetail(m.Name); }, onEdit: function () { self.openModal('mistri', m); } });
+    });
+
     const toolDateResolved = s.attendanceDate || todayStr;
     const attendanceToolRows = s.staff.map(function (st) {
       const rec = attendanceDeduped.find(function (a) { return a.StaffName === st.Name && a.Date === toolDateResolved; });
@@ -2751,6 +2979,19 @@ class Component extends DCLogic {
       };
     }
 
+    let mistriDetail = { Name: '', ContactNumber: '', rateFmt: fmt(0), bfFmt: fmt(0), totalDueFmt: fmt(0), totalPaidFmt: fmt(0), outstandingFmt: fmt(0), outstandingColor: 'var(--muted)', dueRows: [], paymentRows: [] };
+    if (s.selectedMistri) {
+      const miName = s.selectedMistri;
+      const miRow = s.mistri.find(function (x) { return x.Name === miName; }) || {};
+      const fin = self.mistriFinancials(miRow, s);
+      mistriDetail = {
+        Name: miRow.Name || miName, ContactNumber: miRow.ContactNumber || '', rateFmt: fmt(miRow.DailyRate) + '/day',
+        bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding),
+        dueRows: s.mistriDue.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { BasicFmt: fmt(r.Basic), DAFmt: fmt(r.DA), DeductionsFmt: fmt(r.Deductions), NetDueFmt: fmt(r.NetDue), onEdit: function () { self.openModal('mistriDue', r); }, onDelete: function () { self.deleteMistriDue(r); } }); }),
+        paymentRows: s.mistriPayments.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('mistriPayment', r); }, onDelete: function () { self.deleteMistriPayment(r); } }); })
+      };
+    }
+
     const rf = s.reportFilters;
     const matchesPeriod = function (dateStr) {
       if (!dateStr) return true;
@@ -2780,8 +3021,9 @@ class Component extends DCLogic {
     const siteReportRows = rSitesF.map(function (site) {
       const purchase = self.sum(rTxF.filter(function (t) { return t.Site === site.SiteName; }), 'Value');
       const otherExpenditure = self.siteOtherExpenditure(site.SiteName, s, rf.from, rf.to);
-      const expenditure = purchase + otherExpenditure;
-      return { Site: site.SiteName, Material: fmt(purchase), Expenditure: fmt(expenditure), OtherExpenditure: fmt(otherExpenditure), _Material: purchase, _Expenditure: expenditure, _OtherExpenditure: otherExpenditure };
+      const mistriPaid = self.siteMistriPaid(site.SiteName, s, rf.from, rf.to);
+      const expenditure = purchase + otherExpenditure + mistriPaid;
+      return { Site: site.SiteName, Material: fmt(purchase), Expenditure: fmt(expenditure), OtherExpenditure: fmt(otherExpenditure), Mistri: fmt(mistriPaid), _Material: purchase, _Expenditure: expenditure, _OtherExpenditure: otherExpenditure, _Mistri: mistriPaid };
     });
     const materialReportRows = rMaterialsF.map(function (m) {
       const rows = rTxF.filter(function (t) { return String(t.Material || '').trim().toLowerCase() === String(m.MaterialName || '').trim().toLowerCase(); });
@@ -2807,7 +3049,7 @@ class Component extends DCLogic {
 
     const reportColumnsMap = {
       supplier: [{ key: 'Supplier', label: 'Supplier', type: 'text' }, { key: '_BF', label: 'BF', type: 'currency' }, { key: '_Purchase', label: 'Purchase', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
-      site: [{ key: 'Site', label: 'Site', type: 'text' }, { key: '_Material', label: 'Material', type: 'currency' }, { key: '_OtherExpenditure', label: 'Other Expenditure', type: 'currency' }, { key: '_Expenditure', label: 'Total Expenditure', type: 'currency' }],
+      site: [{ key: 'Site', label: 'Site', type: 'text' }, { key: '_Material', label: 'Material', type: 'currency' }, { key: '_OtherExpenditure', label: 'Other Expenditure', type: 'currency' }, { key: '_Mistri', label: 'Mistri', type: 'currency' }, { key: '_Expenditure', label: 'Total Expenditure', type: 'currency' }],
       material: [{ key: 'Material', label: 'Material', type: 'text' }, { key: '_Quantity', label: 'Quantity', type: 'number' }, { key: '_Value', label: 'Value', type: 'currency' }],
       monthly: [{ key: 'Month', label: 'Month', type: 'text' }, { key: '_Purchase', label: 'Purchase', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
       diesel: [{ key: 'Supplier', label: 'Fuel Station', type: 'text' }, { key: '_BF', label: 'BF', type: 'currency' }, { key: '_Cost', label: 'Cost', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
@@ -2845,10 +3087,10 @@ class Component extends DCLogic {
       transactions: s.view === 'transactions', payments: s.view === 'payments', bf: s.view === 'bf',
       dieselTx: s.view === 'dieselTx', dieselPayments: s.view === 'dieselPayments', dieselBF: s.view === 'dieselBF',
       sites: s.view === 'sites', materials: s.view === 'materials', reports: s.view === 'reports', settings: s.view === 'settings',
-      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', funds: s.view === 'funds', attendance: s.view === 'attendance'
+      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', funds: s.view === 'funds', attendance: s.view === 'attendance'
     };
     const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel', staffDue: s.reportTab === 'staffDue' };
-    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense' };
+    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment' };
 
     const editRecordRaw = s.editRecord || {};
     const myName = s.session ? s.session.name : '';
@@ -2858,7 +3100,8 @@ class Component extends DCLogic {
     const spentSupplierN = self.sum(s.payments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid');
     const spentDieselN = self.sum(s.dieselPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid');
     const spentStaffN = self.sum(s.staffPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid');
-    const myFundBalanceN = fundReceivedN - fundSentOutN - fundAllocatedN - spentSupplierN - spentDieselN - spentStaffN;
+    const spentMistriN = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid');
+    const myFundBalanceN = fundReceivedN - fundSentOutN - fundAllocatedN - spentSupplierN - spentDieselN - spentStaffN - spentMistriN;
     const showMyFundBalance = !isOwnerOrAdmin1 || fundReceivedN > 0;
     const fundTransferRows = (canSeeAllFunds ? s.fundTransfers : s.fundTransfers.filter(function (t) { return t.To === myName || t.From === myName; }))
       .slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', r); }, onDelete: function () { self.deleteRecord('deleteFundTransfer', { TransferID: r.TransferID }, 'fundTransfers'); } }); });
@@ -2869,8 +3112,9 @@ class Component extends DCLogic {
       const receivedRows = s.siteAllocations.filter(function (a) { return a.Site === site.SiteName && self.inRange(a.Date, swf.from, swf.to); });
       const received = self.sum(receivedRows, 'Amount');
       const expend = self.siteOtherExpenditure(site.SiteName, s, swf.from, swf.to);
-      const balance = received - expend;
-      return { SiteName: site.SiteName, receivedFmt: fmt(received), expendFmt: fmt(expend), balanceFmt: fmt(balance), balanceColor: self.oc(-balance), hasActivity: received !== 0 || expend !== 0 };
+      const mistriPaid = self.siteMistriPaid(site.SiteName, s, swf.from, swf.to);
+      const balance = received - expend - mistriPaid;
+      return { SiteName: site.SiteName, receivedFmt: fmt(received), expendFmt: fmt(expend), mistriPaidFmt: fmt(mistriPaid), balanceFmt: fmt(balance), balanceColor: self.oc(-balance), hasActivity: received !== 0 || expend !== 0 || mistriPaid !== 0 };
     }).filter(function (r) { return r.hasActivity; });
     const siteExpenseRows = s.siteExpenses.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('siteExpense', r); }, onDelete: function () { self.deleteRecord('deleteSiteExpense', { ExpenseID: r.ExpenseID }, 'siteExpenses'); } }); });
     const userBalanceBreakdown = canSeeAllFunds ? s.users.map(function (u) {
@@ -2880,8 +3124,9 @@ class Component extends DCLogic {
       const toSupplier = self.sum(s.payments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
       const toDiesel = self.sum(s.dieselPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
       const toStaff = self.sum(s.staffPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
-      const balance = received - sentOut - toSite - toSupplier - toDiesel - toStaff;
-      return { Name: u.Name, receivedFmt: fmt(received), toSupplierFmt: fmt(toSupplier), toDieselFmt: fmt(toDiesel), toStaffFmt: fmt(toStaff), toSiteFmt: fmt(toSite), balanceFmt: fmt(balance), balanceColor: self.oc(-balance) };
+      const toMistri = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
+      const balance = received - sentOut - toSite - toSupplier - toDiesel - toStaff - toMistri;
+      return { Name: u.Name, receivedFmt: fmt(received), toSupplierFmt: fmt(toSupplier), toDieselFmt: fmt(toDiesel), toStaffFmt: fmt(toStaff), toMistriFmt: fmt(toMistri), toSiteFmt: fmt(toSite), balanceFmt: fmt(balance), balanceColor: self.oc(-balance) };
     }).filter(function (r) { return r.receivedFmt !== fmt(0); }) : [];
     const fundTransferDefaults = { Date: editRecordRaw.Date || todayStr, To: editRecordRaw.To || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '' };
     const siteAllocationDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
@@ -2904,16 +3149,21 @@ class Component extends DCLogic {
     const staffSalaryDefaults = { StaffName: s.selectedStaff || '', Month: isEditing ? this.monthLabelToKey(editRecordRaw.Month) : todayStr.slice(0, 7), DaysWorked: editRecordRaw.DaysWorked != null ? editRecordRaw.DaysWorked : (isEditing ? '' : presentDaysThisMonth || ''), Basic: editRecordRaw.Basic != null ? editRecordRaw.Basic : (isEditing ? '' : defaultBasicFromAttendance), DA: editRecordRaw.DA != null ? editRecordRaw.DA : '', Deductions: editRecordRaw.Deductions != null ? editRecordRaw.Deductions : '', BFDue: editRecordRaw.BFDue != null ? editRecordRaw.BFDue : '', Remarks: editRecordRaw.Remarks || '' };
     const staffPaymentDefaults = { StaffName: s.selectedStaff || '', Date: editRecordRaw.Date || todayStr, AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Remarks: editRecordRaw.Remarks || '' };
     const userContactDefaults = { ContactNumber: editRecordRaw.ContactNumber || '' };
+    const mistriDefaults = { Name: editRecordRaw.Name || '', ContactNumber: editRecordRaw.ContactNumber || '', DailyRate: editRecordRaw.DailyRate != null ? editRecordRaw.DailyRate : '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '' };
+    const mistriDueDefaults = { MistriName: s.selectedMistri || '', Month: isEditing ? this.monthLabelToKey(editRecordRaw.Month) : todayStr.slice(0, 7), Site: editRecordRaw.Site || '', Basic: editRecordRaw.Basic != null ? editRecordRaw.Basic : '', DA: editRecordRaw.DA != null ? editRecordRaw.DA : '', Deductions: editRecordRaw.Deductions != null ? editRecordRaw.Deductions : '', Remarks: editRecordRaw.Remarks || '' };
+    const mistriPaymentDefaults = { MistriName: s.selectedMistri || editRecordRaw.MistriName || '', Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Remarks: editRecordRaw.Remarks || '' };
+    const showMistriPicker = !s.selectedMistri;
+    const mistriOptions = s.mistri.map(function (m) { return m.Name; });
     const staffRateReadOnly = false;
-    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure' };
+    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment' };
     const modalTitle = modalTitleMap[s.modal] || '';
 
     const navBtn = function (active) { return 'display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;margin-bottom:2px;box-sizing:border-box;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? '#d4af37' : 'var(--text)') + ';'; };
-    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselTx: navBtn(viewIs.dieselTx), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
+    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselTx: navBtn(viewIs.dieselTx), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
     const tabBtn = function (active) { return 'padding:9px 16px;border-radius:20px;border:1px solid ' + (active ? '#d4af37' : 'var(--border)') + ';cursor:pointer;font-size:13px;font-weight:600;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? '#d4af37' : 'var(--text)') + ';'; };
     const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel), staffDue: tabBtn(reportTabIs.staffDue) };
 
-    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', sites: 'Sites', materials: 'Materials', reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', funds: 'Fund Distribution', attendance: 'Attendance' };
+    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', sites: 'Sites', materials: 'Materials', reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', mistri: 'Mistri', mistriDetail: mistriDetail.Name, funds: 'Fund Distribution', attendance: 'Attendance' };
 
     return {
       session: s.session, loading: s.loading, toast: s.toast, loginError: s.loginError, isDemo: isDemo, todayStr: todayStr,
@@ -2925,7 +3175,7 @@ class Component extends DCLogic {
       navPayments: function () { self.setView('payments'); }, navBF: function () { self.setView('bf'); }, navDieselTx: function () { self.setView('dieselTx'); },
       navDieselPayments: function () { self.setView('dieselPayments'); }, navDieselBF: function () { self.setView('dieselBF'); }, navSites: function () { self.setView('sites'); },
       navMaterials: function () { self.setView('materials'); }, navReports: function () { self.setView('reports'); }, navSettings: function () { self.setView('settings'); },
-      navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navFunds: function () { self.setView('funds'); }, navAttendance: function () { self.setView('attendance'); },
+      navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navMistri: function () { self.setView('mistri'); }, navFunds: function () { self.setView('funds'); }, navAttendance: function () { self.setView('attendance'); },
       mobileNavOpen: s.mobileNavOpen, toggleMobileNav: this.toggleMobileNav.bind(this), closeMobileNav: this.closeMobileNav.bind(this),
       isOwnerOrAdmin1: isOwnerOrAdmin1, canSeeAllFunds: canSeeAllFunds, isAdmin1: isAdmin1, showMaintenanceLock: showMaintenanceLock, appAccessible: appAccessible,
       maintenanceMessage: (s.maintenance && s.maintenance.message) || 'We\'re doing scheduled maintenance. Please check back shortly.',
@@ -2988,6 +3238,9 @@ class Component extends DCLogic {
       monthNumOptions: [{ v: '01', l: 'January' }, { v: '02', l: 'February' }, { v: '03', l: 'March' }, { v: '04', l: 'April' }, { v: '05', l: 'May' }, { v: '06', l: 'June' }, { v: '07', l: 'July' }, { v: '08', l: 'August' }, { v: '09', l: 'September' }, { v: '10', l: 'October' }, { v: '11', l: 'November' }, { v: '12', l: 'December' }],
       attendanceYearOptions: (function () { const cur = Number(todayStr.slice(0, 4)); return [cur - 1, cur, cur + 1]; })(),
       staffCards: staffCards, staffDetail: staffDetail, staffDefaults: staffDefaults, staffSalaryDefaults: staffSalaryDefaults, staffPaymentDefaults: staffPaymentDefaults, userContactDefaults: userContactDefaults, staffRateReadOnly: staffRateReadOnly,
+      mistriCards: mistriCards, mistriDetail: mistriDetail, mistriDefaults: mistriDefaults, mistriDueDefaults: mistriDueDefaults, mistriPaymentDefaults: mistriPaymentDefaults, showMistriPicker: showMistriPicker, mistriOptions: mistriOptions,
+      openMistriModal: function () { self.openModal('mistri'); }, openMistriDueModal: function () { self.openModal('mistriDue'); }, openMistriPaymentModal: function () { self.openModal('mistriPayment'); },
+      submitMistri: this.submitMistri.bind(this), submitMistriDue: this.submitMistriDue.bind(this), submitMistriPayment: this.submitMistriPayment.bind(this),
       myFundBalanceFmt: fmt(myFundBalanceN), showMyFundBalance: showMyFundBalance, userBalanceBreakdown: userBalanceBreakdown, siteWalletCards: siteWalletCards, siteWalletFilter: s.siteWalletFilter, onSiteWalletFrom: this.setSiteWalletFilter('from'), onSiteWalletTo: this.setSiteWalletFilter('to'), siteExpenseRows: siteExpenseRows, siteExpenseDefaults: siteExpenseDefaults, openSiteExpenseModal: function () { self.openModal('siteExpense'); }, showStaffPicker: showStaffPicker, staffOptions: staffOptions, fundTransferRows: fundTransferRows, allocationRows: allocationRows, fundTransferDefaults: fundTransferDefaults, siteAllocationDefaults: siteAllocationDefaults, fundRecipientOptions: fundRecipientOptions,
       openStaffModal: function () { self.openModal('staff'); }, openStaffSalaryModal: function () { self.openModal('staffSalary'); }, openStaffPaymentModal: function () { self.openModal('staffPayment'); },
       openFundTransferModal: function () { self.openModal('fundTransfer'); }, openSiteAllocationModal: function () { self.openModal('siteAllocation'); },
