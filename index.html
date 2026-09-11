@@ -812,7 +812,6 @@
           <thead><tr>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Name</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Contact</th>
-            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Rate</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">BF</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Net Due</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Paid</th>
@@ -824,7 +823,6 @@
               <tr>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;cursor:pointer;color:#d4af37;" onClick="{{ r.onView }}">{{ r.Name }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ContactNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.rateFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.bfFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalDueFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalPaidFmt }}</td>
@@ -841,7 +839,7 @@
       <button onClick="{{ navMistri }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:16px;">&larr; Back to Mistri</button>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;">
         <div style="font-weight:700;font-size:18px;">{{ mistriDetail.Name }}</div>
-        <div style="color:var(--muted);font-size:13px;margin-top:4px;">{{ mistriDetail.ContactNumber }} &middot; {{ mistriDetail.rateFmt }}</div>
+        <div style="color:var(--muted);font-size:13px;margin-top:4px;">{{ mistriDetail.ContactNumber }}</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Net Due</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ mistriDetail.totalDueFmt }}</div></div>
@@ -859,10 +857,7 @@
           <thead><tr>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Month</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Site</th>
-            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Basic</th>
-            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">DA</th>
-            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Deductions</th>
-            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Net Due</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Amount</th>
             <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
           </tr></thead>
           <tbody>
@@ -870,9 +865,6 @@
               <tr>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Month }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BasicFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.DAFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.DeductionsFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.NetDueFmt }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
@@ -903,6 +895,32 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="font-weight:700;font-size:15px;margin:24px 0 12px;">Advances</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:700px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Site</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Amount</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">From</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Remarks</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ mistriDetail.advanceRows }}" as="r" hint-placeholder-count="2">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.From }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1061,6 +1079,7 @@
         <div style="font-weight:700;font-size:15px;">Fund Transfers</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <sc-if value="{{ isOwnerOrAdmin1 }}"><button onClick="{{ openFundTransferModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Send Money</button></sc-if>
+          <sc-if value="{{ !isOwnerOrAdmin1 }}"><button onClick="{{ openFundTransferModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send Advance to Mistri</button></sc-if>
           <button onClick="{{ openPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Supplier</button>
           <button onClick="{{ openDieselPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Diesel</button>
           <button onClick="{{ openStaffPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Staff</button>
@@ -1733,7 +1752,9 @@
         <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
         <form key="{{ formKey }}" onSubmit="{{ submitFundTransfer }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="date" name="Date" required="true" defaultValue="{{ fundTransferDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
-          <select name="To" required="true" defaultValue="{{ fundTransferDefaults.To }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Send To</option><sc-for list="{{ fundRecipientOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <select name="To" required="true" defaultValue="{{ fundTransferDefaults.To }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Send To</option><sc-if value="{{ isOwnerOrAdmin1 }}"><optgroup label="Users"><sc-for list="{{ fundRecipientOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></optgroup></sc-if><optgroup label="Mistris (advance)"><sc-for list="{{ mistriOptions }}" as="opt" hint-placeholder-count="3"><option value="MISTRI::{{ opt }}">{{ opt }}</option></sc-for></optgroup></select>
+          <input type="text" name="Site" placeholder="Site (required only when sending to a Mistri)" autocomplete="off" list="fundTransferSiteList" defaultValue="{{ fundTransferDefaults.Site }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="fundTransferSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="Amount" placeholder="Amount (₹)" required="true" defaultValue="{{ fundTransferDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <select name="PaymentMethod" defaultValue="{{ fundTransferDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ fundTransferDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
@@ -1779,7 +1800,6 @@
         <form key="{{ formKey }}" onSubmit="{{ submitMistri }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="text" name="Name" placeholder="Mistri Name" required="true" defaultValue="{{ mistriDefaults.Name }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="text" name="ContactNumber" placeholder="Contact Number" defaultValue="{{ mistriDefaults.ContactNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <input type="number" step="any" name="DailyRate" placeholder="Daily Rate (₹)" defaultValue="{{ mistriDefaults.DailyRate }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="number" step="any" name="BFAmount" placeholder="BF / Advance Balance (₹)" defaultValue="{{ mistriDefaults.BFAmount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -1795,9 +1815,7 @@
           <input type="month" name="Month" required="true" defaultValue="{{ mistriDueDefaults.Month }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ mistriDueDefaults.Site }}" list="mistriDueSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="mistriDueSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
-          <input type="number" step="any" name="Basic" placeholder="Basic (₹)" required="true" defaultValue="{{ mistriDueDefaults.Basic }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <input type="number" step="any" name="DA" placeholder="Addition / DA (₹)" defaultValue="{{ mistriDueDefaults.DA }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <input type="number" step="any" name="Deductions" placeholder="Deduction (₹)" defaultValue="{{ mistriDueDefaults.Deductions }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="number" step="any" name="Amount" placeholder="Amount Due (₹)" required="true" defaultValue="{{ mistriDueDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ mistriDueDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -1843,7 +1861,7 @@ class Component extends DCLogic {
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [],
-    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false,
+    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false,
     selectedSupplier: null, selectedMistri: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     detailFilters: { site: '', material: '', vehicle: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' },
@@ -1879,7 +1897,7 @@ class Component extends DCLogic {
         dieselTx: r.dieselTx || [], dieselPayments: r.dieselPayments || [], dieselBF: r.dieselBF || [],
         sites: r.sites || [], materials: r.materials || [], users: r.users || [], auditLog: r.auditLog || [],
         staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [],
-        mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [],
+        mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [],
         fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
         maintenance: r.maintenance || { enabled: false, message: '' },
         loading: false
@@ -2296,7 +2314,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Name.value) { this.showToast('Name is required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Name: f.Name.value, ContactNumber: f.ContactNumber.value, DailyRate: f.DailyRate.value || 0, BFAmount: f.BFAmount.value || 0, CreatedBy: this.currentUserName() };
+    const payload = { Name: f.Name.value, ContactNumber: f.ContactNumber.value, BFAmount: f.BFAmount.value || 0, CreatedBy: this.currentUserName() };
     if (ed) { payload.MistriID = ed.MistriID; this.submitGeneric('updateMistri', payload, 'Mistri updated successfully.'); }
     else this.submitGeneric('addMistri', payload, 'Mistri saved successfully.');
   }
@@ -2307,11 +2325,15 @@ class Component extends DCLogic {
   submitMistriDue(e) {
     e.preventDefault();
     const f = e.target.elements;
-    if (!f.Month.value || !f.Site.value.trim() || !f.Basic.value) { this.showToast('Month, site and basic amount are required.'); return; }
+    if (!f.Month.value || !f.Site.value.trim() || !f.Amount.value) { this.showToast('Month, site and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Month: this.monthKeyToLabel(f.Month.value), MistriName: f.MistriName.value, Site: f.Site.value.trim(), Basic: f.Basic.value, DA: f.DA.value || 0, Deductions: f.Deductions.value || 0, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Month: this.monthKeyToLabel(f.Month.value), MistriName: f.MistriName.value, Site: f.Site.value.trim(), Basic: f.Amount.value, DA: 0, Deductions: 0, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.DueID = ed.DueID; this.submitGeneric('updateMistriDue', payload, 'Mistri due updated successfully.'); }
     else this.submitGeneric('addMistriDue', payload, 'Mistri due saved successfully.');
+  }
+  deleteMistriAdvance(rec) {
+    if (!window.confirm('Delete this advance? This cannot be undone.')) return;
+    this.submitGeneric('deleteMistriAdvance', { AdvanceID: rec.AdvanceID, CreatedBy: this.currentUserName() }, 'Advance deleted successfully.');
   }
   deleteMistriDue(rec) {
     if (!window.confirm('Delete this due entry? This cannot be undone.')) return;
@@ -2375,8 +2397,16 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.To.value || !f.Amount.value) { this.showToast('Date, recipient and amount are required.'); return; }
     const ed = this.state.editRecord;
+    if (f.To.value.indexOf('MISTRI::') === 0) {
+      const mistriName = f.To.value.slice(8);
+      if (!f.Site.value.trim()) { this.showToast('Site is required for a Mistri advance.'); return; }
+      const payload = { Date: f.Date.value, From: this.currentUserName(), MistriName: mistriName, Site: f.Site.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+      if (ed && ed._isAdvance) { payload.AdvanceID = ed.AdvanceID; this.submitGeneric('updateMistriAdvance', payload, 'Advance updated successfully.'); }
+      else this.submitGeneric('addMistriAdvance', payload, 'Advance sent successfully.');
+      return;
+    }
     const payload = { Date: f.Date.value, From: this.currentUserName(), To: f.To.value, Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
-    if (ed) { payload.TransferID = ed.TransferID; payload.From = ed.From; this.submitGeneric('updateFundTransfer', payload, 'Fund transfer updated successfully.'); }
+    if (ed && !ed._isAdvance) { payload.TransferID = ed.TransferID; payload.From = ed.From; this.submitGeneric('updateFundTransfer', payload, 'Fund transfer updated successfully.'); }
     else this.submitGeneric('addFundTransfer', payload, 'Fund transfer saved successfully.');
   }
   submitSiteAllocation(e) {
@@ -2587,10 +2617,11 @@ class Component extends DCLogic {
   // Same idea for Mistri: BF + all due entries (across every site they've worked) minus payments.
   mistriFinancials(m, s) {
     const due = this.sum(s.mistriDue.filter(function (r) { return r.MistriName === m.Name; }), 'NetDue');
+    const advances = this.sum(s.mistriAdvances.filter(function (r) { return r.MistriName === m.Name; }), 'Amount');
     const paid = this.sum(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name; }), 'AmountPaid');
     const bfAmt = Number(m.BFAmount) || 0;
-    const outstanding = bfAmt + due - paid;
-    return { bfAmt: bfAmt, due: due, paid: paid, outstanding: outstanding };
+    const outstanding = bfAmt + due + advances - paid;
+    return { bfAmt: bfAmt, due: due, advances: advances, paid: paid, outstanding: outstanding };
   }
   byDateTime(a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? -1 : 1; const at = a.Time || '', bt = b.Time || ''; return at < bt ? -1 : (at > bt ? 1 : 0); }
   // Single source of truth for "how much has this site spent from Site Expenditure" — used by
@@ -2923,7 +2954,7 @@ class Component extends DCLogic {
 
     const mistriCards = s.mistri.map(function (m) {
       const fin = self.mistriFinancials(m, s);
-      return Object.assign({}, m, { rateFmt: fmt(m.DailyRate) + '/day', bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteMistri(m); }, onView: function () { self.openMistriDetail(m.Name); }, onEdit: function () { self.openModal('mistri', m); } });
+      return Object.assign({}, m, { bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteMistri(m); }, onView: function () { self.openMistriDetail(m.Name); }, onEdit: function () { self.openModal('mistri', m); } });
     });
 
     const toolDateResolved = s.attendanceDate || todayStr;
@@ -2979,16 +3010,17 @@ class Component extends DCLogic {
       };
     }
 
-    let mistriDetail = { Name: '', ContactNumber: '', rateFmt: fmt(0), bfFmt: fmt(0), totalDueFmt: fmt(0), totalPaidFmt: fmt(0), outstandingFmt: fmt(0), outstandingColor: 'var(--muted)', dueRows: [], paymentRows: [] };
+    let mistriDetail = { Name: '', ContactNumber: '', bfFmt: fmt(0), totalDueFmt: fmt(0), totalPaidFmt: fmt(0), outstandingFmt: fmt(0), outstandingColor: 'var(--muted)', dueRows: [], paymentRows: [] };
     if (s.selectedMistri) {
       const miName = s.selectedMistri;
       const miRow = s.mistri.find(function (x) { return x.Name === miName; }) || {};
       const fin = self.mistriFinancials(miRow, s);
       mistriDetail = {
-        Name: miRow.Name || miName, ContactNumber: miRow.ContactNumber || '', rateFmt: fmt(miRow.DailyRate) + '/day',
+        Name: miRow.Name || miName, ContactNumber: miRow.ContactNumber || '',
         bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding),
-        dueRows: s.mistriDue.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { BasicFmt: fmt(r.Basic), DAFmt: fmt(r.DA), DeductionsFmt: fmt(r.Deductions), NetDueFmt: fmt(r.NetDue), onEdit: function () { self.openModal('mistriDue', r); }, onDelete: function () { self.deleteMistriDue(r); } }); }),
-        paymentRows: s.mistriPayments.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('mistriPayment', r); }, onDelete: function () { self.deleteMistriPayment(r); } }); })
+        dueRows: s.mistriDue.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { NetDueFmt: fmt(r.NetDue), onEdit: function () { self.openModal('mistriDue', r); }, onDelete: function () { self.deleteMistriDue(r); } }); }),
+        paymentRows: s.mistriPayments.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('mistriPayment', r); }, onDelete: function () { self.deleteMistriPayment(r); } }); }),
+        advanceRows: s.mistriAdvances.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isAdvance: true })); }, onDelete: function () { self.deleteMistriAdvance(r); } }); })
       };
     }
 
@@ -3100,7 +3132,7 @@ class Component extends DCLogic {
     const spentSupplierN = self.sum(s.payments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid');
     const spentDieselN = self.sum(s.dieselPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid');
     const spentStaffN = self.sum(s.staffPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid');
-    const spentMistriN = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid');
+    const spentMistriN = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid') + self.sum(s.mistriAdvances.filter(function (p) { return p.CreatedBy === myName; }), 'Amount');
     const myFundBalanceN = fundReceivedN - fundSentOutN - fundAllocatedN - spentSupplierN - spentDieselN - spentStaffN - spentMistriN;
     const showMyFundBalance = !isOwnerOrAdmin1 || fundReceivedN > 0;
     const fundTransferRows = (canSeeAllFunds ? s.fundTransfers : s.fundTransfers.filter(function (t) { return t.To === myName || t.From === myName; }))
@@ -3124,11 +3156,11 @@ class Component extends DCLogic {
       const toSupplier = self.sum(s.payments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
       const toDiesel = self.sum(s.dieselPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
       const toStaff = self.sum(s.staffPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
-      const toMistri = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
+      const toMistri = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid') + self.sum(s.mistriAdvances.filter(function (p) { return p.CreatedBy === u.Name; }), 'Amount');
       const balance = received - sentOut - toSite - toSupplier - toDiesel - toStaff - toMistri;
       return { Name: u.Name, receivedFmt: fmt(received), toSupplierFmt: fmt(toSupplier), toDieselFmt: fmt(toDiesel), toStaffFmt: fmt(toStaff), toMistriFmt: fmt(toMistri), toSiteFmt: fmt(toSite), balanceFmt: fmt(balance), balanceColor: self.oc(-balance) };
     }).filter(function (r) { return r.receivedFmt !== fmt(0); }) : [];
-    const fundTransferDefaults = { Date: editRecordRaw.Date || todayStr, To: editRecordRaw.To || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '' };
+    const fundTransferDefaults = { Date: editRecordRaw.Date || todayStr, To: editRecordRaw._isAdvance ? ('MISTRI::' + editRecordRaw.MistriName) : (editRecordRaw.To || ''), Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '', Site: editRecordRaw.Site || '' };
     const siteAllocationDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
     const siteExpenseDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
     const fundRecipientOptions = s.users.filter(function (u) { return u.Name !== myName; }).map(function (u) { return u.Name; });
@@ -3149,8 +3181,8 @@ class Component extends DCLogic {
     const staffSalaryDefaults = { StaffName: s.selectedStaff || '', Month: isEditing ? this.monthLabelToKey(editRecordRaw.Month) : todayStr.slice(0, 7), DaysWorked: editRecordRaw.DaysWorked != null ? editRecordRaw.DaysWorked : (isEditing ? '' : presentDaysThisMonth || ''), Basic: editRecordRaw.Basic != null ? editRecordRaw.Basic : (isEditing ? '' : defaultBasicFromAttendance), DA: editRecordRaw.DA != null ? editRecordRaw.DA : '', Deductions: editRecordRaw.Deductions != null ? editRecordRaw.Deductions : '', BFDue: editRecordRaw.BFDue != null ? editRecordRaw.BFDue : '', Remarks: editRecordRaw.Remarks || '' };
     const staffPaymentDefaults = { StaffName: s.selectedStaff || '', Date: editRecordRaw.Date || todayStr, AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Remarks: editRecordRaw.Remarks || '' };
     const userContactDefaults = { ContactNumber: editRecordRaw.ContactNumber || '' };
-    const mistriDefaults = { Name: editRecordRaw.Name || '', ContactNumber: editRecordRaw.ContactNumber || '', DailyRate: editRecordRaw.DailyRate != null ? editRecordRaw.DailyRate : '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '' };
-    const mistriDueDefaults = { MistriName: s.selectedMistri || '', Month: isEditing ? this.monthLabelToKey(editRecordRaw.Month) : todayStr.slice(0, 7), Site: editRecordRaw.Site || '', Basic: editRecordRaw.Basic != null ? editRecordRaw.Basic : '', DA: editRecordRaw.DA != null ? editRecordRaw.DA : '', Deductions: editRecordRaw.Deductions != null ? editRecordRaw.Deductions : '', Remarks: editRecordRaw.Remarks || '' };
+    const mistriDefaults = { Name: editRecordRaw.Name || '', ContactNumber: editRecordRaw.ContactNumber || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '' };
+    const mistriDueDefaults = { MistriName: s.selectedMistri || '', Month: isEditing ? this.monthLabelToKey(editRecordRaw.Month) : todayStr.slice(0, 7), Site: editRecordRaw.Site || '', Amount: editRecordRaw.NetDue != null ? editRecordRaw.NetDue : (editRecordRaw.Basic != null ? editRecordRaw.Basic : ''), Remarks: editRecordRaw.Remarks || '' };
     const mistriPaymentDefaults = { MistriName: s.selectedMistri || editRecordRaw.MistriName || '', Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Remarks: editRecordRaw.Remarks || '' };
     const showMistriPicker = !s.selectedMistri;
     const mistriOptions = s.mistri.map(function (m) { return m.Name; });
