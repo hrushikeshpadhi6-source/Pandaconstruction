@@ -1399,6 +1399,7 @@
                     <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Date</th>
                     <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Category</th>
                     <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Detail</th>
+                    <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Remarks</th>
                     <th style="text-align:right;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Received</th>
                     <th style="text-align:right;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Sent</th>
                   </tr></thead>
@@ -1409,6 +1410,7 @@
                         <td style="padding:4px 6px;font-size:11px;">{{ tx.Date }}</td>
                         <td style="padding:4px 6px;font-size:11px;">{{ tx.Category }}</td>
                         <td style="padding:4px 6px;font-size:11px;color:var(--muted);">{{ tx.Detail }}</td>
+                        <td style="padding:4px 6px;font-size:11px;color:var(--muted);">{{ tx.Remarks }}</td>
                         <td style="padding:4px 6px;font-size:11px;text-align:right;color:#2e9e5b;font-weight:600;">{{ tx.receivedFmt }}</td>
                         <td style="padding:4px 6px;font-size:11px;text-align:right;color:#e2574c;font-weight:600;">{{ tx.sentFmt }}</td>
                       </tr>
@@ -3436,7 +3438,8 @@ class Component extends DCLogic {
     const totalDieselBFN = this.sumLatestBF(s.dieselBF.filter(function (b) { return (!df.supplier || b.Supplier === df.supplier) && (!df.site || b.Site === df.site); }));
     const totalDieselOutstandingN = totalDieselBFN + totalDieselCostN - totalDieselPaidN;
     const curMonth = new Date().toISOString().slice(0, 7);
-    const currentMonthExpenditureN = this.sum(s.transactions.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') + this.sum(s.dieselTx.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value');
+    const currentMonthSiteExpN = this.sum(s.siteExpenses.filter(function (e) { return String(e.Date || '').slice(0, 7) === curMonth; }), 'Amount');
+    const currentMonthExpenditureN = this.sum(s.transactions.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') + currentMonthSiteExpN + this.sum(s.dieselTx.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value');
 
     const groupSum = function (list, key, field) {
       const map = {}; const labels = {};
@@ -3477,7 +3480,8 @@ class Component extends DCLogic {
     }).filter(function (r) { return r.value !== 0; }).sort(function (a, b) { return b.value - a.value; });
     const currentMonthBreakdown = [
       { label: 'Supplier Purchases', value: self.sum(s.transactions.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') },
-      { label: 'Diesel Purchases', value: self.sum(s.dieselTx.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') }
+      { label: 'Diesel Purchases', value: self.sum(s.dieselTx.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') },
+      { label: 'Site Other Expenditure', value: currentMonthSiteExpN }
     ];
     const toPopupRows = function (rows, field) { return rows.map(function (r) { return { label: r.label, value: fmt(r.value != null ? r.value : r[field]) }; }); };
     const openDashPopup = function (title, rows) { return function () { self.setState({ dashboardPopup: { title: title, rows: rows.length ? rows : [{ label: 'No data for this filter', value: '' }] } }); }; };
@@ -3840,10 +3844,10 @@ class Component extends DCLogic {
       const labourPaid = self.siteLabourPaid(site.SiteName, s, swf.from, swf.to);
       const balance = received - expend - mistriPaid - labourPaid;
       const txns = [];
-      receivedRows.forEach(function (a) { txns.push({ Date: a.Date, Category: 'Allocated to Site', Detail: 'by ' + a.User, AmountN: Number(a.Amount) || 0, isReceived: true }); });
-      s.siteExpenses.filter(function (e) { return e.Site === site.SiteName && self.inRange(e.Date, swf.from, swf.to); }).forEach(function (e) { txns.push({ Date: e.Date, Category: 'Site Expenditure', Detail: e.Remarks || '', AmountN: Number(e.Amount) || 0, isReceived: false }); });
-      s.mistriPayments.filter(function (p) { return p.Site === site.SiteName && self.inRange(p.Date, swf.from, swf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Mistri', Detail: p.MistriName, AmountN: Number(p.AmountPaid) || 0, isReceived: false }); });
-      s.labourPayments.filter(function (p) { return p.Site === site.SiteName && self.inRange(p.Date, swf.from, swf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Labour', Detail: p.LabourName, AmountN: Number(p.AmountPaid) || 0, isReceived: false }); });
+      receivedRows.forEach(function (a) { txns.push({ Date: a.Date, Category: 'Allocated to Site', Detail: 'by ' + a.User, Remarks: a.Remarks || '', AmountN: Number(a.Amount) || 0, isReceived: true }); });
+      s.siteExpenses.filter(function (e) { return e.Site === site.SiteName && self.inRange(e.Date, swf.from, swf.to); }).forEach(function (e) { txns.push({ Date: e.Date, Category: 'Site Expenditure', Detail: '', Remarks: e.Remarks || '', AmountN: Number(e.Amount) || 0, isReceived: false }); });
+      s.mistriPayments.filter(function (p) { return p.Site === site.SiteName && self.inRange(p.Date, swf.from, swf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Mistri', Detail: p.MistriName, Remarks: p.Remarks || '', AmountN: Number(p.AmountPaid) || 0, isReceived: false }); });
+      s.labourPayments.filter(function (p) { return p.Site === site.SiteName && self.inRange(p.Date, swf.from, swf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Labour', Detail: p.LabourName, Remarks: p.Remarks || '', AmountN: Number(p.AmountPaid) || 0, isReceived: false }); });
       txns.sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); });
       txns.forEach(function (tx, i) { tx.Sl = i + 1; tx.receivedFmt = tx.isReceived ? fmt(tx.AmountN) : ''; tx.sentFmt = tx.isReceived ? '' : fmt(tx.AmountN); });
       const isExpanded = s.expandedSiteBalance === site.SiteName;
