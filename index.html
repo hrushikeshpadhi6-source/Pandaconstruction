@@ -1182,10 +1182,25 @@
       </sc-if>
 
       <sc-if value="{{ canSeeAllFunds }}">
-        <div style="font-weight:700;font-size:15px;margin-bottom:12px;">Balance by User</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+          <div style="font-weight:700;font-size:15px;">Balance by User</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ userBalanceFilter.from }}" onChange="{{ onUserBalanceFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ userBalanceFilter.to }}" onChange="{{ onUserBalanceTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div style="min-width:180px;"><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">User Name</label><input type="text" value="{{ userBalanceFilter.name }}" onChange="{{ onUserBalanceName }}" placeholder="e.g. Sukadev" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;box-sizing:border-box;" /></div>
+          <div style="flex:1;"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button onClick="{{ exportUserBalanceExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
+            <button onClick="{{ exportUserBalancePDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button>
+            <button onClick="{{ exportAllExcel }}" style="background:#d4af37;color:#0e0e10;font-weight:700;border:none;padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export All (Excel)</button>
+            <button onClick="{{ exportAllPDF }}" style="background:#d4af37;color:#0e0e10;font-weight:700;border:none;padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export All (PDF)</button>
+          </div>
+        </div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;margin-bottom:24px;">
           <table style="width:100%;border-collapse:collapse;min-width:760px;">
             <thead><tr>
+              <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);"></th>
               <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">User</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">Received</th>
               <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);">To Supplier</th>
@@ -1198,7 +1213,8 @@
             </tr></thead>
             <tbody>
               <sc-for list="{{ userBalanceBreakdown }}" as="r" hint-placeholder-count="2">
-                <tr>
+                <tr onClick="{{ r.onToggle }}" style="cursor:pointer;">
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);color:var(--muted);width:24px;">{{ r.toggleIcon }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;">{{ r.Name }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.receivedFmt }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toSupplierFmt }}</td>
@@ -1209,6 +1225,44 @@
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toSiteFmt }}</td>
                   <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.balanceColor }};font-weight:700;">{{ r.balanceFmt }}</td>
                 </tr>
+                <sc-if value="{{ r.isExpanded }}">
+                  <tr>
+                    <td colspan="10" style="padding:0;border-bottom:1px solid var(--border-soft);background:var(--bg);">
+                      <div style="padding:14px 16px 16px 40px;">
+                        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Date-wise activity — {{ r.Name }}</div>
+                        <sc-if value="{{ r.txns.length }}" hint-placeholder-val="{{ true }}">
+                          <table style="width:100%;border-collapse:collapse;">
+                            <thead><tr>
+                              <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:6px 8px;">Sl</th>
+                              <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:6px 8px;">Date</th>
+                              <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:6px 8px;">Category</th>
+                              <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:6px 8px;">Detail</th>
+                              <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:6px 8px;">Site</th>
+                              <th style="text-align:right;font-size:10px;color:var(--muted);text-transform:uppercase;padding:6px 8px;">Received</th>
+                              <th style="text-align:right;font-size:10px;color:var(--muted);text-transform:uppercase;padding:6px 8px;">Sent</th>
+                            </tr></thead>
+                            <tbody>
+                              <sc-for list="{{ r.txns }}" as="tx" hint-placeholder-count="2">
+                                <tr>
+                                  <td style="padding:6px 8px;font-size:12px;color:var(--muted);">{{ tx.Sl }}</td>
+                                  <td style="padding:6px 8px;font-size:12px;">{{ tx.Date }}</td>
+                                  <td style="padding:6px 8px;font-size:12px;">{{ tx.Category }}</td>
+                                  <td style="padding:6px 8px;font-size:12px;color:var(--muted);">{{ tx.Detail }}</td>
+                                  <td style="padding:6px 8px;font-size:12px;color:var(--muted);">{{ tx.Site }}</td>
+                                  <td style="padding:6px 8px;font-size:12px;text-align:right;color:#2e9e5b;font-weight:600;">{{ tx.receivedFmt }}</td>
+                                  <td style="padding:6px 8px;font-size:12px;text-align:right;color:#e2574c;font-weight:600;">{{ tx.sentFmt }}</td>
+                                </tr>
+                              </sc-for>
+                            </tbody>
+                          </table>
+                        </sc-if>
+                        <sc-if value="{{ !r.txns.length }}">
+                          <div style="font-size:12px;color:var(--muted);padding:6px 8px;">No dated activity recorded.</div>
+                        </sc-if>
+                      </div>
+                    </td>
+                  </tr>
+                </sc-if>
               </sc-for>
             </tbody>
           </table>
@@ -1219,11 +1273,20 @@
         <div style="font-weight:700;font-size:15px;">Fund Transfers</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <sc-if value="{{ isOwnerOrAdmin1 }}"><button onClick="{{ openFundTransferModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Send Money</button></sc-if>
-          <sc-if value="{{ !isOwnerOrAdmin1 }}"><button onClick="{{ openFundTransferModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send Advance to Mistri</button></sc-if>
+          <sc-if value="{{ !isOwnerOrAdmin1 }}"><button onClick="{{ openFundTransferModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Labour</button></sc-if>
           <button onClick="{{ openPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Supplier</button>
           <button onClick="{{ openDieselPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Diesel</button>
           <button onClick="{{ openStaffPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Staff</button>
           <button onClick="{{ openMistriPaymentModal }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;">+ Send to Mistri</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ fundTransferFilter.from }}" onChange="{{ onFundTransferFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ fundTransferFilter.to }}" onChange="{{ onFundTransferTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div style="flex:1;min-width:160px;"><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Party (From/To)</label><input type="text" value="{{ fundTransferFilter.party }}" onChange="{{ onFundTransferParty }}" placeholder="e.g. Sukadev, Supplier name" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div style="display:flex;gap:8px;">
+          <button onClick="{{ exportFundTransfersExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
+          <button onClick="{{ exportFundTransfersPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button>
         </div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;margin-bottom:24px;">
@@ -1252,7 +1315,16 @@
           </tbody>
         </table>
       </div>
-
+      <sc-if value="{{ fundTransferHiddenCount }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;margin:-12px 0 24px;">
+          <button onClick="{{ toggleFundTransferShowAll }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Show All ({{ fundTransferHiddenCount }} more)</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ fundTransferShowAllOn }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;margin:-12px 0 24px;">
+          <button onClick="{{ toggleFundTransferShowAll }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Show Less</button>
+        </div>
+      </sc-if>
       <div style="font-weight:700;font-size:15px;margin-bottom:12px;">Site Balances</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ siteWalletFilter.from }}" onChange="{{ onSiteWalletFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
@@ -1261,12 +1333,39 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;" data-card-grid>
         <sc-for list="{{ siteWalletCards }}" as="sc" hint-placeholder-count="3">
           <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;">
-            <div style="font-weight:700;font-size:15px;margin-bottom:14px;">{{ sc.SiteName }}</div>
+            <div onClick="{{ sc.onToggle }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:14px;"><span style="color:var(--muted);font-size:12px;">{{ sc.toggleIcon }}</span>{{ sc.SiteName }}</div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Sent</span><span>{{ sc.receivedFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Other Expenditure</span><span>{{ sc.expendFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Mistri</span><span>{{ sc.mistriPaidFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Labour</span><span>{{ sc.labourPaidFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:8px;border-top:1px solid var(--border-soft);"><span style="color:var(--muted);">Balance</span><span style="color:{{ sc.balanceColor }};font-weight:700;">{{ sc.balanceFmt }}</span></div>
+            <sc-if value="{{ sc.isExpanded }}">
+              <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border-soft);overflow:auto;">
+                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Date-wise activity</div>
+                <table style="width:100%;border-collapse:collapse;min-width:280px;">
+                  <thead><tr>
+                    <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Sl</th>
+                    <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Date</th>
+                    <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Category</th>
+                    <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Detail</th>
+                    <th style="text-align:right;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Received</th>
+                    <th style="text-align:right;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Sent</th>
+                  </tr></thead>
+                  <tbody>
+                    <sc-for list="{{ sc.txns }}" as="tx" hint-placeholder-count="2">
+                      <tr>
+                        <td style="padding:4px 6px;font-size:11px;color:var(--muted);">{{ tx.Sl }}</td>
+                        <td style="padding:4px 6px;font-size:11px;">{{ tx.Date }}</td>
+                        <td style="padding:4px 6px;font-size:11px;">{{ tx.Category }}</td>
+                        <td style="padding:4px 6px;font-size:11px;color:var(--muted);">{{ tx.Detail }}</td>
+                        <td style="padding:4px 6px;font-size:11px;text-align:right;color:#2e9e5b;font-weight:600;">{{ tx.receivedFmt }}</td>
+                        <td style="padding:4px 6px;font-size:11px;text-align:right;color:#e2574c;font-weight:600;">{{ tx.sentFmt }}</td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </sc-if>
           </div>
         </sc-for>
       </div>
@@ -2110,7 +2209,8 @@ class Component extends DCLogic {
     staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
     selectedSupplier: null, selectedMistri: null, selectedLabour: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
-    detailFilters: { site: '', material: '', vehicle: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' },
+    detailFilters: { site: '', material: '', vehicle: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null,
+    fundTransferFilter: { from: '', to: '', party: '' }, userBalanceFilter: { from: '', to: '', name: '' }, fundTransferShowAll: false,
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
     reportTab: 'supplier', showPassword: false, theme: 'light', maintenance: { enabled: false, message: '' }
   };
@@ -2748,6 +2848,169 @@ class Component extends DCLogic {
     XLSX.utils.book_append_sheet(wb, ws, 'Staff Payments');
     XLSX.writeFile(wb, 'panda-construction-staff-payments.xlsx');
   }
+  exportUserBalanceExcel() {
+    const rows = this._lastUserBalanceBreakdown || [];
+    if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
+    const ubf = this.state.userBalanceFilter;
+    const summaryAoa = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Balance by User'], ['Range: ' + (ubf.from || 'Start') + ' to ' + (ubf.to || 'Today')], ['Generated: ' + new Date().toLocaleString('en-IN')], []];
+    summaryAoa.push(['User', 'Received', 'To Supplier', 'To Diesel', 'To Staff', 'To Mistri', 'To Labour', 'To Site', 'Balance']);
+    rows.forEach(function (r) { summaryAoa.push([r.Name, r.receivedN, r.toSupplierN, r.toDieselN, r.toStaffN, r.toMistriN, r.toLabourN, r.toSiteN, r.balanceN]); });
+    const wsSummary = XLSX.utils.aoa_to_sheet(summaryAoa);
+    wsSummary['!cols'] = [{ wch: 16 }].concat(Array.from({ length: 8 }, function () { return { wch: 14 }; }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+    const actAoa = [['Sl', 'Date', 'User', 'Category', 'Detail', 'Site', 'Received', 'Sent']];
+    rows.forEach(function (r) { r.txns.forEach(function (tx) { actAoa.push([tx.Sl, tx.Date, r.Name, tx.Category, tx.Detail, tx.Site || '', tx.Category === 'Received' ? tx.AmountN : '', tx.Category === 'Received' ? '' : tx.AmountN]); }); });
+    actAoa.sort(function (a, b) { return typeof a[1] === 'string' && typeof b[1] === 'string' ? b[1].localeCompare(a[1]) : 0; });
+    const wsAct = XLSX.utils.aoa_to_sheet(actAoa);
+    wsAct['!cols'] = [{ wch: 6 }, { wch: 12 }, { wch: 16 }, { wch: 18 }, { wch: 20 }, { wch: 14 }, { wch: 14 }, { wch: 14 }];
+    XLSX.utils.book_append_sheet(wb, wsAct, 'Activity');
+    XLSX.writeFile(wb, 'panda-construction-balance-by-user.xlsx');
+  }
+  async exportUserBalancePDF() {
+    const rows = this._lastUserBalanceBreakdown || [];
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const self = this;
+    const fmt = function (n) { return self.fmtPdf(n); };
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    const ubf = this.state.userBalanceFilter;
+    let y = 40;
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
+    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Balance by User', 40, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal');
+    doc.text('Range: ' + (ubf.from || 'Start') + ' to ' + (ubf.to || 'Today'), 40, y); y += 14;
+    doc.text('Generated: ' + new Date().toLocaleString('en-IN'), 40, y); y += 10;
+    const summaryBody = rows.map(function (r) { return [r.Name, fmt(r.receivedN), fmt(r.toSupplierN), fmt(r.toDieselN), fmt(r.toStaffN), fmt(r.toMistriN), fmt(r.toLabourN), fmt(r.toSiteN), fmt(r.balanceN)]; });
+    doc.autoTable({ startY: y + 6, head: [['User', 'Received', 'Supplier', 'Diesel', 'Staff', 'Mistri', 'Labour', 'Site', 'Balance']], body: summaryBody, styles: { fontSize: 7 }, headStyles: { fillColor: [212, 175, 55] } });
+    const allTxns = [];
+    rows.forEach(function (r) { r.txns.forEach(function (tx) { allTxns.push({ Sl: tx.Sl, Date: tx.Date, User: r.Name, Category: tx.Category, Detail: tx.Detail, Site: tx.Site || '', ReceivedFmt: tx.Category === 'Received' ? fmt(tx.AmountN) : '', SentFmt: tx.Category === 'Received' ? '' : fmt(tx.AmountN) }); }); });
+    allTxns.sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); });
+    let y2 = doc.lastAutoTable.finalY + 20;
+    doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Date-wise Activity — All Users', 40, y2); y2 += 6;
+    doc.autoTable({ startY: y2 + 4, head: [['Sl', 'Date', 'User', 'Category', 'Detail', 'Site', 'Received', 'Sent']], body: allTxns.map(function (t) { return [t.Sl, t.Date, t.User, t.Category, t.Detail, t.Site, t.ReceivedFmt, t.SentFmt]; }), styles: { fontSize: 7 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.save('panda-construction-balance-by-user.pdf');
+  }
+  computeAllModuleTotals(from, to) {
+    const self = this; const s = this.state;
+    const inR = function (d) { return self.inRange(d, from, to); };
+    const supplierPurchase = self.sum(s.transactions.filter(function (t) { return inR(t.Date); }), 'Value');
+    const supplierPaid = self.sum(s.payments.filter(function (p) { return inR(p.Date); }), 'AmountPaid');
+    const supplierBF = self.sumLatestBF(s.bf);
+    const dieselCost = self.sum(s.dieselTx.filter(function (t) { return inR(t.Date); }), 'Value');
+    const dieselPaid = self.sum(s.dieselPayments.filter(function (p) { return inR(p.Date); }), 'AmountPaid');
+    const dieselBF = self.sumLatestBF(s.dieselBF);
+    const staffPaid = self.sum(s.staffPayments.filter(function (p) { return inR(p.Date); }), 'AmountPaid');
+    const noSlip = function () { return false; };
+    const curMonthKey = (to || new Date().toISOString().slice(0, 10)).slice(0, 7);
+    const staffOutstanding = self.sum(s.staff.map(function (st) { return { v: self.staffFinancials(st, s, s.staffAttendance, curMonthKey, noSlip).outstanding }; }), 'v');
+    const mistriPaid = self.sum(s.mistriPayments.filter(function (p) { return inR(p.Date); }), 'AmountPaid') + self.sum(s.mistriAdvances.filter(function (p) { return inR(p.Date); }), 'Amount');
+    const mistriOutstanding = self.sum(s.mistri.map(function (m) { return { v: self.mistriFinancials(m, s).outstanding }; }), 'v');
+    const labourPaid = self.sum(s.labourPayments.filter(function (p) { return inR(p.Date); }), 'AmountPaid') + self.sum(s.labourAdvances.filter(function (p) { return inR(p.Date); }), 'Amount');
+    const labourOutstanding = self.sum(s.labour.map(function (l) { return { v: self.labourFinancials(l, s).outstanding }; }), 'v');
+    const siteReceived = self.sum(s.siteAllocations.filter(function (a) { return inR(a.Date); }), 'Amount');
+    const siteSpent = self.sum(s.siteExpenses.filter(function (e) { return inR(e.Date); }), 'Amount');
+    return {
+      supplier: [['BF', supplierBF], ['Purchase (range)', supplierPurchase], ['Paid (range)', supplierPaid], ['Outstanding (BF + Purchase - Paid)', supplierBF + supplierPurchase - supplierPaid]],
+      diesel: [['BF', dieselBF], ['Cost (range)', dieselCost], ['Paid (range)', dieselPaid], ['Outstanding (BF + Cost - Paid)', dieselBF + dieselCost - dieselPaid]],
+      staff: [['Paid (range)', staffPaid], ['Outstanding (current, all staff)', staffOutstanding]],
+      mistri: [['Paid + Advances (range)', mistriPaid], ['Outstanding (current, all mistri)', mistriOutstanding]],
+      labour: [['Paid + Advances (range)', labourPaid], ['Outstanding (current, all labour)', labourOutstanding]],
+      sites: [['Allocated to Sites (range)', siteReceived], ['Site Expenditure (range)', siteSpent]]
+    };
+  }
+  exportAllExcel() {
+    if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
+    const rows = this._lastUserBalanceBreakdown || [];
+    const ftRows = this._lastFundTransferRows || [];
+    const ubf = this.state.userBalanceFilter;
+    const totals = this.computeAllModuleTotals(ubf.from, ubf.to);
+    const wb = XLSX.utils.book_new();
+    const cover = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Complete Fund & Module Summary'], ['Range: ' + (ubf.from || 'Start') + ' to ' + (ubf.to || 'Today')], ['Generated: ' + new Date().toLocaleString('en-IN')]];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cover), 'Cover');
+    const balAoa = [['User', 'Received', 'To Supplier', 'To Diesel', 'To Staff', 'To Mistri', 'To Labour', 'To Site', 'Balance']];
+    rows.forEach(function (r) { balAoa.push([r.Name, r.receivedN, r.toSupplierN, r.toDieselN, r.toStaffN, r.toMistriN, r.toLabourN, r.toSiteN, r.balanceN]); });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(balAoa), 'Balance by User');
+    const ftAoa = [['Date', 'From', 'To', 'Amount', 'Method', 'Remarks']];
+    ftRows.forEach(function (r) { ftAoa.push([r.Date, r.From, r.To, Number(r.Amount) || 0, r.PaymentMethod || '', r.Remarks || '']); });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ftAoa), 'Fund Transfers');
+    Object.keys(totals).forEach(function (key) {
+      const label = key.charAt(0).toUpperCase() + key.slice(1);
+      const aoa = [['Metric', 'Amount']].concat(totals[key]);
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), label);
+    });
+    XLSX.writeFile(wb, 'panda-construction-complete-summary.xlsx');
+  }
+  async exportAllPDF() {
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const self = this;
+    const fmt = function (n) { return self.fmtPdf(n); };
+    const rows = this._lastUserBalanceBreakdown || [];
+    const ftRows = this._lastFundTransferRows || [];
+    const ubf = this.state.userBalanceFilter;
+    const totals = this.computeAllModuleTotals(ubf.from, ubf.to);
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    let y = 40;
+    const header = function (title) {
+      y = 40;
+      if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+      doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
+      doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
+      doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text(title, 40, y); y += 16;
+      doc.setFontSize(9); doc.setFont(undefined, 'normal');
+      doc.text('Range: ' + (ubf.from || 'Start') + ' to ' + (ubf.to || 'Today'), 40, y); y += 14;
+    };
+    header('Complete Fund & Module Summary — Balance by User');
+    doc.autoTable({ startY: y + 6, head: [['User', 'Received', 'Supplier', 'Diesel', 'Staff', 'Mistri', 'Labour', 'Site', 'Balance']], body: rows.map(function (r) { return [r.Name, fmt(r.receivedN), fmt(r.toSupplierN), fmt(r.toDieselN), fmt(r.toStaffN), fmt(r.toMistriN), fmt(r.toLabourN), fmt(r.toSiteN), fmt(r.balanceN)]; }), styles: { fontSize: 7 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.addPage(); header('Fund Transfers');
+    doc.autoTable({ startY: y + 6, head: [['Date', 'From', 'To', 'Amount', 'Method', 'Remarks']], body: ftRows.map(function (r) { return [r.Date, r.From, r.To, fmt(Number(r.Amount) || 0), r.PaymentMethod || '', r.Remarks || '']; }), styles: { fontSize: 7 }, headStyles: { fillColor: [212, 175, 55] } });
+    Object.keys(totals).forEach(function (key) {
+      const label = key.charAt(0).toUpperCase() + key.slice(1);
+      doc.addPage(); header(label + ' — Totals');
+      doc.autoTable({ startY: y + 6, head: [['Metric', 'Amount']], body: totals[key].map(function (row) { return [row[0], fmt(row[1])]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    });
+    doc.save('panda-construction-complete-summary.pdf');
+  }
+  exportFundTransfersExcel() {
+    const rows = this._lastFundTransferRows || [];
+    if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
+    const ftf = this.state.fundTransferFilter;
+    const aoa = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Fund Transfers'], ['Range: ' + (ftf.from || 'Start') + ' to ' + (ftf.to || 'Today')], ['Generated: ' + new Date().toLocaleString('en-IN')], []];
+    aoa.push(['Date', 'From', 'To', 'Amount', 'Method', 'Remarks']);
+    let total = 0;
+    rows.forEach(function (r) { total += Number(r.Amount) || 0; aoa.push([r.Date, r.From, r.To, Number(r.Amount) || 0, r.PaymentMethod || '', r.Remarks || '']); });
+    aoa.push(['TOTAL', '', '', total, '', '']);
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!merges'] = [0, 1, 2, 3, 4].map(function (r) { return { s: { r: r, c: 0 }, e: { r: r, c: 5 } }; });
+    ws['!cols'] = [{ wch: 12 }, { wch: 16 }, { wch: 16 }, { wch: 14 }, { wch: 14 }, { wch: 24 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Fund Transfers');
+    XLSX.writeFile(wb, 'panda-construction-fund-transfers.xlsx');
+  }
+  async exportFundTransfersPDF() {
+    const rows = this._lastFundTransferRows || [];
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    const ftf = this.state.fundTransferFilter;
+    let y = 40;
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
+    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Fund Transfers', 40, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal');
+    doc.text('Range: ' + (ftf.from || 'Start') + ' to ' + (ftf.to || 'Today'), 40, y); y += 14;
+    doc.text('Generated: ' + new Date().toLocaleString('en-IN'), 40, y); y += 10;
+    const self = this;
+    const fmt = function (n) { return self.fmtPdf(n); };
+    let total = 0; rows.forEach(function (r) { total += Number(r.Amount) || 0; });
+    const body = rows.map(function (r) { return [r.Date, r.From, r.To, fmt(Number(r.Amount) || 0), r.PaymentMethod || '', r.Remarks || '']; });
+    doc.autoTable({ startY: y + 6, head: [['Date', 'From', 'To', 'Amount', 'Method', 'Remarks']], body: body, foot: [['TOTAL', '', '', fmt(total), '', '']], styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] }, footStyles: { fillColor: [245, 240, 220], textColor: [0, 0, 0], fontStyle: 'bold' } });
+    doc.save('panda-construction-fund-transfers.pdf');
+  }
   async exportStaffPaymentsPDF() {
     const rows = this._lastStaffPaymentRows || [];
     if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
@@ -2859,6 +3122,11 @@ class Component extends DCLogic {
   setDashFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.dashFilters); nf[key] = e.target.value; return { dashFilters: nf }; }); }.bind(this); }
   setDetailFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.detailFilters); nf[key] = e.target.value; return { detailFilters: nf }; }); }.bind(this); }
   setStaffPaymentsFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.staffPaymentsFilter); nf[key] = e.target.value; return { staffPaymentsFilter: nf }; }); }.bind(this); }
+  setFundTransferFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.fundTransferFilter); nf[key] = e.target.value; return { fundTransferFilter: nf }; }); }.bind(this); }
+  toggleUserBalance(name) { this.setState(function (s) { return { expandedUserBalance: s.expandedUserBalance === name ? null : name }; }); }
+  toggleSiteBalance(name) { this.setState(function (s) { return { expandedSiteBalance: s.expandedSiteBalance === name ? null : name }; }); }
+  setUserBalanceFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.userBalanceFilter); nf[key] = e.target.value; return { userBalanceFilter: nf }; }); }.bind(this); }
+  toggleFundTransferShowAll() { this.setState(function (s) { return { fundTransferShowAll: !s.fundTransferShowAll }; }); }
   setSiteWalletFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.siteWalletFilter); nf[key] = e.target.value; return { siteWalletFilter: nf }; }); }.bind(this); }
   setReportFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.reportFilters); nf[key] = e.target.value; return { reportFilters: nf }; }); }.bind(this); }
   buildFilterSummary(rf) {
@@ -3475,8 +3743,19 @@ class Component extends DCLogic {
     const spentMistriN = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid') + self.sum(s.mistriAdvances.filter(function (p) { return p.CreatedBy === myName; }), 'Amount');
     const myFundBalanceN = fundReceivedN - fundSentOutN - fundAllocatedN - spentSupplierN - spentDieselN - spentStaffN - spentMistriN;
     const showMyFundBalance = !isOwnerOrAdmin1 || fundReceivedN > 0;
-    const fundTransferRows = (canSeeAllFunds ? s.fundTransfers : s.fundTransfers.filter(function (t) { return t.To === myName || t.From === myName; }))
+    const ftf = s.fundTransferFilter;
+    const fundTransferRowsAll = (canSeeAllFunds ? s.fundTransfers : s.fundTransfers.filter(function (t) { return t.To === myName || t.From === myName; }))
+      .filter(function (t) {
+        if (!self.inRange(t.Date, ftf.from, ftf.to)) return false;
+        if (ftf.party && !((t.From || '').toLowerCase().includes(ftf.party.toLowerCase()) || (t.To || '').toLowerCase().includes(ftf.party.toLowerCase()))) return false;
+        return true;
+      });
+    this._lastFundTransferRows = fundTransferRowsAll.slice().reverse();
+    const fundTransferRowsSorted = fundTransferRowsAll
       .slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', r); }, onDelete: function () { self.deleteRecord('deleteFundTransfer', { TransferID: r.TransferID }, 'fundTransfers'); } }); });
+    const fundTransferRows = s.fundTransferShowAll ? fundTransferRowsSorted : fundTransferRowsSorted.slice(0, 8);
+    const fundTransferHiddenCount = fundTransferRowsSorted.length - fundTransferRows.length;
+    const fundTransferShowLessOn = s.fundTransferShowAll && fundTransferRowsSorted.length > 8;
     const allocationRows = (canSeeAllFunds ? s.siteAllocations : s.siteAllocations.filter(function (a) { return a.User === myName; }))
       .slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('siteAllocation', r); }, onDelete: function () { self.deleteRecord('deleteSiteAllocation', { AllocationID: r.AllocationID }, 'siteAllocations'); } }); });
     const swf = s.siteWalletFilter;
@@ -3487,21 +3766,45 @@ class Component extends DCLogic {
       const mistriPaid = self.siteMistriPaid(site.SiteName, s, swf.from, swf.to);
       const labourPaid = self.siteLabourPaid(site.SiteName, s, swf.from, swf.to);
       const balance = received - expend - mistriPaid - labourPaid;
-      return { SiteName: site.SiteName, receivedFmt: fmt(received), expendFmt: fmt(expend), mistriPaidFmt: fmt(mistriPaid), labourPaidFmt: fmt(labourPaid), balanceFmt: fmt(balance), balanceColor: self.oc(-balance), hasActivity: received !== 0 || expend !== 0 || mistriPaid !== 0 || labourPaid !== 0 };
+      const txns = [];
+      receivedRows.forEach(function (a) { txns.push({ Date: a.Date, Category: 'Allocated to Site', Detail: 'by ' + a.User, AmountN: Number(a.Amount) || 0, isReceived: true }); });
+      s.siteExpenses.filter(function (e) { return e.Site === site.SiteName && self.inRange(e.Date, swf.from, swf.to); }).forEach(function (e) { txns.push({ Date: e.Date, Category: 'Site Expenditure', Detail: e.Remarks || '', AmountN: Number(e.Amount) || 0, isReceived: false }); });
+      s.mistriPayments.filter(function (p) { return p.Site === site.SiteName && self.inRange(p.Date, swf.from, swf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Mistri', Detail: p.MistriName, AmountN: Number(p.AmountPaid) || 0, isReceived: false }); });
+      s.labourPayments.filter(function (p) { return p.Site === site.SiteName && self.inRange(p.Date, swf.from, swf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Labour', Detail: p.LabourName, AmountN: Number(p.AmountPaid) || 0, isReceived: false }); });
+      txns.sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); });
+      txns.forEach(function (tx, i) { tx.Sl = i + 1; tx.receivedFmt = tx.isReceived ? fmt(tx.AmountN) : ''; tx.sentFmt = tx.isReceived ? '' : fmt(tx.AmountN); });
+      const isExpanded = s.expandedSiteBalance === site.SiteName;
+      return { SiteName: site.SiteName, receivedFmt: fmt(received), expendFmt: fmt(expend), mistriPaidFmt: fmt(mistriPaid), labourPaidFmt: fmt(labourPaid), balanceFmt: fmt(balance), balanceColor: self.oc(-balance), hasActivity: received !== 0 || expend !== 0 || mistriPaid !== 0 || labourPaid !== 0, txns: txns, isExpanded: isExpanded, toggleIcon: isExpanded ? '▾' : '▸', onToggle: function () { self.toggleSiteBalance(site.SiteName); } };
     }).filter(function (r) { return r.hasActivity; });
     const siteExpenseRows = s.siteExpenses.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('siteExpense', r); }, onDelete: function () { self.deleteRecord('deleteSiteExpense', { ExpenseID: r.ExpenseID }, 'siteExpenses'); } }); });
-    const userBalanceBreakdown = canSeeAllFunds ? s.users.map(function (u) {
-      const received = self.sum(s.fundTransfers.filter(function (t) { return t.To === u.Name; }), 'Amount');
-      const sentOut = self.sum(s.fundTransfers.filter(function (t) { return t.From === u.Name; }), 'Amount');
-      const toSite = self.sum(s.siteAllocations.filter(function (a) { return a.User === u.Name; }), 'Amount');
-      const toSupplier = self.sum(s.payments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
-      const toDiesel = self.sum(s.dieselPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
-      const toStaff = self.sum(s.staffPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid');
-      const toMistri = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid') + self.sum(s.mistriAdvances.filter(function (p) { return p.CreatedBy === u.Name; }), 'Amount');
-      const toLabour = self.sum(s.labourPayments.filter(function (p) { return p.CreatedBy === u.Name; }), 'AmountPaid') + self.sum(s.labourAdvances.filter(function (p) { return p.CreatedBy === u.Name; }), 'Amount');
+    const ubf = s.userBalanceFilter;
+    const userBalanceBreakdown = canSeeAllFunds ? s.users.filter(function (u) { return !ubf.name || u.Name.toLowerCase().includes(ubf.name.toLowerCase()); }).map(function (u) {
+      const received = self.sum(s.fundTransfers.filter(function (t) { return t.To === u.Name && self.inRange(t.Date, ubf.from, ubf.to); }), 'Amount');
+      const sentOut = self.sum(s.fundTransfers.filter(function (t) { return t.From === u.Name && self.inRange(t.Date, ubf.from, ubf.to); }), 'Amount');
+      const toSite = self.sum(s.siteAllocations.filter(function (a) { return a.User === u.Name && self.inRange(a.Date, ubf.from, ubf.to); }), 'Amount');
+      const toSupplier = self.sum(s.payments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'AmountPaid');
+      const toDiesel = self.sum(s.dieselPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'AmountPaid');
+      const toStaff = self.sum(s.staffPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'AmountPaid');
+      const toMistri = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'AmountPaid') + self.sum(s.mistriAdvances.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'Amount');
+      const toLabour = self.sum(s.labourPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'AmountPaid') + self.sum(s.labourAdvances.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'Amount');
       const balance = received - sentOut - toSite - toSupplier - toDiesel - toStaff - toMistri - toLabour;
-      return { Name: u.Name, receivedFmt: fmt(received), toSupplierFmt: fmt(toSupplier), toDieselFmt: fmt(toDiesel), toStaffFmt: fmt(toStaff), toMistriFmt: fmt(toMistri), toLabourFmt: fmt(toLabour), toSiteFmt: fmt(toSite), balanceFmt: fmt(balance), balanceColor: self.oc(-balance) };
+      const txns = [];
+      s.fundTransfers.filter(function (t) { return t.To === u.Name && self.inRange(t.Date, ubf.from, ubf.to); }).forEach(function (t) { txns.push({ Date: t.Date, Category: 'Received', Detail: 'from ' + t.From, Site: '', AmountFmt: fmt(Number(t.Amount) || 0), color: '#2e9e5b', AmountN: Number(t.Amount) || 0 }); });
+      s.siteAllocations.filter(function (a) { return a.User === u.Name && self.inRange(a.Date, ubf.from, ubf.to); }).forEach(function (a) { txns.push({ Date: a.Date, Category: 'To Site', Detail: a.Site, Site: a.Site, AmountFmt: fmt(Number(a.Amount) || 0), color: '#e2574c', AmountN: Number(a.Amount) || 0 }); });
+      s.payments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Supplier', Detail: p.Supplier, Site: p.Site || '', AmountFmt: fmt(Number(p.AmountPaid) || 0), color: '#e2574c', AmountN: Number(p.AmountPaid) || 0 }); });
+      s.dieselPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Diesel', Detail: p.Supplier, Site: p.Site || '', AmountFmt: fmt(Number(p.AmountPaid) || 0), color: '#e2574c', AmountN: Number(p.AmountPaid) || 0 }); });
+      s.staffPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Staff', Detail: p.StaffName, Site: '', AmountFmt: fmt(Number(p.AmountPaid) || 0), color: '#e2574c', AmountN: Number(p.AmountPaid) || 0 }); });
+      s.mistriPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Mistri', Detail: p.MistriName, Site: p.Site || '', AmountFmt: fmt(Number(p.AmountPaid) || 0), color: '#e2574c', AmountN: Number(p.AmountPaid) || 0 }); });
+      s.mistriAdvances.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Mistri (Advance)', Detail: p.MistriName, Site: p.Site || '', AmountFmt: fmt(Number(p.Amount) || 0), color: '#e2574c', AmountN: Number(p.Amount) || 0 }); });
+      s.labourPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Labour', Detail: p.LabourName, Site: p.Site || '', AmountFmt: fmt(Number(p.AmountPaid) || 0), color: '#e2574c', AmountN: Number(p.AmountPaid) || 0 }); });
+      s.labourAdvances.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Labour (Advance)', Detail: p.LabourName, Site: p.Site || '', AmountFmt: fmt(Number(p.Amount) || 0), color: '#e2574c', AmountN: Number(p.Amount) || 0 }); });
+      txns.sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); });
+      txns.forEach(function (tx, i) { tx.Sl = i + 1; tx.receivedFmt = tx.Category === 'Received' ? fmt(tx.AmountN) : ''; tx.sentFmt = tx.Category === 'Received' ? '' : fmt(tx.AmountN); });
+      const isExpanded = s.expandedUserBalance === u.Name;
+      return { Name: u.Name, receivedFmt: fmt(received), toSupplierFmt: fmt(toSupplier), toDieselFmt: fmt(toDiesel), toStaffFmt: fmt(toStaff), toMistriFmt: fmt(toMistri), toLabourFmt: fmt(toLabour), toSiteFmt: fmt(toSite), balanceFmt: fmt(balance), balanceColor: self.oc(-balance), txns: txns, isExpanded: isExpanded, toggleIcon: isExpanded ? '▾' : '▸', onToggle: function () { self.toggleUserBalance(u.Name); },
+        receivedN: received, toSupplierN: toSupplier, toDieselN: toDiesel, toStaffN: toStaff, toMistriN: toMistri, toLabourN: toLabour, toSiteN: toSite, balanceN: balance };
     }).filter(function (r) { return r.receivedFmt !== fmt(0); }) : [];
+    this._lastUserBalanceBreakdown = userBalanceBreakdown;
     const fundTransferDefaults = { Date: editRecordRaw.Date || todayStr, To: editRecordRaw._isAdvance ? ('MISTRI::' + editRecordRaw.MistriName) : (editRecordRaw._isLabourAdvance ? ('LABOUR::' + editRecordRaw.LabourName) : (editRecordRaw.To || '')), Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '', Site: editRecordRaw.Site || '' };
     const siteAllocationDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
     const siteExpenseDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
@@ -3626,7 +3929,13 @@ class Component extends DCLogic {
       labourCards: labourCards, labourDetail: labourDetail, labourDefaults: labourDefaults, labourEntryDefaults: labourEntryDefaults, labourPaymentDefaults: labourPaymentDefaults, showLabourPicker: showLabourPicker, labourOptions: labourOptions, isLabourEntryDaily: isLabourEntryDaily, onLabourEntryTypeChange: this.onLabourEntryTypeChange.bind(this),
       navLabour: function () { self.setView('labour'); }, openLabourModal: function () { self.openModal('labour'); }, openLabourEntryModal: this.openLabourEntryModal.bind(this), openLabourPaymentModal: function () { self.openModal('labourPayment'); },
       submitLabour: this.submitLabour.bind(this), submitLabourEntry: this.submitLabourEntry.bind(this), submitLabourPayment: this.submitLabourPayment.bind(this),
-      myFundBalanceFmt: fmt(myFundBalanceN), showMyFundBalance: showMyFundBalance, userBalanceBreakdown: userBalanceBreakdown, siteWalletCards: siteWalletCards, siteWalletFilter: s.siteWalletFilter, onSiteWalletFrom: this.setSiteWalletFilter('from'), onSiteWalletTo: this.setSiteWalletFilter('to'), siteExpenseRows: siteExpenseRows, siteExpenseDefaults: siteExpenseDefaults, openSiteExpenseModal: function () { self.openModal('siteExpense'); }, showStaffPicker: showStaffPicker, staffOptions: staffOptions, fundTransferRows: fundTransferRows, allocationRows: allocationRows, fundTransferDefaults: fundTransferDefaults, siteAllocationDefaults: siteAllocationDefaults, fundRecipientOptions: fundRecipientOptions,
+      myFundBalanceFmt: fmt(myFundBalanceN), showMyFundBalance: showMyFundBalance, userBalanceBreakdown: userBalanceBreakdown, siteWalletCards: siteWalletCards, siteWalletFilter: s.siteWalletFilter,
+      fundTransferFilter: s.fundTransferFilter, onFundTransferFrom: this.setFundTransferFilter('from'), onFundTransferTo: this.setFundTransferFilter('to'), onFundTransferParty: this.setFundTransferFilter('party'),
+      userBalanceFilter: s.userBalanceFilter, onUserBalanceFrom: this.setUserBalanceFilter('from'), onUserBalanceTo: this.setUserBalanceFilter('to'), onUserBalanceName: this.setUserBalanceFilter('name'),
+      exportUserBalanceExcel: this.exportUserBalanceExcel.bind(this), exportUserBalancePDF: this.exportUserBalancePDF.bind(this),
+      exportAllExcel: this.exportAllExcel.bind(this), exportAllPDF: this.exportAllPDF.bind(this),
+      exportFundTransfersExcel: this.exportFundTransfersExcel.bind(this), exportFundTransfersPDF: this.exportFundTransfersPDF.bind(this),
+      fundTransferHiddenCount: fundTransferHiddenCount, fundTransferShowAllOn: fundTransferShowLessOn, toggleFundTransferShowAll: this.toggleFundTransferShowAll.bind(this), onSiteWalletFrom: this.setSiteWalletFilter('from'), onSiteWalletTo: this.setSiteWalletFilter('to'), siteExpenseRows: siteExpenseRows, siteExpenseDefaults: siteExpenseDefaults, openSiteExpenseModal: function () { self.openModal('siteExpense'); }, showStaffPicker: showStaffPicker, staffOptions: staffOptions, fundTransferRows: fundTransferRows, allocationRows: allocationRows, fundTransferDefaults: fundTransferDefaults, siteAllocationDefaults: siteAllocationDefaults, fundRecipientOptions: fundRecipientOptions,
       openStaffModal: function () { self.openModal('staff'); }, openStaffSalaryModal: function () { self.openModal('staffSalary'); }, openStaffPaymentModal: function () { self.openModal('staffPayment'); },
       openFundTransferModal: function () { self.openModal('fundTransfer'); }, openSiteAllocationModal: function () { self.openModal('siteAllocation'); },
       submitStaff: this.submitStaff.bind(this), submitStaffSalary: this.submitStaffSalary.bind(this), submitStaffPayment: this.submitStaffPayment.bind(this), submitUserContact: this.submitUserContact.bind(this),
