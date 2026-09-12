@@ -67,7 +67,8 @@
     LabourAdvance: { coll: "labourAdvances", idField: "AdvanceID", counter: "LabourAdvanceID", prefix: "LA", def: { Status: "Active" } },
     FundTransfer: { coll: "fundTransfers", idField: "TransferID", counter: "TransferID", prefix: "FT", def: { Status: "Active" } },
     SiteAllocation: { coll: "siteAllocations", idField: "AllocationID", counter: "AllocationID", prefix: "SA", def: { Status: "Active" } },
-    SiteExpense: { coll: "siteExpenses", idField: "ExpenseID", counter: "ExpenseID", prefix: "SE", def: { Status: "Active" } }
+    SiteExpense: { coll: "siteExpenses", idField: "ExpenseID", counter: "ExpenseID", prefix: "SE", def: { Status: "Active" } },
+    OtherPayment: { coll: "otherPayments", idField: "PaymentID", counter: "OtherPaymentID", prefix: "OTH", def: { Status: "Active" } }
   };
 
   async function genericAdd(key, payload) {
@@ -147,8 +148,9 @@
         await auditLog(p.RequestedBy, p.Enabled ? "Enabled Maintenance Mode" : "Disabled Maintenance Mode", "Settings", "", p.Message || "");
         return { success: true, message: "Maintenance settings updated.", maintenance: await getMaintenanceStatus() };
       }
+      case "getCollection": return { success: true, data: await colToArray(p.name) };
       case "getAllData": {
-        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions"];
+        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions"];
         const arrs = await Promise.all(names.map(colToArray));
         const out = { success: true };
         names.forEach(function (n, i) { out[n] = arrs[i]; });
@@ -277,8 +279,8 @@
       case "deleteFundTransfer": await genericDelete("FundTransfer", p.TransferID); await auditLog(p.CreatedBy, "Deleted Fund Transfer", "FundTransfers", p.TransferID, ""); return { success: true, message: "Fund transfer deleted successfully." };
 
       case "getSiteAllocations": return { success: true, data: await colToArray("siteAllocations") };
-      case "addSiteAllocation": { const r = await genericAdd("SiteAllocation", { Date: p.Date, User: p.User, Site: p.Site, Amount: p.Amount, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Site Allocation", "SiteAllocations", r.id, p.User + " -> " + p.Site + " Rs." + p.Amount); return { success: true, message: "Site allocation saved successfully." }; }
-      case "updateSiteAllocation": { const ok = await genericUpdate("SiteAllocation", p, { Date: p.Date, User: p.User, Site: p.Site, Amount: p.Amount, Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Site allocation not found." }; await auditLog(p.CreatedBy, "Updated Site Allocation", "SiteAllocations", p.AllocationID, p.User + " -> " + p.Site + " Rs." + p.Amount); return { success: true, message: "Site allocation updated successfully." }; }
+      case "addSiteAllocation": { const r = await genericAdd("SiteAllocation", { Date: p.Date, User: p.User, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Site Allocation", "SiteAllocations", r.id, p.User + " -> " + p.Site + " Rs." + p.Amount); return { success: true, message: "Site allocation saved successfully." }; }
+      case "updateSiteAllocation": { const ok = await genericUpdate("SiteAllocation", p, { Date: p.Date, User: p.User, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Site allocation not found." }; await auditLog(p.CreatedBy, "Updated Site Allocation", "SiteAllocations", p.AllocationID, p.User + " -> " + p.Site + " Rs." + p.Amount); return { success: true, message: "Site allocation updated successfully." }; }
       case "deleteSiteAllocation": await genericDelete("SiteAllocation", p.AllocationID); await auditLog(p.CreatedBy, "Deleted Site Allocation", "SiteAllocations", p.AllocationID, ""); return { success: true, message: "Site allocation deleted successfully." };
 
       case "getSiteExpenses": return { success: true, data: await colToArray("siteExpenses") };
@@ -286,8 +288,38 @@
       case "updateSiteExpense": { const ok = await genericUpdate("SiteExpense", p, { Date: p.Date, Site: p.Site, Amount: p.Amount, Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Site expense not found." }; await auditLog(p.CreatedBy, "Updated Site Expense", "SiteExpenses", p.ExpenseID, p.Site + " Rs." + p.Amount); return { success: true, message: "Site expenditure updated successfully." }; }
       case "deleteSiteExpense": await genericDelete("SiteExpense", p.ExpenseID); await auditLog(p.CreatedBy, "Deleted Site Expense", "SiteExpenses", p.ExpenseID, ""); return { success: true, message: "Site expenditure deleted successfully." };
 
+      case "getOtherPayments": return { success: true, data: await colToArray("otherPayments") };
+      case "addOtherPayment": { const r = await genericAdd("OtherPayment", { Date: p.Date, From: p.From, Name: p.Name, Purpose: p.Purpose, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Other Payment", "OtherPayments", r.id, p.Name + " ₹" + p.Amount); return { success: true, message: "Payment saved successfully." }; }
+      case "updateOtherPayment": { const ok = await genericUpdate("OtherPayment", p, { Date: p.Date, From: p.From, Name: p.Name, Purpose: p.Purpose, Amount: p.Amount, PaymentMethod: p.PaymentMethod, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Payment not found." }; await auditLog(p.CreatedBy, "Updated Other Payment", "OtherPayments", p.PaymentID, p.Name + " ₹" + p.Amount); return { success: true, message: "Payment updated successfully." }; }
+      case "deleteOtherPayment": await genericDelete("OtherPayment", p.PaymentID); await auditLog(p.CreatedBy, "Deleted Other Payment", "OtherPayments", p.PaymentID, ""); return { success: true, message: "Payment deleted successfully." };
+
       case "getTaskCompletions": return { success: true, data: await colToArray("taskCompletions") };
       case "addTaskCompletion": { const arr = await colToArray("taskCompletions"); const exists = arr.some(function (x) { return x.Date === p.Date && x.User === p.User; }); if (exists) return { success: true, message: "Already marked completed." }; const id = p.Date + "_" + p.User; await db.collection("taskCompletions").doc(id).set({ Date: p.Date, User: p.User, CreatedAt: new Date().toISOString() }); await auditLog(p.User, "Marked Task Completed", "TaskCompletions", p.Date, p.User); return { success: true, message: "Task marked completed." }; }
+
+      case "getBilling": {
+        const invSnap = await db.collection("billing").doc("invoice").get();
+        const mSnap = await db.collection("billing").doc("maintenance").get();
+        const inv = invSnap.exists ? invSnap.data() : { amount: 478, status: "Pending" };
+        const maint = mSnap.exists ? mSnap.data() : { amount: 125, firstDueYear: 2027, paidYears: [] };
+        return { success: true, invoice: inv, maintenance: maint };
+      }
+      case "markInvoicePaid": {
+        if (String(p.RequestedBy || "").toLowerCase() !== "hrushikesh padhi") return { success: false, message: "Only Hrushikesh Padhi can mark this as paid." };
+        await db.collection("billing").doc("invoice").set({ amount: 478, status: "Paid", paidAt: new Date().toISOString(), paidBy: p.RequestedBy }, { merge: true });
+        await auditLog(p.RequestedBy, "Marked Invoice Paid", "Billing", "invoice", "$478");
+        return { success: true, message: "Invoice marked as paid." };
+      }
+      case "markMaintenancePaid": {
+        if (String(p.RequestedBy || "").toLowerCase() !== "hrushikesh padhi") return { success: false, message: "Only Hrushikesh Padhi can mark this as paid." };
+        const ref = db.collection("billing").doc("maintenance");
+        const snap = await ref.get();
+        const data = snap.exists ? snap.data() : { amount: 125, firstDueYear: 2027, paidYears: [] };
+        const years = data.paidYears || [];
+        if (years.indexOf(p.CycleYear) === -1) years.push(p.CycleYear);
+        await ref.set({ amount: 125, firstDueYear: data.firstDueYear || 2027, paidYears: years, lastPaidAt: new Date().toISOString(), lastPaidBy: p.RequestedBy }, { merge: true });
+        await auditLog(p.RequestedBy, "Marked Maintenance Paid", "Billing", "maintenance", "$125 for " + p.CycleYear);
+        return { success: true, message: "Maintenance fee marked as paid for " + p.CycleYear + "." };
+      }
 
       case "migrateFromSheets": return migrateFromSheets(p);
       default: return { success: false, message: "Unknown action: " + action };

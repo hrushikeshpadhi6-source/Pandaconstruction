@@ -38,6 +38,7 @@
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="firebase-api.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -118,24 +119,24 @@
       <button onClick="{{ navTasks }}" style="{{ navStyle.tasks }}">Task Tracker</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Supplier Management</div>
       <button onClick="{{ navSuppliers }}" style="{{ navStyle.suppliers }}">Suppliers</button>
-      <button onClick="{{ navTransactions }}" style="{{ navStyle.transactions }}">Transactions</button>
-      <button onClick="{{ navPayments }}" style="{{ navStyle.payments }}">Payments</button>
+      <button onClick="{{ navTransactions }}" style="{{ navStyle.transactions }}">Transactions<sc-if value="{{ hasNew.transactions }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.transactions }}</span></sc-if></button>
+      <button onClick="{{ navPayments }}" style="{{ navStyle.payments }}">Payments<sc-if value="{{ hasNew.payments }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.payments }}</span></sc-if></button>
       <button onClick="{{ navBF }}" style="{{ navStyle.bf }}">BF Balance</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Diesel Management</div>
-      <button onClick="{{ navDieselTx }}" style="{{ navStyle.dieselTx }}">Diesel Transactions</button>
-      <button onClick="{{ navDieselPayments }}" style="{{ navStyle.dieselPayments }}">Diesel Payments</button>
+      <button onClick="{{ navDieselTx }}" style="{{ navStyle.dieselTx }}">Diesel Transactions<sc-if value="{{ hasNew.dieselTx }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.dieselTx }}</span></sc-if></button>
+      <button onClick="{{ navDieselPayments }}" style="{{ navStyle.dieselPayments }}">Diesel Payments<sc-if value="{{ hasNew.dieselPayments }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.dieselPayments }}</span></sc-if></button>
       <button onClick="{{ navDieselBF }}" style="{{ navStyle.dieselBF }}">Diesel BF</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Master Data</div>
       <button onClick="{{ navSites }}" style="{{ navStyle.sites }}">Sites</button>
       <button onClick="{{ navMaterials }}" style="{{ navStyle.materials }}">Materials</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Staff & Payroll</div>
       <button onClick="{{ navStaff }}" style="{{ navStyle.staff }}">Staff</button>
-      <button onClick="{{ navStaffPayments }}" style="{{ navStyle.staffPayments }}">Staff Payments</button>
-      <button onClick="{{ navMistri }}" style="{{ navStyle.mistri }}">Mistri</button>
-      <button onClick="{{ navLabour }}" style="{{ navStyle.labour }}">Labour</button>
+      <button onClick="{{ navStaffPayments }}" style="{{ navStyle.staffPayments }}">Staff Payments<sc-if value="{{ hasNew.staffPayments }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.staffPayments }}</span></sc-if></button>
+      <button onClick="{{ navMistri }}" style="{{ navStyle.mistri }}">Mistri<sc-if value="{{ hasNew.mistri }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.mistri }}</span></sc-if></button>
+      <button onClick="{{ navLabour }}" style="{{ navStyle.labour }}">Labour<sc-if value="{{ hasNew.labour }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.labour }}</span></sc-if></button>
       <button onClick="{{ navAttendance }}" style="{{ navStyle.attendance }}">Attendance</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Fund Distribution</div>
-      <button onClick="{{ navFunds }}" style="{{ navStyle.funds }}">Money & Sites</button>
+      <button onClick="{{ navFunds }}" style="{{ navStyle.funds }}">Money & Sites<sc-if value="{{ hasNew.funds }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.funds }}</span></sc-if></button>
       <div style="margin:16px 12px 6px;"></div>
       <button onClick="{{ navReports }}" style="{{ navStyle.reports }}">Reports</button>
       <button onClick="{{ navSettings }}" style="{{ navStyle.settings }}">Settings</button>
@@ -1569,6 +1570,41 @@
         </table>
       </div>
       </sc-if>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;margin-top:24px;flex-wrap:wrap;gap:10px;">
+        <div onClick="{{ sectionToggle.otherPayments }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;"><span style="color:var(--muted);font-size:12px;">{{ sectionIcon.otherPayments }}</span>Other Payments</div>
+        <button onClick="{{ openOtherPaymentModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Send Payment</button>
+      </div>
+      <sc-if value="{{ sectionExpanded.otherPayments }}">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:800px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">By</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Name</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Purpose</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Amount</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Method</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Remarks</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ otherPaymentRows }}" as="r" hint-placeholder-count="2">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.From }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;">{{ r.Name }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Purpose }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#e2574c;font-weight:600;">{{ r.AmountFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      </sc-if>
     </sc-if>
 
     <sc-if value="{{ viewIs.reports }}">
@@ -1814,6 +1850,36 @@
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;">
           <div style="font-weight:700;font-size:14px;margin-bottom:6px;">Data Source</div>
           <div style="font-size:13px;color:var(--muted);">{{ dataSourceLabel }}</div>
+        </div>
+      </div>
+
+      <div style="font-weight:700;margin-bottom:10px;">Billing</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:24px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">ERP Tool Invoice</div>
+          <div style="font-size:22px;font-weight:700;margin-bottom:8px;">{{ billing.invoiceAmount }}</div>
+          <div style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:{{ billing.invoiceIsPaid ? 'rgba(46,158,91,0.15)' : 'rgba(212,175,55,0.15)' }};color:{{ billing.invoiceIsPaid ? '#2e9e5b' : '#d4af37' }};">{{ billing.invoiceStatus }}</div>
+          <sc-if value="{{ billing.invoiceIsPaid }}">
+            <div style="font-size:11px;color:var(--muted);margin-top:8px;">Paid by {{ billing.invoicePaidBy }} on {{ billing.invoicePaidAt }}</div>
+          </sc-if>
+          <sc-if value="{{ billing.canMarkPaid }}">
+            <sc-if value="{{ !billing.invoiceIsPaid }}">
+              <button onClick="{{ billing.onMarkInvoicePaid }}" style="margin-top:12px;background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Mark as Paid</button>
+            </sc-if>
+          </sc-if>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Annual Maintenance &amp; Firewall Fee</div>
+          <div style="font-size:22px;font-weight:700;margin-bottom:8px;">{{ billing.maintAmount }}</div>
+          <div style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:{{ billing.maintIsPaid ? 'rgba(46,158,91,0.15)' : 'rgba(212,175,55,0.15)' }};color:{{ billing.maintIsPaid ? '#2e9e5b' : '#d4af37' }};">{{ billing.maintStatusLabel }}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;">Due every year, February 1–5. Resets to Pending automatically each cycle.</div>
+          <sc-if value="{{ billing.canMarkPaid }}">
+            <sc-if value="{{ billing.maintIsDue }}">
+              <sc-if value="{{ !billing.maintIsPaid }}">
+                <button onClick="{{ billing.onMarkMaintPaid }}" style="margin-top:12px;background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Mark as Paid</button>
+              </sc-if>
+            </sc-if>
+          </sc-if>
         </div>
       </div>
       <div onClick="{{ sectionToggle.usersList }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:10px;"><span style="color:var(--muted);font-size:12px;">{{ sectionIcon.usersList }}</span>Users</div>
@@ -2219,6 +2285,27 @@
         </form>
       </sc-if>
 
+      <sc-if value="{{ modalIs.otherPayment }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitOtherPayment }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="date" name="Date" required="true" defaultValue="{{ otherPaymentDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
+          <input type="text" name="Name" placeholder="Name" required="true" defaultValue="{{ otherPaymentDefaults.Name }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="Purpose" placeholder="Purpose" required="true" defaultValue="{{ otherPaymentDefaults.Purpose }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="number" step="any" name="Amount" placeholder="Amount (₹)" required="true" defaultValue="{{ otherPaymentDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <select name="PaymentMethod" defaultValue="{{ otherPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;">
+            <option value="Cash">Cash</option>
+            <option value="UPI">UPI</option>
+            <option value="Cheque">Cheque</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+          </select>
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ otherPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:#d4af37;color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
       <sc-if value="{{ modalIs.mistri }}">
         <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
         <form key="{{ formKey }}" onSubmit="{{ submitMistri }}" style="display:flex;flex-direction:column;gap:12px;">
@@ -2361,7 +2448,7 @@ class Component extends DCLogic {
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [],
-    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
+    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], otherPayments: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
     selectedSupplier: null, selectedMistri: null, selectedLabour: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
@@ -2379,8 +2466,25 @@ class Component extends DCLogic {
     }.bind(this)).catch(function (e) { this.showToast('Could not reach backend: ' + e.message); }.bind(this));
     let sess = null;
     try { sess = JSON.parse(localStorage.getItem('panda_session')); } catch (e) {}
-    if (sess) { this.setState({ session: sess, view: 'dashboard' }); this.loadAll(); }
+    let lastSeen = {};
+    try { lastSeen = JSON.parse(localStorage.getItem('panda_lastseen')) || {}; } catch (e) {}
+    this.state.lastSeen = lastSeen;
+    if (sess) { this.setState({ session: sess, view: 'dashboard' }); this.loadAll(); this.loadBilling(); }
     else this.setState({ loading: false });
+  }
+  loadBilling() {
+    const self = this;
+    PandaAPI.call('getBilling').then(function (r) { if (r && r.success) self.setState({ billingInvoice: r.invoice, billingMaintenance: r.maintenance }); });
+  }
+  markInvoicePaid() {
+    if (!window.confirm('Mark the $478 invoice as paid?')) return;
+    const self = this;
+    PandaAPI.call('markInvoicePaid', { RequestedBy: this.currentUserName() }).then(function (res) { self.showToast(res.message); if (res.success) self.loadBilling(); });
+  }
+  markMaintenancePaid(cycleYear) {
+    if (!window.confirm('Mark the $125 maintenance fee for ' + cycleYear + ' as paid?')) return;
+    const self = this;
+    PandaAPI.call('markMaintenancePaid', { RequestedBy: this.currentUserName(), CycleYear: cycleYear }).then(function (res) { self.showToast(res.message); if (res.success) self.loadBilling(); });
   }
 
   showToast(msg) {
@@ -2400,7 +2504,7 @@ class Component extends DCLogic {
         staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [],
         mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [],
         labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [],
-        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
+        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
         maintenance: r.maintenance || { enabled: false, message: '' },
         loading: false
       });
@@ -2410,6 +2514,22 @@ class Component extends DCLogic {
     }.bind(this));
   }
 
+  // Refetches ONLY the one collection an add/update action touched, instead of reloading all
+  // ~25 collections — keeps Firestore read usage low as data grows.
+  refreshEntity(action) {
+    const map = {
+      Transaction: 'transactions', Payment: 'payments', BF: 'bf', DieselTransaction: 'dieselTx', DieselPayment: 'dieselPayments', DieselBF: 'dieselBF',
+      Supplier: 'suppliers', Site: 'sites', Material: 'materials', Staff: 'staff', StaffSalary: 'staffSalary', StaffPayment: 'staffPayments', StaffAttendance: 'staffAttendance',
+      Mistri: 'mistri', MistriDue: 'mistriDue', MistriPayment: 'mistriPayments', MistriAdvance: 'mistriAdvances',
+      Labour: 'labour', LabourEntry: 'labourEntries', LabourPayment: 'labourPayments', LabourAdvance: 'labourAdvances',
+      FundTransfer: 'fundTransfers', SiteAllocation: 'siteAllocations', SiteExpense: 'siteExpenses', OtherPayment: 'otherPayments', TaskCompletion: 'taskCompletions'
+    };
+    const entity = action.replace(/^(add|update|delete)/, '');
+    const key = map[entity];
+    const self = this;
+    if (!key) { this.loadAllQuiet(); return; }
+    PandaAPI.call('getCollection', { name: key }).then(function (r) { if (r && r.success) { const upd = {}; upd[key] = r.data; self.setState(upd); } });
+  }
   // Same as loadAll but skips the loading screen — used after save/delete so a background
   // refresh never blocks or re-flashes the UI.
   loadAllQuiet() {
@@ -2423,7 +2543,7 @@ class Component extends DCLogic {
         staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [],
         mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [],
         labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [],
-        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || []
+        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || []
       });
     });
   }
@@ -2484,6 +2604,15 @@ class Component extends DCLogic {
       const self = this;
       PandaAPI.call('getAuditLog').then(function (r) { if (r && r.success) self.setState({ auditLog: r.data || [] }); });
     }
+    if (this._trackedSections && this._trackedSections.indexOf(view) !== -1) {
+      const seen = Object.assign({}, this.state.lastSeen); seen[view] = new Date().toISOString();
+      localStorage.setItem('panda_lastseen', JSON.stringify(seen));
+      this.setState({ lastSeen: seen });
+    }
+  }
+  countNew(list, lastSeenTs) {
+    const ts = lastSeenTs || '';
+    return (list || []).filter(function (r) { return (r.CreatedAt || r.Date || '') > ts; }).length;
   }
   toggleMobileNav() { this.setState(function (s) { return { mobileNavOpen: !s.mobileNavOpen }; }); }
   closeMobileNav() { this.setState({ mobileNavOpen: false }); }
@@ -2705,7 +2834,7 @@ class Component extends DCLogic {
         self.showToast(res.message || successMsg);
         self.closeModal();
         self.setState({ saveStatus: null });
-        self.loadAllQuiet();
+        self.refreshEntity(action);
       } else {
         self.setState({ saveStatus: null });
         self.showToast(res.message || 'Save failed.');
@@ -2797,7 +2926,8 @@ class Component extends DCLogic {
       if (res.success) {
         self.showToast(res.message || 'Deleted successfully.');
         self.setState({ saveStatus: null });
-        self.loadAllQuiet();
+        if (listKey) { PandaAPI.call('getCollection', { name: listKey }).then(function (r) { if (r && r.success) { const upd = {}; upd[listKey] = r.data; self.setState(upd); } }); }
+        else self.loadAllQuiet();
       } else {
         self.setState({ saveStatus: null });
         self.showToast(res.message || 'Delete failed.');
@@ -3021,6 +3151,15 @@ class Component extends DCLogic {
     const payload = { Date: f.Date.value, Site: f.Site.value, Amount: f.Amount.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.ExpenseID = ed.ExpenseID; this.submitGeneric('updateSiteExpense', payload, 'Site expenditure updated successfully.'); }
     else this.submitGeneric('addSiteExpense', payload, 'Site expenditure saved successfully.');
+  }
+  submitOtherPayment(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value || !f.Name.value.trim() || !f.Purpose.value.trim() || !f.Amount.value) { this.showToast('Date, name, purpose and amount are required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, From: this.currentUserName(), Name: f.Name.value.trim(), Purpose: f.Purpose.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.PaymentID = ed.PaymentID; payload.From = ed.From; this.submitGeneric('updateOtherPayment', payload, 'Payment updated successfully.'); }
+    else this.submitGeneric('addOtherPayment', payload, 'Payment sent successfully.');
   }
 
   exportStaffPaymentsExcel() {
@@ -3541,9 +3680,41 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state;
     const self = this;
+    this._trackedSections = ['transactions', 'payments', 'dieselTx', 'dieselPayments', 'staffPayments', 'mistri', 'labour', 'funds'];
+    const lastSeen = s.lastSeen || {};
+    const newCount = {
+      transactions: this.countNew(s.transactions, lastSeen.transactions),
+      payments: this.countNew(s.payments, lastSeen.payments),
+      dieselTx: this.countNew(s.dieselTx, lastSeen.dieselTx),
+      dieselPayments: this.countNew(s.dieselPayments, lastSeen.dieselPayments),
+      staffPayments: this.countNew(s.staffPayments, lastSeen.staffPayments),
+      mistri: this.countNew(s.mistriPayments, lastSeen.mistri) + this.countNew(s.mistriDue, lastSeen.mistri) + this.countNew(s.mistriAdvances, lastSeen.mistri),
+      labour: this.countNew(s.labourEntries, lastSeen.labour) + this.countNew(s.labourPayments, lastSeen.labour) + this.countNew(s.labourAdvances, lastSeen.labour),
+      funds: this.countNew(s.fundTransfers, lastSeen.funds) + this.countNew(s.siteAllocations, lastSeen.funds) + this.countNew(s.siteExpenses, lastSeen.funds)
+    };
+    const hasNew = {
+      transactions: newCount.transactions > 0, payments: newCount.payments > 0, dieselTx: newCount.dieselTx > 0, dieselPayments: newCount.dieselPayments > 0,
+      staffPayments: newCount.staffPayments > 0, mistri: newCount.mistri > 0, labour: newCount.labour > 0, funds: newCount.funds > 0
+    };
+    const bInvoice = s.billingInvoice || { amount: 478, status: 'Pending' };
+    const bMaint = s.billingMaintenance || { amount: 125, firstDueYear: 2027, paidYears: [] };
+    const nowDate = new Date();
+    const feb1ThisYear = new Date(nowDate.getFullYear(), 1, 1);
+    const maintCycleYear = nowDate >= feb1ThisYear ? nowDate.getFullYear() : nowDate.getFullYear() - 1;
+    const maintIsDue = maintCycleYear >= (bMaint.firstDueYear || 2027);
+    const maintPaidThisCycle = (bMaint.paidYears || []).indexOf(maintCycleYear) !== -1;
+    const maintStatusLabel = !maintIsDue ? ('Scheduled — starts Feb 1, ' + (bMaint.firstDueYear || 2027)) : (maintPaidThisCycle ? 'Paid for ' + maintCycleYear : 'Pending for ' + maintCycleYear);
+    const canMarkPaid = this.currentUserName().toLowerCase() === 'hrushikesh padhi';
+    const billing = {
+      invoiceAmount: '$' + (bInvoice.amount || 478) + '.00', invoiceStatus: bInvoice.status || 'Pending', invoiceIsPaid: bInvoice.status === 'Paid',
+      invoicePaidBy: bInvoice.paidBy || '', invoicePaidAt: bInvoice.paidAt ? new Date(bInvoice.paidAt).toLocaleDateString('en-IN') : '',
+      maintAmount: '$' + (bMaint.amount || 125) + '.00/yr', maintStatusLabel: maintStatusLabel, maintIsDue: maintIsDue, maintIsPaid: maintPaidThisCycle,
+      maintCycleYear: maintCycleYear, canMarkPaid: canMarkPaid,
+      onMarkInvoicePaid: this.markInvoicePaid.bind(this), onMarkMaintPaid: function () { self.markMaintenancePaid(maintCycleYear); }
+    };
     if (!s.mistriDetailFilter) s.mistriDetailFilter = { from: '', to: '' };
     if (!s.labourDetailFilter) s.labourDetailFilter = { from: '', to: '' };
-    const sectionIds = ['salarySlips', 'staffPayments', 'staffPaymentsReport', 'mistriDue', 'mistriPayments', 'mistriAdvances', 'labourEntries', 'labourPayments', 'labourAdvances', 'fundTransfers', 'siteExpenditure', 'siteAllocations', 'supplierTx', 'supplierPay', 'supplierBF', 'usersList'];
+    const sectionIds = ['salarySlips', 'staffPayments', 'staffPaymentsReport', 'mistriDue', 'mistriPayments', 'mistriAdvances', 'labourEntries', 'labourPayments', 'labourAdvances', 'fundTransfers', 'siteExpenditure', 'siteAllocations', 'otherPayments', 'supplierTx', 'supplierPay', 'supplierBF', 'usersList'];
     const sectionExpanded = {}; const sectionToggle = {}; const sectionIcon = {};
     sectionIds.forEach(function (id) { sectionExpanded[id] = !!s.expandedSections[id]; sectionIcon[id] = s.expandedSections[id] ? '▾' : '▸'; sectionToggle[id] = function () { self.toggleSection(id); }; });
     const fmt = function (n) { return self.fmt(n); };
@@ -3936,7 +4107,7 @@ class Component extends DCLogic {
       tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', labour: s.view === 'labour', labourDetail: s.view === 'labourDetail', funds: s.view === 'funds', attendance: s.view === 'attendance'
     };
     const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel', staffDue: s.reportTab === 'staffDue', labour: s.reportTab === 'labour' };
-    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment', labour: s.modal === 'labour', labourEntry: s.modal === 'labourEntry', labourPayment: s.modal === 'labourPayment' };
+    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment', labour: s.modal === 'labour', labourEntry: s.modal === 'labourEntry', labourPayment: s.modal === 'labourPayment', otherPayment: s.modal === 'otherPayment' };
     const editRecordRaw = s.editRecord || {};
     const myName = s.session ? s.session.name : '';
     const fundReceivedN = self.sum(s.fundTransfers.filter(function (t) { return t.To === myName; }), 'Amount');
@@ -3947,7 +4118,8 @@ class Component extends DCLogic {
     const spentStaffN = self.sum(s.staffPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid');
     const spentMistriN = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid') + self.sum(s.mistriAdvances.filter(function (p) { return p.CreatedBy === myName; }), 'Amount');
     const spentLabourN = self.sum(s.labourPayments.filter(function (p) { return p.CreatedBy === myName; }), 'AmountPaid') + self.sum(s.labourAdvances.filter(function (p) { return p.CreatedBy === myName; }), 'Amount');
-    const totalMyExpenditureN = fundSentOutN + fundAllocatedN + spentSupplierN + spentDieselN + spentStaffN + spentMistriN + spentLabourN;
+    const spentOtherN = self.sum(s.otherPayments.filter(function (p) { return p.From === myName; }), 'Amount');
+    const totalMyExpenditureN = fundSentOutN + fundAllocatedN + spentSupplierN + spentDieselN + spentStaffN + spentMistriN + spentLabourN + spentOtherN;
     const myFundBalanceN = fundReceivedN - totalMyExpenditureN;
     const myExpenditureBreakdown = [
       { label: 'Sent to Other Users', valueFmt: fmt(fundSentOutN) },
@@ -3956,7 +4128,8 @@ class Component extends DCLogic {
       { label: 'To Diesel', valueFmt: fmt(spentDieselN) },
       { label: 'To Staff', valueFmt: fmt(spentStaffN) },
       { label: 'To Mistri', valueFmt: fmt(spentMistriN) },
-      { label: 'To Labour', valueFmt: fmt(spentLabourN) }
+      { label: 'To Labour', valueFmt: fmt(spentLabourN) },
+      { label: 'To Others', valueFmt: fmt(spentOtherN) }
     ];
     const showMyFundBalance = !isOwnerOrAdmin1 || fundReceivedN > 0;
     const ftf = s.fundTransferFilter;
@@ -3974,6 +4147,9 @@ class Component extends DCLogic {
     const fundTransferShowLessOn = s.fundTransferShowAll && fundTransferRowsSorted.length > 8;
     const allocationRows = (canSeeAllFunds ? s.siteAllocations : s.siteAllocations.filter(function (a) { return a.User === myName; }))
       .slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('siteAllocation', r); }, onDelete: function () { self.deleteRecord('deleteSiteAllocation', { AllocationID: r.AllocationID }, 'siteAllocations'); } }); });
+    const otherPaymentRows = (canSeeAllFunds ? s.otherPayments : s.otherPayments.filter(function (p) { return p.From === myName; }))
+      .slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('otherPayment', r); }, onDelete: function () { self.deleteRecord('deleteOtherPayment', { PaymentID: r.PaymentID }, 'otherPayments'); } }); });
+    const otherPaymentDefaults = { Date: editRecordRaw.Date || todayStr, Name: editRecordRaw.Name || '', Purpose: editRecordRaw.Purpose || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '' };
     const swf = s.siteWalletFilter;
     const siteWalletCards = s.sites.map(function (site) {
       const receivedRows = s.siteAllocations.filter(function (a) { return a.Site === site.SiteName && self.inRange(a.Date, swf.from, swf.to); });
@@ -4009,7 +4185,8 @@ class Component extends DCLogic {
       const toStaff = self.sum(s.staffPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'AmountPaid');
       const toMistri = self.sum(s.mistriPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'AmountPaid') + self.sum(s.mistriAdvances.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'Amount');
       const toLabour = self.sum(s.labourPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'AmountPaid') + self.sum(s.labourAdvances.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'Amount');
-      const balance = received - sentOut - toSite - toSupplier - toDiesel - toStaff - toMistri - toLabour;
+      const toOther = self.sum(s.otherPayments.filter(function (p) { return p.From === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }), 'Amount');
+      const balance = received - sentOut - toSite - toSupplier - toDiesel - toStaff - toMistri - toLabour - toOther;
       const txns = [];
       s.fundTransfers.filter(function (t) { return t.To === u.Name && self.inRange(t.Date, ubf.from, ubf.to); }).forEach(function (t) { txns.push({ Date: t.Date, Category: 'Received', Detail: 'from ' + t.From, Site: '', AmountFmt: fmt(Number(t.Amount) || 0), color: '#2e9e5b', AmountN: Number(t.Amount) || 0 }); });
       s.siteAllocations.filter(function (a) { return a.User === u.Name && self.inRange(a.Date, ubf.from, ubf.to); }).forEach(function (a) { txns.push({ Date: a.Date, Category: 'To Site', Detail: a.Site, Site: a.Site, AmountFmt: fmt(Number(a.Amount) || 0), color: '#e2574c', AmountN: Number(a.Amount) || 0 }); });
@@ -4019,6 +4196,7 @@ class Component extends DCLogic {
       s.mistriPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Mistri', Detail: p.MistriName, Site: p.Site || '', AmountFmt: fmt(Number(p.AmountPaid) || 0), color: '#e2574c', AmountN: Number(p.AmountPaid) || 0 }); });
       s.mistriAdvances.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Mistri (Advance)', Detail: p.MistriName, Site: p.Site || '', AmountFmt: fmt(Number(p.Amount) || 0), color: '#e2574c', AmountN: Number(p.Amount) || 0 }); });
       s.labourPayments.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Labour', Detail: p.LabourName, Site: p.Site || '', AmountFmt: fmt(Number(p.AmountPaid) || 0), color: '#e2574c', AmountN: Number(p.AmountPaid) || 0 }); });
+      s.otherPayments.filter(function (p) { return p.From === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Other', Detail: p.Name + ' (' + p.Purpose + ')', Site: '', AmountFmt: fmt(Number(p.Amount) || 0), color: '#e2574c', AmountN: Number(p.Amount) || 0 }); });
       s.labourAdvances.filter(function (p) { return p.CreatedBy === u.Name && self.inRange(p.Date, ubf.from, ubf.to); }).forEach(function (p) { txns.push({ Date: p.Date, Category: 'To Labour (Advance)', Detail: p.LabourName, Site: p.Site || '', AmountFmt: fmt(Number(p.Amount) || 0), color: '#e2574c', AmountN: Number(p.Amount) || 0 }); });
       txns.sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); });
       txns.forEach(function (tx, i) { tx.Sl = i + 1; tx.receivedFmt = tx.Category === 'Received' ? fmt(tx.AmountN) : ''; tx.sentFmt = tx.Category === 'Received' ? '' : fmt(tx.AmountN); });
@@ -4060,7 +4238,7 @@ class Component extends DCLogic {
     const showLabourPicker = !s.selectedLabour;
     const labourOptions = s.labour.map(function (l) { return l.Name; });
     const staffRateReadOnly = false;
-    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment', labour: isEditing ? 'Edit Labour' : 'Add Labour', labourEntry: isEditing ? 'Edit Labour Entry' : 'Add Labour Entry', labourPayment: isEditing ? 'Edit Labour Payment' : 'Add Labour Payment' };
+    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment', labour: isEditing ? 'Edit Labour' : 'Add Labour', labourEntry: isEditing ? 'Edit Labour Entry' : 'Add Labour Entry', labourPayment: isEditing ? 'Edit Labour Payment' : 'Add Labour Payment', otherPayment: isEditing ? 'Edit Payment' : 'Send Payment' };
     const modalTitle = modalTitleMap[s.modal] || '';
 
     const navBtn = function (active) { return 'display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;margin-bottom:2px;box-sizing:border-box;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? '#d4af37' : 'var(--text)') + ';'; };
@@ -4088,7 +4266,7 @@ class Component extends DCLogic {
       maintenanceToggleLabel: (s.maintenance && s.maintenance.enabled) ? 'Turn Maintenance OFF' : 'Turn Maintenance ON',
       maintenanceToggleStyle: 'padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:' + ((s.maintenance && s.maintenance.enabled) ? '#e2574c' : '#2ea043') + ';color:#fff;',
       onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this), onMigrate: this.migrateFromSheets.bind(this),
-      viewIs: viewIs, pageTitle: pageTitles[s.view] || '', navStyle: navStyle, reportTabStyle: reportTabStyle, reportTabIs: reportTabIs, modal: s.modal, modalIs: modalIs,
+      viewIs: viewIs, pageTitle: pageTitles[s.view] || '', navStyle: navStyle, reportTabStyle: reportTabStyle, reportTabIs: reportTabIs, modal: s.modal, modalIs: modalIs, hasNew: hasNew, newCount: newCount, billing: billing,
       users: usersWithContact, auditLog: s.auditLog, dataSourceLabel: isDemo ? 'Demo mode — data stored in this browser only. Paste your Apps Script Web App URL into config.js to switch to live Google Sheet.' : 'Connected to Google Sheets via Apps Script.',
       dashFilters: s.dashFilters, supplierOptions: supplierOptions, siteOptions: siteOptions, materialOptions: materialOptions, dieselSupplierOptions: dieselSupplierOptions, unitOptions: unitOptions, monthShortcutOptions: monthShortcutOptions, onDashMonth: this.setMonthShortcut('dashFilters'), paymentMethodOptions: paymentMethodOptions,
       onDashFrom: this.setDashFilter('from'), onDashTo: this.setDashFilter('to'), onDashSupplier: this.setDashFilter('supplier'), onDashSite: this.setDashFilter('site'), onDashMaterial: this.setDashFilter('material'), onDashVehicle: this.setDashFilter('vehicle'),
@@ -4166,9 +4344,9 @@ class Component extends DCLogic {
       exportFundTransfersExcel: this.exportFundTransfersExcel.bind(this), exportFundTransfersPDF: this.exportFundTransfersPDF.bind(this),
       fundTransferHiddenCount: fundTransferHiddenCount, fundTransferShowAllOn: fundTransferShowLessOn, toggleFundTransferShowAll: this.toggleFundTransferShowAll.bind(this), onSiteWalletFrom: this.setSiteWalletFilter('from'), onSiteWalletTo: this.setSiteWalletFilter('to'), onSiteWalletMonth: this.setMonthShortcut('siteWalletFilter'), siteExpenseRows: siteExpenseRows, siteExpenseDefaults: siteExpenseDefaults, openSiteExpenseModal: function () { self.openModal('siteExpense'); }, showStaffPicker: showStaffPicker, staffOptions: staffOptions, fundTransferRows: fundTransferRows, allocationRows: allocationRows, fundTransferDefaults: fundTransferDefaults, siteAllocationDefaults: siteAllocationDefaults, fundRecipientOptions: fundRecipientOptions,
       openStaffModal: function () { self.openModal('staff'); }, openStaffSalaryModal: function () { self.openModal('staffSalary'); }, openStaffPaymentModal: function () { self.openModal('staffPayment'); },
-      openFundTransferModal: function () { self.openModal('fundTransfer'); }, openSiteAllocationModal: function () { self.openModal('siteAllocation'); },
+      openFundTransferModal: function () { self.openModal('fundTransfer'); }, openSiteAllocationModal: function () { self.openModal('siteAllocation'); }, openOtherPaymentModal: function () { self.openModal('otherPayment'); },
       submitStaff: this.submitStaff.bind(this), submitStaffSalary: this.submitStaffSalary.bind(this), submitStaffPayment: this.submitStaffPayment.bind(this), submitUserContact: this.submitUserContact.bind(this),
-      submitFundTransfer: this.submitFundTransfer.bind(this), submitSiteAllocation: this.submitSiteAllocation.bind(this), submitSiteExpense: this.submitSiteExpense.bind(this)
+      submitFundTransfer: this.submitFundTransfer.bind(this), submitSiteAllocation: this.submitSiteAllocation.bind(this), submitSiteExpense: this.submitSiteExpense.bind(this), submitOtherPayment: this.submitOtherPayment.bind(this), otherPaymentRows: otherPaymentRows, otherPaymentDefaults: otherPaymentDefaults
     };
   }
 }
