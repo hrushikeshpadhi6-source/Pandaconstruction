@@ -2404,6 +2404,24 @@ class Component extends DCLogic {
     }.bind(this));
   }
 
+  // Same as loadAll but skips the loading screen — used after save/delete so a background
+  // refresh never blocks or re-flashes the UI.
+  loadAllQuiet() {
+    const self = this;
+    return PandaAPI.call('getAllData').then(function (r) {
+      if (!r || !r.success) return;
+      self.setState({
+        suppliers: r.suppliers || [], transactions: r.transactions || [], payments: r.payments || [], bf: r.bf || [],
+        dieselTx: r.dieselTx || [], dieselPayments: r.dieselPayments || [], dieselBF: r.dieselBF || [],
+        sites: r.sites || [], materials: r.materials || [], users: r.users || [],
+        staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [],
+        mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [],
+        labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [],
+        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || []
+      });
+    });
+  }
+
   handleLogin(e) {
     e.preventDefault();
     const name = e.target.elements.name.value;
@@ -2454,7 +2472,13 @@ class Component extends DCLogic {
   }
   toggleShowPassword() { this.setState(function (s) { return { showPassword: !s.showPassword }; }); }
   toggleTheme() { this.setState(function (s) { const t = s.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('panda_theme', t); return { theme: t }; }); }
-  setView(view) { this.setState({ view: view, selectedSupplier: null, modal: null, mobileNavOpen: false }); }
+  setView(view) {
+    this.setState({ view: view, selectedSupplier: null, modal: null, mobileNavOpen: false });
+    if (view === 'settings') {
+      const self = this;
+      PandaAPI.call('getAuditLog').then(function (r) { if (r && r.success) self.setState({ auditLog: r.data || [] }); });
+    }
+  }
   toggleMobileNav() { this.setState(function (s) { return { mobileNavOpen: !s.mobileNavOpen }; }); }
   closeMobileNav() { this.setState({ mobileNavOpen: false }); }
   openSupplier(name) { this.setState({ view: 'supplierDetail', selectedSupplier: name, mobileNavOpen: false }); }
@@ -2675,7 +2699,7 @@ class Component extends DCLogic {
         self.showToast(res.message || successMsg);
         self.closeModal();
         self.setState({ saveStatus: null });
-        self.loadAll();
+        self.loadAllQuiet();
       } else {
         self.setState({ saveStatus: null });
         self.showToast(res.message || 'Save failed.');
@@ -2766,7 +2790,8 @@ class Component extends DCLogic {
     PandaAPI.call(action, payload).then(function (res) {
       if (res.success) {
         self.showToast(res.message || 'Deleted successfully.');
-        self.loadAll().then(function () { self.setState({ saveStatus: null }); });
+        self.setState({ saveStatus: null });
+        self.loadAllQuiet();
       } else {
         self.setState({ saveStatus: null });
         self.showToast(res.message || 'Delete failed.');

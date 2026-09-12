@@ -152,8 +152,7 @@
         const arrs = await Promise.all(names.map(colToArray));
         const out = { success: true };
         names.forEach(function (n, i) { out[n] = arrs[i]; });
-        const auditSnap = await db.collection("auditLog").orderBy("Timestamp", "desc").limit(300).get();
-        out.auditLog = auditSnap.docs.map(function (d) { return d.data(); });
+        out.auditLog = []; // fetched separately via getAuditLog only when the Settings/Audit tab is opened
         out.maintenance = await getMaintenanceStatus();
         return out;
       }
