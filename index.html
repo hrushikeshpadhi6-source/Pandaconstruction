@@ -1853,6 +1853,29 @@
         </div>
       </div>
 
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+          <div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:4px;">Database Usage (estimated, this device today)</div>
+            <div style="font-size:12px;color:var(--muted);max-width:480px;">Counts actions made from this browser only — not the exact total across your whole team. For the real number, check Firebase Console.</div>
+          </div>
+          <a href="https://console.firebase.google.com/project/panda-construction/firestore/usage" target="_blank" style="font-size:12px;font-weight:700;white-space:nowrap;">Open Firebase Usage →</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;">
+          <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Reads</div><div style="font-size:18px;font-weight:700;">{{ usageEstimate.reads }} <span style="font-size:12px;color:var(--muted);font-weight:500;">/ 50,000</span></div></div>
+          <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Writes</div><div style="font-size:18px;font-weight:700;">{{ usageEstimate.writes }} <span style="font-size:12px;color:var(--muted);font-weight:500;">/ 20,000</span></div></div>
+          <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Deletes</div><div style="font-size:18px;font-weight:700;">{{ usageEstimate.deletes }} <span style="font-size:12px;color:var(--muted);font-weight:500;">/ 20,000</span></div></div>
+        </div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:700;font-size:14px;margin-bottom:6px;">Export Raw Data</div>
+          <div style="font-size:13px;color:var(--muted);max-width:480px;">Download every record from the database as one Excel file (one sheet per module) — open it in Excel or Google Sheets to view/search the raw data.</div>
+        </div>
+        <button onClick="{{ onExportRawData }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;white-space:nowrap;">Export All Data (Excel)</button>
+      </div>
+
       <div style="font-weight:700;margin-bottom:10px;">Billing</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:24px;">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;">
@@ -2238,7 +2261,7 @@
         <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
         <form key="{{ formKey }}" onSubmit="{{ submitFundTransfer }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="date" name="Date" required="true" defaultValue="{{ fundTransferDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
-          <select name="To" required="true" defaultValue="{{ fundTransferDefaults.To }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Send To</option><sc-if value="{{ isOwnerOrAdmin1 }}"><optgroup label="Users"><sc-for list="{{ fundRecipientOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></optgroup></sc-if><optgroup label="Mistris (advance)"><sc-for list="{{ mistriOptions }}" as="opt" hint-placeholder-count="3"><option value="MISTRI::{{ opt }}">{{ opt }}</option></sc-for></optgroup><optgroup label="Labour (advance)"><sc-for list="{{ labourOptions }}" as="opt" hint-placeholder-count="3"><option value="LABOUR::{{ opt }}">{{ opt }}</option></sc-for></optgroup></select>
+          <select name="To" required="true" defaultValue="{{ fundTransferDefaults.To }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Send To</option><sc-if value="{{ isOwnerOrAdmin1 }}"><optgroup label="Users"><sc-for list="{{ fundRecipientOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></optgroup></sc-if></select>
           <input type="text" name="Site" placeholder="Site (required only when sending to a Mistri or Labour)" autocomplete="off" list="fundTransferSiteList" defaultValue="{{ fundTransferDefaults.Site }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="fundTransferSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="Amount" placeholder="Amount (₹)" required="true" defaultValue="{{ fundTransferDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
@@ -2486,6 +2509,27 @@ class Component extends DCLogic {
     const self = this;
     PandaAPI.call('markMaintenancePaid', { RequestedBy: this.currentUserName(), CycleYear: cycleYear }).then(function (res) { self.showToast(res.message); if (res.success) self.loadBilling(); });
   }
+  exportRawData() {
+    if (!window.XLSX) { this.showToast('Excel library still loading — try again in a moment.'); return; }
+    const s = this.state;
+    const wb = XLSX.utils.book_new();
+    const collections = {
+      Suppliers: s.suppliers, Transactions: s.transactions, Payments: s.payments, BF: s.bf,
+      DieselTransactions: s.dieselTx, DieselPayments: s.dieselPayments, DieselBF: s.dieselBF,
+      Sites: s.sites, Materials: s.materials, Users: s.users,
+      Staff: s.staff, StaffSalary: s.staffSalary, StaffPayments: s.staffPayments, StaffAttendance: s.staffAttendance,
+      Mistri: s.mistri, MistriDue: s.mistriDue, MistriPayments: s.mistriPayments, MistriAdvances: s.mistriAdvances,
+      Labour: s.labour, LabourEntries: s.labourEntries, LabourPayments: s.labourPayments, LabourAdvances: s.labourAdvances,
+      FundTransfers: s.fundTransfers, SiteAllocations: s.siteAllocations, SiteExpenses: s.siteExpenses, OtherPayments: s.otherPayments,
+      TaskCompletions: s.taskCompletions
+    };
+    Object.keys(collections).forEach(function (name) {
+      const rows = collections[name] || [];
+      const ws = rows.length ? XLSX.utils.json_to_sheet(rows) : XLSX.utils.aoa_to_sheet([['No data']]);
+      XLSX.utils.book_append_sheet(wb, ws, name.slice(0, 31));
+    });
+    XLSX.writeFile(wb, 'Panda_Construction_Raw_Data_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+  }
 
   showToast(msg) {
     this.setState({ toast: { msg: msg } });
@@ -2495,7 +2539,10 @@ class Component extends DCLogic {
 
   loadAll() {
     this.setState({ loading: true });
+    const self = this;
+    const timeoutGuard = setTimeout(function () { self.setState(function (s) { return s.loading ? { loading: false } : null; }); self.showToast('Data load timed out — check your connection and try again.'); }, 15000);
     return PandaAPI.call('getAllData').then(function (r) {
+      clearTimeout(timeoutGuard);
       if (!r || !r.success) { this.setState({ loading: false }); this.showToast((r && r.message) || 'Failed to load data.'); return; }
       this.setState({
         suppliers: r.suppliers || [], transactions: r.transactions || [], payments: r.payments || [], bf: r.bf || [],
@@ -2509,6 +2556,7 @@ class Component extends DCLogic {
         loading: false
       });
     }.bind(this)).catch(function (e) {
+      clearTimeout(timeoutGuard);
       this.setState({ loading: false });
       this.showToast('Failed to load data: ' + e.message + ' — check your connection and try again.');
     }.bind(this));
@@ -3128,6 +3176,13 @@ class Component extends DCLogic {
       const payload = { Date: f.Date.value, From: this.currentUserName(), LabourName: labourName, Site: f.Site.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
       if (ed && ed._isLabourAdvance) { payload.AdvanceID = ed.AdvanceID; this.submitGeneric('updateLabourAdvance', payload, 'Advance updated successfully.'); }
       else this.submitGeneric('addLabourAdvance', payload, 'Advance sent successfully.');
+      return;
+    }
+    if (f.To.value.indexOf('STAFF::') === 0) {
+      const staffName = f.To.value.slice(7);
+      const payload = { Date: f.Date.value, StaffName: staffName, AmountPaid: f.Amount.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: '', Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+      if (ed && ed._isStaffPayment) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateStaffPayment', payload, 'Staff payment updated successfully.'); }
+      else this.submitGeneric('addStaffPayment', payload, 'Staff payment sent successfully.');
       return;
     }
     const payload = { Date: f.Date.value, From: this.currentUserName(), To: f.To.value, Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
@@ -4346,7 +4401,7 @@ class Component extends DCLogic {
       openStaffModal: function () { self.openModal('staff'); }, openStaffSalaryModal: function () { self.openModal('staffSalary'); }, openStaffPaymentModal: function () { self.openModal('staffPayment'); },
       openFundTransferModal: function () { self.openModal('fundTransfer'); }, openSiteAllocationModal: function () { self.openModal('siteAllocation'); }, openOtherPaymentModal: function () { self.openModal('otherPayment'); },
       submitStaff: this.submitStaff.bind(this), submitStaffSalary: this.submitStaffSalary.bind(this), submitStaffPayment: this.submitStaffPayment.bind(this), submitUserContact: this.submitUserContact.bind(this),
-      submitFundTransfer: this.submitFundTransfer.bind(this), submitSiteAllocation: this.submitSiteAllocation.bind(this), submitSiteExpense: this.submitSiteExpense.bind(this), submitOtherPayment: this.submitOtherPayment.bind(this), otherPaymentRows: otherPaymentRows, otherPaymentDefaults: otherPaymentDefaults
+      submitFundTransfer: this.submitFundTransfer.bind(this), submitSiteAllocation: this.submitSiteAllocation.bind(this), submitSiteExpense: this.submitSiteExpense.bind(this), submitOtherPayment: this.submitOtherPayment.bind(this), otherPaymentRows: otherPaymentRows, otherPaymentDefaults: otherPaymentDefaults, onExportRawData: this.exportRawData.bind(this), usageEstimate: (window.PandaAPI && window.PandaAPI.getUsageEstimate ? window.PandaAPI.getUsageEstimate() : { reads: 0, writes: 0, deletes: 0 })
     };
   }
 }

@@ -410,25 +410,28 @@
     return { success: true, message: "Migration complete — " + written + " records copied into Firestore." };
   }
 
-  // Auto-seed the four known users if the users collection is empty, so the login dropdown
-  // works even before "Migrate from Google Sheets" has been run.
-  async function ensureUsersSeeded() {
+  function trackUsage(kind, n) {
     try {
-      const snap = await db.collection("users").limit(1).get();
-      if (!snap.empty) return;
-      const names = Object.keys(USER_PASSWORDS);
-      const roles = { "Subrat Panda": "Admin 1", "Hrushikesh Padhi": "Admin 1", "Ayaskanta Giri": "Admin 2", "Sukadev": "Site User" };
-      let i = 0;
-      for (const name of names) {
-        i++;
-        await db.collection("users").doc("USR" + i).set({ UserID: "USR" + i, Name: name, Role: roles[name] || "Site User", ContactNumber: "", Status: "Active", CreatedAt: new Date().toISOString() });
-      }
-    } catch (e) { console.error("User seed failed", e); }
+      const key = 'panda_usage_' + new Date().toISOString().slice(0, 10);
+      const cur = JSON.parse(localStorage.getItem(key) || '{"reads":0,"writes":0,"deletes":0}');
+      cur[kind] = (cur[kind] || 0) + n;
+      localStorage.setItem(key, JSON.stringify(cur));
+    } catch (e) {}
   }
-  ensureUsersSeeded();
-
   window.PandaAPI = {
     isDemo: false,
-    call: function (action, payload) { return route(action, payload).catch(function (e) { console.error("PandaAPI (Firestore): " + action + " failed", e); return { success: false, message: "Database error: " + e.message }; }); }
+    getUsageEstimate: function () {
+      try { return JSON.parse(localStorage.getItem('panda_usage_' + new Date().toISOString().slice(0, 10)) || '{"reads":0,"writes":0,"deletes":0}'); }
+      catch (e) { return { reads: 0, writes: 0, deletes: 0 }; }
+    },
+    call: function (action, payload) {
+      return route(action, payload).then(function (res) {
+        if (/^get/.test(action)) trackUsage('reads', (res && res.data && res.data.length) || (action === 'getAllData' ? 500 : 1));
+        else if (/^add/.test(action)) trackUsage('writes', 2);
+        else if (/^update/.test(action)) trackUsage('writes', 1);
+        else if (/^delete/.test(action)) trackUsage('deletes', 1);
+        return res;
+      }).catch(function (e) { console.error("PandaAPI (Firestore): " + action + " failed", e); return { success: false, message: "Database error: " + e.message }; });
+    }
   };
 })();

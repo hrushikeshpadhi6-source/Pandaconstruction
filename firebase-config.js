@@ -17,11 +17,12 @@ var CONFIG = window.CONFIG;
 firebase.initializeApp(window.FIREBASE_CONFIG);
 // App Check — proves requests come from this real deployed site (blocks random access using just the API key).
 // Enable "Enforce" for Firestore in Firebase Console > App Check once this is confirmed working.
-if (!window.__pandaAppCheckActivated) {
-  window.__pandaAppCheckActivated = true;
-  try {
-    var appCheck = firebase.appCheck();
-    appCheck.activate('6LfzGLgtAAAAAPofhVIR8MthZZaOwxHA-t47uyE', true);
-  } catch (e) { console.warn('App Check not available:', e); }
-}
+// App Check — DISABLED (still causing hangs with current Enterprise key; needs a properly verified key before re-enabling).
+// if (!window.__pandaAppCheckActivated) {
+//   window.__pandaAppCheckActivated = true;
+//   try {
+//     var appCheck = firebase.appCheck();
+//     appCheck.activate(new firebase.appCheck.ReCaptchaEnterpriseProvider('6LfzGLgtAAAAAGw8YGPYuQ2HdpTaUGfgK-jk6tfo'), true);
+//   } catch (e) { console.warn('App Check not available:', e); }
+// }
 window.fsdb = firebase.firestore();
