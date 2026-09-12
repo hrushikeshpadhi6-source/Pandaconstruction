@@ -380,16 +380,16 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DisplaySL }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Time }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.VehicleNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Material }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.VehicleNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Material }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Quantity }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Unit }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Unit }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.RateFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:var(--muted);">{{ r.FareFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);white-space:nowrap;">{{ r.Remarks }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1492,7 +1492,7 @@
                     <sc-for list="{{ sc.txns }}" as="tx" hint-placeholder-count="2">
                       <tr>
                         <td style="padding:4px 6px;font-size:11px;color:var(--muted);">{{ tx.Sl }}</td>
-                        <td style="padding:4px 6px;font-size:11px;">{{ tx.Date }}</td>
+                        <td style="padding:4px 6px;font-size:11px;white-space:nowrap;">{{ tx.Date }}</td>
                         <td style="padding:4px 6px;font-size:11px;">{{ tx.Category }}</td>
                         <td style="padding:4px 6px;font-size:11px;color:var(--muted);">{{ tx.Detail }}</td>
                         <td style="padding:4px 6px;font-size:11px;color:var(--muted);">{{ tx.Remarks }}</td>
@@ -1549,6 +1549,7 @@
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">By</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Site</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Amount</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Method</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Remarks</th>
             <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
           </tr></thead>
@@ -1559,6 +1560,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.User }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
@@ -2190,6 +2192,10 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ siteAllocationDefaults.Site }}" list="allocSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="allocSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="Amount" placeholder="Amount (₹)" required="true" defaultValue="{{ siteAllocationDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <select name="PaymentMethod" defaultValue="{{ siteAllocationDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;">
+            <option value="Cash">Cash</option>
+            <option value="A/C">A/C</option>
+          </select>
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ siteAllocationDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -3003,7 +3009,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Site.value || !f.Amount.value) { this.showToast('Date, site and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, User: this.currentUserName(), Site: f.Site.value, Amount: f.Amount.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, User: this.currentUserName(), Site: f.Site.value, Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.AllocationID = ed.AllocationID; payload.User = ed.User; this.submitGeneric('updateSiteAllocation', payload, 'Site allocation updated successfully.'); }
     else this.submitGeneric('addSiteAllocation', payload, 'Site allocation saved successfully.');
   }
@@ -4022,7 +4028,7 @@ class Component extends DCLogic {
     }).filter(function (r) { return r.receivedFmt !== fmt(0); }) : [];
     this._lastUserBalanceBreakdown = userBalanceBreakdown;
     const fundTransferDefaults = { Date: editRecordRaw.Date || todayStr, To: editRecordRaw._isAdvance ? ('MISTRI::' + editRecordRaw.MistriName) : (editRecordRaw._isLabourAdvance ? ('LABOUR::' + editRecordRaw.LabourName) : (editRecordRaw.To || '')), Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '', Site: editRecordRaw.Site || '' };
-    const siteAllocationDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
+    const siteAllocationDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '' };
     const siteExpenseDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
     const fundRecipientOptions = s.users.filter(function (u) { return u.Name !== myName; }).map(function (u) { return u.Name; });
     const staffOptions = s.staff.map(function (st) { return st.Name; });
