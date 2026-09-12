@@ -161,8 +161,14 @@
     </sc-if>
     <sc-if value="{{ !loading }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
-        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" onChange="{{ onDashFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
-        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" onChange="{{ onDashTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ dashFilters.from }}" onChange="{{ onDashFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ dashFilters.to }}" onChange="{{ onDashTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onDashMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Pick a month</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Supplier</label>
           <select onChange="{{ onDashSupplier }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
             <option value="">All Suppliers</option>
@@ -257,6 +263,14 @@
       </div>
       <div style="color:var(--muted2);font-size:12px;margin-bottom:20px;">Outstanding = BF Balance + Total Purchase − Total Paid</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ detailFilters.from }}" onChange="{{ onDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ detailFilters.to }}" onChange="{{ onDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onDetailMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Pick a month</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Site</label>
           <select onChange="{{ onDetailSite }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
             <option value="">All Sites</option>
@@ -273,6 +287,8 @@
           <input type="text" onChange="{{ onDetailVehicle }}" placeholder="Search vehicle no." style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" />
         </div>
       </div>
+      <div onClick="{{ sectionToggle.supplierTx }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:12px;"><span style="color:var(--muted);font-size:12px;">{{ sectionIcon.supplierTx }}</span>Transactions</div>
+      <sc-if value="{{ sectionExpanded.supplierTx }}">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;min-width:700px;">
           <thead><tr>
@@ -285,6 +301,7 @@
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Fare</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Value</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Site</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
           </tr></thead>
           <tbody>
             <sc-for list="{{ supplierDetail.rows }}" as="r" hint-placeholder-count="4">
@@ -298,18 +315,26 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:var(--muted);">{{ r.FareFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
         </table>
       </div>
+      </sc-if>
     </sc-if>
 
     <sc-if value="{{ viewIs.transactions }}">
       <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" onChange="{{ onDashFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
-          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" onChange="{{ onDashTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ dashFilters.from }}" onChange="{{ onDashFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ dashFilters.to }}" onChange="{{ onDashTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+            <select onChange="{{ onDashMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+              <option value="">Pick a month</option>
+              <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+            </select>
+          </div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Supplier</label>
             <select onChange="{{ onDashSupplier }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
               <option value="">All</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
@@ -456,8 +481,14 @@
       </div>
       <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" onChange="{{ onDashFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
-          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" onChange="{{ onDashTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ dashFilters.from }}" onChange="{{ onDashFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ dashFilters.to }}" onChange="{{ onDashTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+            <select onChange="{{ onDashMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+              <option value="">Pick a month</option>
+              <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+            </select>
+          </div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Fuel Station</label>
             <select onChange="{{ onDashSupplier }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
               <option value="">All</option><sc-for list="{{ dieselSupplierOptions }}" as="opt" hint-placeholder-count="2"><option value="{{ opt }}">{{ opt }}</option></sc-for>
@@ -883,6 +914,17 @@
       </div>
       </sc-if>
 
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ mistriDetailFilter.from }}" onChange="{{ onMistriDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ mistriDetailFilter.to }}" onChange="{{ onMistriDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onMistriDetailMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Pick a month</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
+        <div style="font-size:12px;color:var(--muted2);align-self:center;">Filters Payments &amp; Advances (Due Entries use their own Month field)</div>
+      </div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <div onClick="{{ sectionToggle.mistriPayments }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;"><span style="color:var(--muted);font-size:12px;">{{ sectionIcon.mistriPayments }}</span>Payments</div>
         <button onClick="{{ openMistriPaymentModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Add Payment</button>
@@ -990,6 +1032,17 @@
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Outstanding</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:{{ labourDetail.outstandingColor }};">{{ labourDetail.outstandingFmt }}</div></div>
       </div>
 
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ labourDetailFilter.from }}" onChange="{{ onLabourDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ labourDetailFilter.to }}" onChange="{{ onLabourDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onLabourDetailMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Pick a month</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
+        <div style="font-size:12px;color:var(--muted2);align-self:center;">Filters Entries, Payments &amp; Advances</div>
+      </div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <div onClick="{{ sectionToggle.labourEntries }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;"><span style="color:var(--muted);font-size:12px;">{{ sectionIcon.labourEntries }}</span>Entries <span style="font-size:12px;color:var(--muted2);font-weight:400;">(daily or contract work, per site)</span></div>
         <button onClick="{{ openLabourEntryModal }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Add Entry</button>
@@ -1022,6 +1075,7 @@
         </table>
       </div>
       </sc-if>
+
 
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <div onClick="{{ sectionToggle.labourPayments }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;"><span style="color:var(--muted);font-size:12px;">{{ sectionIcon.labourPayments }}</span>Payments</div>
@@ -1103,8 +1157,14 @@
     <sc-if value="{{ viewIs.staffPayments }}">
       <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" onChange="{{ onStaffPaymentsFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
-          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" onChange="{{ onStaffPaymentsTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ staffPaymentsFilter.from }}" onChange="{{ onStaffPaymentsFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ staffPaymentsFilter.to }}" onChange="{{ onStaffPaymentsTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+            <select onChange="{{ onStaffPaymentsMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+              <option value="">Pick a month</option>
+              <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+            </select>
+          </div>
         </div>
         <div style="display:flex;gap:8px;">
           <button onClick="{{ exportStaffPaymentsExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
@@ -1112,6 +1172,8 @@
         </div>
       </div>
       <div style="margin-bottom:12px;font-size:13px;color:var(--muted);">Total paid in range: <span style="font-weight:700;color:#d4af37;">{{ staffPaymentsTotalFmt }}</span></div>
+      <div onClick="{{ sectionToggle.staffPaymentsReport }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:12px;"><span style="color:var(--muted);font-size:12px;">{{ sectionIcon.staffPaymentsReport }}</span>Payments</div>
+      <sc-if value="{{ sectionExpanded.staffPaymentsReport }}">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
         <table style="width:100%;border-collapse:collapse;min-width:760px;">
           <thead><tr>
@@ -1138,6 +1200,7 @@
           </tbody>
         </table>
       </div>
+      </sc-if>
     </sc-if>
 
     <sc-if value="{{ viewIs.attendance }}">
@@ -1235,6 +1298,12 @@
         <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ userBalanceFilter.from }}" onChange="{{ onUserBalanceFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ userBalanceFilter.to }}" onChange="{{ onUserBalanceTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+            <select onChange="{{ onUserBalanceMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+              <option value="">Pick a month</option>
+              <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+            </select>
+          </div>
           <div style="min-width:180px;"><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">User Name</label><input type="text" value="{{ userBalanceFilter.name }}" onChange="{{ onUserBalanceName }}" placeholder="e.g. Sukadev" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;box-sizing:border-box;" /></div>
           <div style="flex:1;"></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -1332,6 +1401,12 @@
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ fundTransferFilter.from }}" onChange="{{ onFundTransferFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ fundTransferFilter.to }}" onChange="{{ onFundTransferTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onFundTransferMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Pick a month</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
         <div style="flex:1;min-width:160px;"><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Party (From/To)</label><input type="text" value="{{ fundTransferFilter.party }}" onChange="{{ onFundTransferParty }}" placeholder="e.g. Sukadev, Supplier name" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div style="display:flex;gap:8px;">
           <button onClick="{{ exportFundTransfersExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
@@ -1379,6 +1454,12 @@
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ siteWalletFilter.from }}" onChange="{{ onSiteWalletFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ siteWalletFilter.to }}" onChange="{{ onSiteWalletTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onSiteWalletMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Pick a month</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;" data-card-grid>
         <sc-for list="{{ siteWalletCards }}" as="sc" hint-placeholder-count="3">
@@ -2270,7 +2351,7 @@ class Component extends DCLogic {
     staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
     selectedSupplier: null, selectedMistri: null, selectedLabour: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
-    detailFilters: { site: '', material: '', vehicle: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
+    detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
     fundTransferFilter: { from: '', to: '', party: '' }, userBalanceFilter: { from: '', to: '', name: '' }, fundTransferShowAll: false,
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
     reportTab: 'supplier', showPassword: false, theme: 'light', maintenance: { enabled: false, message: '' }
@@ -3182,6 +3263,10 @@ class Component extends DCLogic {
 
   setDashFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.dashFilters); nf[key] = e.target.value; return { dashFilters: nf }; }); }.bind(this); }
   setDetailFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.detailFilters); nf[key] = e.target.value; return { detailFilters: nf }; }); }.bind(this); }
+  // Generic "Month" quick-filter: picking a month fills From/To with that month's first/last day for the given filter state key.
+  monthShortcutRange(v) { if (!v) return { from: '', to: '' }; const y = Number(v.slice(0, 4)), m = Number(v.slice(5, 7)); const last = new Date(y, m, 0).getDate(); const pad = function (n) { return String(n).padStart(2, '0'); }; return { from: v + '-01', to: y + '-' + pad(m) + '-' + pad(last) }; }
+  setMonthShortcut(stateKey) { return function (e) { const range = this.monthShortcutRange(e.target.value); this.setState(function (s) { const nf = Object.assign({}, s[stateKey] || {}, range); return (function () { const o = {}; o[stateKey] = nf; return o; })(); }); }.bind(this); }
+  setGenericFilter(stateKey, key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s[stateKey] || {}); nf[key] = e.target.value; return (function () { const o = {}; o[stateKey] = nf; return o; })(); }); }.bind(this); }
   setStaffPaymentsFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.staffPaymentsFilter); nf[key] = e.target.value; return { staffPaymentsFilter: nf }; }); }.bind(this); }
   setFundTransferFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.fundTransferFilter); nf[key] = e.target.value; return { fundTransferFilter: nf }; }); }.bind(this); }
   toggleUserBalance(name) { this.setState(function (s) { return { expandedUserBalance: s.expandedUserBalance === name ? null : name }; }); }
@@ -3407,7 +3492,9 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state;
     const self = this;
-    const sectionIds = ['salarySlips', 'staffPayments', 'mistriDue', 'mistriPayments', 'mistriAdvances', 'labourEntries', 'labourPayments', 'labourAdvances', 'fundTransfers', 'siteExpenditure', 'siteAllocations', 'supplierTx', 'supplierPay', 'supplierBF', 'usersList'];
+    if (!s.mistriDetailFilter) s.mistriDetailFilter = { from: '', to: '' };
+    if (!s.labourDetailFilter) s.labourDetailFilter = { from: '', to: '' };
+    const sectionIds = ['salarySlips', 'staffPayments', 'staffPaymentsReport', 'mistriDue', 'mistriPayments', 'mistriAdvances', 'labourEntries', 'labourPayments', 'labourAdvances', 'fundTransfers', 'siteExpenditure', 'siteAllocations', 'supplierTx', 'supplierPay', 'supplierBF', 'usersList'];
     const sectionExpanded = {}; const sectionToggle = {}; const sectionIcon = {};
     sectionIds.forEach(function (id) { sectionExpanded[id] = !!s.expandedSections[id]; sectionIcon[id] = s.expandedSections[id] ? '▾' : '▸'; sectionToggle[id] = function () { self.toggleSection(id); }; });
     const fmt = function (n) { return self.fmt(n); };
@@ -3513,7 +3600,7 @@ class Component extends DCLogic {
     if (s.selectedSupplier) {
       const name = s.selectedSupplier;
       const dfl = s.detailFilters;
-      const filteredTx = s.transactions.filter(function (t) { return t.Supplier === name && (!dfl.site || t.Site === dfl.site) && (!dfl.material || t.Material === dfl.material) && (!dfl.vehicle || String(t.VehicleNumber || '').toLowerCase().indexOf(dfl.vehicle.toLowerCase()) !== -1); });
+      const filteredTx = s.transactions.filter(function (t) { return t.Supplier === name && self.inRange(t.Date, dfl.from, dfl.to) && (!dfl.site || t.Site === dfl.site) && (!dfl.material || t.Material === dfl.material) && (!dfl.vehicle || String(t.VehicleNumber || '').toLowerCase().indexOf(dfl.vehicle.toLowerCase()) !== -1); });
       const allTx = s.transactions.filter(function (t) { return t.Supplier === name; });
       const pay = s.payments.filter(function (p) { return p.Supplier === name; });
       const bfEntries = s.bf.filter(function (b) { return b.Supplier === name; });
@@ -3523,7 +3610,7 @@ class Component extends DCLogic {
       const outstanding = bfAmt + purchase - paid;
       supplierDetail = {
         name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding), outstandingColor: this.oc(outstanding),
-        rows: filteredTx.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value) }); }),
+        rows: filteredTx.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteTransaction(r); } }); }),
         allTxRaw: allTx.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         payRaw: pay.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, outstandingN: outstanding,
@@ -3675,8 +3762,8 @@ class Component extends DCLogic {
         Name: miRow.Name || miName, ContactNumber: miRow.ContactNumber || '',
         bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding),
         dueRows: s.mistriDue.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { NetDueFmt: fmt(r.NetDue), onEdit: function () { self.openModal('mistriDue', r); }, onDelete: function () { self.deleteMistriDue(r); } }); }),
-        paymentRows: s.mistriPayments.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('mistriPayment', r); }, onDelete: function () { self.deleteMistriPayment(r); } }); }),
-        advanceRows: s.mistriAdvances.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isAdvance: true })); }, onDelete: function () { self.deleteMistriAdvance(r); } }); })
+        paymentRows: s.mistriPayments.filter(function (r) { return r.MistriName === miName && self.inRange(r.Date, s.mistriDetailFilter.from, s.mistriDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('mistriPayment', r); }, onDelete: function () { self.deleteMistriPayment(r); } }); }),
+        advanceRows: s.mistriAdvances.filter(function (r) { return r.MistriName === miName && self.inRange(r.Date, s.mistriDetailFilter.from, s.mistriDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isAdvance: true })); }, onDelete: function () { self.deleteMistriAdvance(r); } }); })
       };
     }
 
@@ -3688,9 +3775,9 @@ class Component extends DCLogic {
       labourDetail = {
         Name: lbRow.Name || lbName, ContactNumber: lbRow.ContactNumber || '',
         bfFmt: fmt(finL.bfAmt), totalDueFmt: fmt(finL.due), totalPaidFmt: fmt(finL.paid), outstandingFmt: fmt(finL.outstanding), outstandingColor: self.oc(finL.outstanding),
-        entryRows: s.labourEntries.filter(function (r) { return r.LabourName === lbName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { NetAmountFmt: fmt(r.NetAmount), onEdit: function () { self.openLabourEntryModal(r); }, onDelete: function () { self.deleteLabourEntry(r); } }); }),
-        paymentRows: s.labourPayments.filter(function (r) { return r.LabourName === lbName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('labourPayment', r); }, onDelete: function () { self.deleteLabourPayment(r); } }); }),
-        advanceRows: s.labourAdvances.filter(function (r) { return r.LabourName === lbName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isLabourAdvance: true })); }, onDelete: function () { self.deleteLabourAdvance(r); } }); })
+        entryRows: s.labourEntries.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { NetAmountFmt: fmt(r.NetAmount), onEdit: function () { self.openLabourEntryModal(r); }, onDelete: function () { self.deleteLabourEntry(r); } }); }),
+        paymentRows: s.labourPayments.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('labourPayment', r); }, onDelete: function () { self.deleteLabourPayment(r); } }); }),
+        advanceRows: s.labourAdvances.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isLabourAdvance: true })); }, onDelete: function () { self.deleteLabourAdvance(r); } }); })
       };
     }
 
@@ -3784,6 +3871,8 @@ class Component extends DCLogic {
     this._lastReportFilterSummary = this.buildFilterSummary(rf);
 
     const yearOptions = Array.from(new Set(s.transactions.map(function (t) { return String(t.Date || '').slice(0, 4); }).concat(s.payments.map(function (p) { return String(p.Date || '').slice(0, 4); })).concat(s.dieselTx.map(function (t) { return String(t.Date || '').slice(0, 4); })))).filter(Boolean).sort();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthShortcutOptions = (function () { const out = []; const now = new Date(); for (var i = 0; i < 15; i++) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); const v = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); out.push({ v: v, l: monthNames[d.getMonth()] + ' ' + d.getFullYear() }); } return out; })();
     const monthOptions = [{ v: '01', l: 'January' }, { v: '02', l: 'February' }, { v: '03', l: 'March' }, { v: '04', l: 'April' }, { v: '05', l: 'May' }, { v: '06', l: 'June' }, { v: '07', l: 'July' }, { v: '08', l: 'August' }, { v: '09', l: 'September' }, { v: '10', l: 'October' }, { v: '11', l: 'November' }, { v: '12', l: 'December' }];
 
     const totalDieselQty = this.sum(s.dieselTx, 'DieselQuantity').toLocaleString('en-IN');
@@ -3952,9 +4041,11 @@ class Component extends DCLogic {
       onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this),
       viewIs: viewIs, pageTitle: pageTitles[s.view] || '', navStyle: navStyle, reportTabStyle: reportTabStyle, reportTabIs: reportTabIs, modal: s.modal, modalIs: modalIs,
       users: usersWithContact, auditLog: s.auditLog, dataSourceLabel: isDemo ? 'Demo mode — data stored in this browser only. Paste your Apps Script Web App URL into config.js to switch to live Google Sheet.' : 'Connected to Google Sheets via Apps Script.',
-      dashFilters: s.dashFilters, supplierOptions: supplierOptions, siteOptions: siteOptions, materialOptions: materialOptions, dieselSupplierOptions: dieselSupplierOptions, unitOptions: unitOptions, paymentMethodOptions: paymentMethodOptions,
+      dashFilters: s.dashFilters, supplierOptions: supplierOptions, siteOptions: siteOptions, materialOptions: materialOptions, dieselSupplierOptions: dieselSupplierOptions, unitOptions: unitOptions, monthShortcutOptions: monthShortcutOptions, onDashMonth: this.setMonthShortcut('dashFilters'), paymentMethodOptions: paymentMethodOptions,
       onDashFrom: this.setDashFilter('from'), onDashTo: this.setDashFilter('to'), onDashSupplier: this.setDashFilter('supplier'), onDashSite: this.setDashFilter('site'), onDashMaterial: this.setDashFilter('material'), onDashVehicle: this.setDashFilter('vehicle'),
       onDetailSite: this.setDetailFilter('site'), onDetailMaterial: this.setDetailFilter('material'), onDetailVehicle: this.setDetailFilter('vehicle'),
+      onDetailFrom: this.setDetailFilter('from'), onDetailTo: this.setDetailFilter('to'), onDetailMonth: this.setMonthShortcut('detailFilters'), monthShortcutOptions: monthShortcutOptions,
+      detailFilters: s.detailFilters,
       totalSupplierPurchase: fmt(totalSupplierPurchaseN), totalSupplierPaid: fmt(totalSupplierPaidN), totalSupplierOutstanding: fmt(totalSupplierOutstandingN), totalSupplierOutstandingColor: self.oc(totalSupplierOutstandingN),
       totalDieselCost: fmt(totalDieselCostN), totalDieselPaid: fmt(totalDieselPaidN), totalDieselOutstanding: fmt(totalDieselOutstandingN), totalDieselOutstandingColor: self.oc(totalDieselOutstandingN),
       currentMonthExpenditure: fmt(currentMonthExpenditureTotalN), totalStaffOutstanding: fmt(totalStaffOutstandingN), totalStaffOutstandingColor: self.oc(totalStaffOutstandingN),
@@ -3968,16 +4059,16 @@ class Component extends DCLogic {
       onOpenDieselOutstanding: openDashPopup('Total Diesel Outstanding — by Fuel Station', toPopupRows(dieselOutstandingBreakdown)),
       onOpenCurrentMonth: openDashPopup('Current Month Expenditure — Breakdown', toPopupRows(currentMonthBreakdown)),
       onOpenStaffOutstanding: openDashPopup('Total Staff Outstanding — by Staff', toPopupRows(staffOutstandingBreakdown)),
-      staffPaymentsFilter: s.staffPaymentsFilter, onStaffPaymentsFrom: this.setStaffPaymentsFilter('from'), onStaffPaymentsTo: this.setStaffPaymentsFilter('to'),
+      staffPaymentsFilter: s.staffPaymentsFilter, onStaffPaymentsFrom: this.setStaffPaymentsFilter('from'), onStaffPaymentsTo: this.setStaffPaymentsFilter('to'), onStaffPaymentsMonth: this.setMonthShortcut('staffPaymentsFilter'),
       staffPaymentsListRows: staffPaymentsListRows, staffPaymentsTotalFmt: staffPaymentsTotalFmt,
       exportStaffPaymentsExcel: this.exportStaffPaymentsExcel.bind(this), exportStaffPaymentsPDF: this.exportStaffPaymentsPDF.bind(this),
       supplierExpenditure: supplierExpenditure, siteExpenditure: siteExpenditure, materialExpenditure: materialExpenditure, dieselExpenditure: dieselExpenditure,
       supplierCards: supplierCards, openSupplierModal: function () { self.openModal('supplier'); },
       supplierDetail: supplierDetail,
-      txRows: txF.slice().reverse().map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }).reverse(),
+      txRows: txF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
       payRows: payF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
       bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
-      dieselTxRows: dieselTxF.slice().reverse().map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }).reverse(),
+      dieselTxRows: dieselTxF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }),
       dieselPayRows: dieselPayF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
       dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
       formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
@@ -4007,20 +4098,24 @@ class Component extends DCLogic {
       monthNumOptions: [{ v: '01', l: 'January' }, { v: '02', l: 'February' }, { v: '03', l: 'March' }, { v: '04', l: 'April' }, { v: '05', l: 'May' }, { v: '06', l: 'June' }, { v: '07', l: 'July' }, { v: '08', l: 'August' }, { v: '09', l: 'September' }, { v: '10', l: 'October' }, { v: '11', l: 'November' }, { v: '12', l: 'December' }],
       attendanceYearOptions: (function () { const cur = Number(todayStr.slice(0, 4)); return [cur - 1, cur, cur + 1]; })(),
       staffCards: staffCards, staffDetail: staffDetail, staffDefaults: staffDefaults, staffSalaryDefaults: staffSalaryDefaults, staffPaymentDefaults: staffPaymentDefaults, userContactDefaults: userContactDefaults, staffRateReadOnly: staffRateReadOnly,
-      mistriCards: mistriCards, mistriDetail: mistriDetail, mistriDefaults: mistriDefaults, mistriDueDefaults: mistriDueDefaults, mistriPaymentDefaults: mistriPaymentDefaults, showMistriPicker: showMistriPicker, mistriOptions: mistriOptions,
+      mistriCards: mistriCards, mistriDetail: mistriDetail, mistriDefaults: mistriDefaults, mistriDueDefaults: mistriDueDefaults, mistriPaymentDefaults: mistriPaymentDefaults,
+      mistriDetailFilter: s.mistriDetailFilter, onMistriDetailFrom: this.setGenericFilter('mistriDetailFilter', 'from'), onMistriDetailTo: this.setGenericFilter('mistriDetailFilter', 'to'), onMistriDetailMonth: this.setMonthShortcut('mistriDetailFilter'),
+      showMistriPicker: showMistriPicker, mistriOptions: mistriOptions,
       openMistriModal: function () { self.openModal('mistri'); }, openMistriDueModal: function () { self.openModal('mistriDue'); }, openMistriPaymentModal: function () { self.openModal('mistriPayment'); },
       submitMistri: this.submitMistri.bind(this), submitMistriDue: this.submitMistriDue.bind(this), submitMistriPayment: this.submitMistriPayment.bind(this),
-      labourCards: labourCards, labourDetail: labourDetail, labourDefaults: labourDefaults, labourEntryDefaults: labourEntryDefaults, labourPaymentDefaults: labourPaymentDefaults, showLabourPicker: showLabourPicker, labourOptions: labourOptions, isLabourEntryDaily: isLabourEntryDaily, onLabourEntryTypeChange: this.onLabourEntryTypeChange.bind(this),
+      labourCards: labourCards, labourDetail: labourDetail, labourDefaults: labourDefaults, labourEntryDefaults: labourEntryDefaults, labourPaymentDefaults: labourPaymentDefaults,
+      labourDetailFilter: s.labourDetailFilter, onLabourDetailFrom: this.setGenericFilter('labourDetailFilter', 'from'), onLabourDetailTo: this.setGenericFilter('labourDetailFilter', 'to'), onLabourDetailMonth: this.setMonthShortcut('labourDetailFilter'),
+      showLabourPicker: showLabourPicker, labourOptions: labourOptions, isLabourEntryDaily: isLabourEntryDaily, onLabourEntryTypeChange: this.onLabourEntryTypeChange.bind(this),
       navLabour: function () { self.setView('labour'); }, openLabourModal: function () { self.openModal('labour'); }, openLabourEntryModal: this.openLabourEntryModal.bind(this), openLabourPaymentModal: function () { self.openModal('labourPayment'); },
       submitLabour: this.submitLabour.bind(this), submitLabourEntry: this.submitLabourEntry.bind(this), submitLabourPayment: this.submitLabourPayment.bind(this),
       myFundBalanceFmt: fmt(myFundBalanceN), fundReceivedFmt: fmt(fundReceivedN), totalMyExpenditureFmt: fmt(totalMyExpenditureN), myExpenditureBreakdown: myExpenditureBreakdown, expandedMyExpenditure: s.expandedMyExpenditure, toggleMyExpenditure: this.toggleMyExpenditure.bind(this), showMyFundBalance: showMyFundBalance, userBalanceBreakdown: userBalanceBreakdown, siteWalletCards: siteWalletCards, siteWalletFilter: s.siteWalletFilter,
       sectionExpanded: sectionExpanded, sectionToggle: sectionToggle, sectionIcon: sectionIcon,
-      fundTransferFilter: s.fundTransferFilter, onFundTransferFrom: this.setFundTransferFilter('from'), onFundTransferTo: this.setFundTransferFilter('to'), onFundTransferParty: this.setFundTransferFilter('party'),
-      userBalanceFilter: s.userBalanceFilter, onUserBalanceFrom: this.setUserBalanceFilter('from'), onUserBalanceTo: this.setUserBalanceFilter('to'), onUserBalanceName: this.setUserBalanceFilter('name'),
+      fundTransferFilter: s.fundTransferFilter, onFundTransferFrom: this.setFundTransferFilter('from'), onFundTransferTo: this.setFundTransferFilter('to'), onFundTransferMonth: this.setMonthShortcut('fundTransferFilter'), onFundTransferParty: this.setFundTransferFilter('party'),
+      userBalanceFilter: s.userBalanceFilter, onUserBalanceFrom: this.setUserBalanceFilter('from'), onUserBalanceTo: this.setUserBalanceFilter('to'), onUserBalanceMonth: this.setMonthShortcut('userBalanceFilter'), onUserBalanceName: this.setUserBalanceFilter('name'),
       exportUserBalanceExcel: this.exportUserBalanceExcel.bind(this), exportUserBalancePDF: this.exportUserBalancePDF.bind(this),
       exportAllExcel: this.exportAllExcel.bind(this), exportAllPDF: this.exportAllPDF.bind(this),
       exportFundTransfersExcel: this.exportFundTransfersExcel.bind(this), exportFundTransfersPDF: this.exportFundTransfersPDF.bind(this),
-      fundTransferHiddenCount: fundTransferHiddenCount, fundTransferShowAllOn: fundTransferShowLessOn, toggleFundTransferShowAll: this.toggleFundTransferShowAll.bind(this), onSiteWalletFrom: this.setSiteWalletFilter('from'), onSiteWalletTo: this.setSiteWalletFilter('to'), siteExpenseRows: siteExpenseRows, siteExpenseDefaults: siteExpenseDefaults, openSiteExpenseModal: function () { self.openModal('siteExpense'); }, showStaffPicker: showStaffPicker, staffOptions: staffOptions, fundTransferRows: fundTransferRows, allocationRows: allocationRows, fundTransferDefaults: fundTransferDefaults, siteAllocationDefaults: siteAllocationDefaults, fundRecipientOptions: fundRecipientOptions,
+      fundTransferHiddenCount: fundTransferHiddenCount, fundTransferShowAllOn: fundTransferShowLessOn, toggleFundTransferShowAll: this.toggleFundTransferShowAll.bind(this), onSiteWalletFrom: this.setSiteWalletFilter('from'), onSiteWalletTo: this.setSiteWalletFilter('to'), onSiteWalletMonth: this.setMonthShortcut('siteWalletFilter'), siteExpenseRows: siteExpenseRows, siteExpenseDefaults: siteExpenseDefaults, openSiteExpenseModal: function () { self.openModal('siteExpense'); }, showStaffPicker: showStaffPicker, staffOptions: staffOptions, fundTransferRows: fundTransferRows, allocationRows: allocationRows, fundTransferDefaults: fundTransferDefaults, siteAllocationDefaults: siteAllocationDefaults, fundRecipientOptions: fundRecipientOptions,
       openStaffModal: function () { self.openModal('staff'); }, openStaffSalaryModal: function () { self.openModal('staffSalary'); }, openStaffPaymentModal: function () { self.openModal('staffPayment'); },
       openFundTransferModal: function () { self.openModal('fundTransfer'); }, openSiteAllocationModal: function () { self.openModal('siteAllocation'); },
       submitStaff: this.submitStaff.bind(this), submitStaffSalary: this.submitStaffSalary.bind(this), submitStaffPayment: this.submitStaffPayment.bind(this), submitUserContact: this.submitUserContact.bind(this),
