@@ -36,8 +36,10 @@
     [data-stat-grid] { grid-template-columns: 1fr !important; }
   }
 </style>
-<script src="config.js"></script>
-<script src="api.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="firebase-api.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -1841,6 +1843,11 @@
       </sc-if>
 
       <sc-if value="{{ isAdmin1 }}">
+        <div style="font-weight:700;margin-bottom:10px;">Data Migration <span style="font-size:11px;color:var(--muted);font-weight:500;">(Admin 1 only)</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div style="font-size:13px;color:var(--muted);max-width:520px;">One-time: copies all data from the old Google Sheets backend into the new Firestore database. Safe to run more than once — existing records are overwritten with the same IDs, nothing is duplicated.</div>
+          <button type="button" onClick="{{ onMigrate }}" style="padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:#1a1a1a;color:#d4af37;">Migrate from Google Sheets</button>
+        </div>
         <div style="font-weight:700;margin-bottom:10px;">Maintenance Mode <span style="font-size:11px;color:var(--muted);font-weight:500;">(Admin 1 only)</span></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px;display:flex;flex-direction:column;gap:14px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
@@ -2417,6 +2424,16 @@ class Component extends DCLogic {
   }
 
   logout() { localStorage.removeItem('panda_session'); this.setState({ session: null, view: 'login' }); }
+  migrateFromSheets() {
+    if (!window.confirm('Copy all data from the old Google Sheets backend into Firestore now?')) return;
+    const self = this;
+    this.showToast('Migrating — this may take a minute...');
+    PandaAPI.call('migrateFromSheets', {}).then(function (res) {
+      self.showToast(res.message || (res.success ? 'Migration complete.' : 'Migration failed.'));
+      if (res.success) self.loadAll();
+    });
+  }
+
   toggleMaintenance() {
     const self = this;
     const next = !this.state.maintenance.enabled;
@@ -2657,7 +2674,8 @@ class Component extends DCLogic {
       if (res.success) {
         self.showToast(res.message || successMsg);
         self.closeModal();
-        self.loadAll().then(function () { self.setState({ saveStatus: null }); });
+        self.setState({ saveStatus: null });
+        self.loadAll();
       } else {
         self.setState({ saveStatus: null });
         self.showToast(res.message || 'Save failed.');
@@ -4038,7 +4056,7 @@ class Component extends DCLogic {
       maintenanceMessage: (s.maintenance && s.maintenance.message) || 'We\'re doing scheduled maintenance. Please check back shortly.',
       maintenanceToggleLabel: (s.maintenance && s.maintenance.enabled) ? 'Turn Maintenance OFF' : 'Turn Maintenance ON',
       maintenanceToggleStyle: 'padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:' + ((s.maintenance && s.maintenance.enabled) ? '#e2574c' : '#2ea043') + ';color:#fff;',
-      onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this),
+      onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this), onMigrate: this.migrateFromSheets.bind(this),
       viewIs: viewIs, pageTitle: pageTitles[s.view] || '', navStyle: navStyle, reportTabStyle: reportTabStyle, reportTabIs: reportTabIs, modal: s.modal, modalIs: modalIs,
       users: usersWithContact, auditLog: s.auditLog, dataSourceLabel: isDemo ? 'Demo mode — data stored in this browser only. Paste your Apps Script Web App URL into config.js to switch to live Google Sheet.' : 'Connected to Google Sheets via Apps Script.',
       dashFilters: s.dashFilters, supplierOptions: supplierOptions, siteOptions: siteOptions, materialOptions: materialOptions, dieselSupplierOptions: dieselSupplierOptions, unitOptions: unitOptions, monthShortcutOptions: monthShortcutOptions, onDashMonth: this.setMonthShortcut('dashFilters'), paymentMethodOptions: paymentMethodOptions,
@@ -4106,7 +4124,7 @@ class Component extends DCLogic {
       labourCards: labourCards, labourDetail: labourDetail, labourDefaults: labourDefaults, labourEntryDefaults: labourEntryDefaults, labourPaymentDefaults: labourPaymentDefaults,
       labourDetailFilter: s.labourDetailFilter, onLabourDetailFrom: this.setGenericFilter('labourDetailFilter', 'from'), onLabourDetailTo: this.setGenericFilter('labourDetailFilter', 'to'), onLabourDetailMonth: this.setMonthShortcut('labourDetailFilter'),
       showLabourPicker: showLabourPicker, labourOptions: labourOptions, isLabourEntryDaily: isLabourEntryDaily, onLabourEntryTypeChange: this.onLabourEntryTypeChange.bind(this),
-      navLabour: function () { self.setView('labour'); }, openLabourModal: function () { self.openModal('labour'); }, openLabourEntryModal: this.openLabourEntryModal.bind(this), openLabourPaymentModal: function () { self.openModal('labourPayment'); },
+      navLabour: function () { self.setView('labour'); }, openLabourModal: function () { self.openModal('labour'); }, openLabourEntryModal: function () { self.openLabourEntryModal(null); }, openLabourPaymentModal: function () { self.openModal('labourPayment'); },
       submitLabour: this.submitLabour.bind(this), submitLabourEntry: this.submitLabourEntry.bind(this), submitLabourPayment: this.submitLabourPayment.bind(this),
       myFundBalanceFmt: fmt(myFundBalanceN), fundReceivedFmt: fmt(fundReceivedN), totalMyExpenditureFmt: fmt(totalMyExpenditureN), myExpenditureBreakdown: myExpenditureBreakdown, expandedMyExpenditure: s.expandedMyExpenditure, toggleMyExpenditure: this.toggleMyExpenditure.bind(this), showMyFundBalance: showMyFundBalance, userBalanceBreakdown: userBalanceBreakdown, siteWalletCards: siteWalletCards, siteWalletFilter: s.siteWalletFilter,
       sectionExpanded: sectionExpanded, sectionToggle: sectionToggle, sectionIcon: sectionIcon,
