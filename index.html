@@ -1121,6 +1121,7 @@
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Method</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Reference</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Remarks</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
           </tr></thead>
           <tbody>
             <sc-for list="{{ staffPaymentsListRows }}" as="r" hint-placeholder-count="5">
@@ -1131,6 +1132,7 @@
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
                 <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -3489,7 +3491,7 @@ class Component extends DCLogic {
     const spf = s.staffPaymentsFilter;
     const staffPaymentsListRows = s.staffPayments.filter(function (p) { return self.inRange(p.Date, spf.from, spf.to); })
       .slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); })
-      .map(function (p) { return Object.assign({}, p, { AmountPaidFmt: fmt(p.AmountPaid) }); });
+      .map(function (p) { return Object.assign({}, p, { AmountPaidFmt: fmt(p.AmountPaid), onEdit: function () { self.openModal('staffPayment', p); }, onDelete: function () { self.deleteStaffPayment(p); } }); });
     const staffPaymentsTotalFmt = fmt(self.sum(staffPaymentsListRows, 'AmountPaid'));
     this._lastStaffPaymentRows = staffPaymentsListRows;
 
