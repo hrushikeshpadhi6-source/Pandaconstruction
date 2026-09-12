@@ -3267,7 +3267,6 @@ class Component extends DCLogic {
     const outstanding = bfAmt + due + advances - paid;
     return { bfAmt: bfAmt, due: due, advances: advances, paid: paid, outstanding: outstanding };
   }
-  byDateTime(a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? -1 : 1; const at = a.Time || '', bt = b.Time || ''; return at < bt ? -1 : (at > bt ? 1 : 0); }
   // Single source of truth for "how much has this site spent from Site Expenditure" — used by
   // both the Funds page Site Balances cards and the Reports Site tab, so they never disagree.
   siteOtherExpenditure(siteName, s, from, to) {
@@ -3524,7 +3523,7 @@ class Component extends DCLogic {
       const outstanding = bfAmt + purchase - paid;
       supplierDetail = {
         name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding), outstandingColor: this.oc(outstanding),
-        rows: filteredTx.slice().sort(this.byDateTime.bind(this)).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value) }); }),
+        rows: filteredTx.slice().reverse().map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value) }); }),
         allTxRaw: allTx.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         payRaw: pay.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, outstandingN: outstanding,
@@ -3975,10 +3974,10 @@ class Component extends DCLogic {
       supplierExpenditure: supplierExpenditure, siteExpenditure: siteExpenditure, materialExpenditure: materialExpenditure, dieselExpenditure: dieselExpenditure,
       supplierCards: supplierCards, openSupplierModal: function () { self.openModal('supplier'); },
       supplierDetail: supplierDetail,
-      txRows: txF.slice().sort(this.byDateTime).map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }).reverse(),
+      txRows: txF.slice().reverse().map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }).reverse(),
       payRows: payF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
       bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
-      dieselTxRows: dieselTxF.slice().sort(this.byDateTime).map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }).reverse(),
+      dieselTxRows: dieselTxF.slice().reverse().map(function (r, i) { return Object.assign({}, r, { DisplaySL: i + 1, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }).reverse(),
       dieselPayRows: dieselPayF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
       dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
       formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
