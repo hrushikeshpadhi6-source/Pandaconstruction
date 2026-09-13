@@ -334,15 +334,15 @@
           <tbody>
             <sc-for list="{{ supplierDetail.rows }}" as="r" hint-placeholder-count="4">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.VehicleNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Material }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Quantity }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Unit }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.RateFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:var(--muted);">{{ r.FareFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.VehicleNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Material }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Quantity }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Unit }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.RateFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:var(--muted);">{{ r.FareFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -350,6 +350,58 @@
         </table>
       </div>
       </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.siteDetail }}">
+      <button onClick="{{ navSitesFund }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:20px;">← All Sites</button>
+      <div style="font-weight:800;font-size:20px;margin-bottom:16px;">{{ siteDetail.name }}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Received</div><div style="font-size:20px;font-weight:800;color:#2e9e5b;">{{ siteDetail.receivedFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Expenditure</div><div style="font-size:20px;font-weight:800;color:#e2574c;">{{ siteDetail.totalExpendFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid #d4af37;border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Balance</div><div style="font-size:20px;font-weight:800;color:{{ siteDetail.balanceColor }};">{{ siteDetail.balanceFmt }}</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <sc-for list="{{ siteDetail.expendBreakdown }}" as="b" hint-placeholder-count="3">
+          <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">{{ b.label }}</div><div style="font-size:15px;font-weight:700;">{{ b.valueFmt }}</div></div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ siteDetailFilter.from }}" onChange="{{ onSiteDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ siteDetailFilter.to }}" onChange="{{ onSiteDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onSiteDetailMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Pick a month</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
+      </div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:12px;">Date-wise Activity</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:700px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Sl</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Category</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Detail</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Remarks</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Received</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Sent</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ siteDetail.txns }}" as="tx" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);color:var(--muted);white-space:nowrap;">{{ tx.Sl }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ tx.Date }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ tx.Category }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);color:var(--muted);white-space:nowrap;">{{ tx.Detail }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);color:var(--muted);white-space:nowrap;">{{ tx.Remarks }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#2e9e5b;font-weight:600;">{{ tx.receivedFmt }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#e2574c;font-weight:600;">{{ tx.sentFmt }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
     </sc-if>
 
     <sc-if value="{{ viewIs.transactions }}">
@@ -403,20 +455,20 @@
           <tbody>
             <sc-for list="{{ txRows }}" as="r" hint-placeholder-count="5">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DisplaySL }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Time }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Supplier }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.VehicleNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Material }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Quantity }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Unit }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.RateFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:var(--muted);">{{ r.FareFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);white-space:nowrap;">{{ r.Remarks }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.DisplaySL }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted);">{{ r.Time }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.VehicleNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Material }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Quantity }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Unit }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.RateFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:var(--muted);">{{ r.FareFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted);white-space:nowrap;">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -455,14 +507,14 @@
           <tbody>
             <sc-for list="{{ payRows }}" as="r" hint-placeholder-count="5">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Remarks }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -486,13 +538,13 @@
           <tbody>
             <sc-for list="{{ bfRows }}" as="r" hint-placeholder-count="4">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.BFMonth }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.BFDate }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.BFAmountFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Remarks }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.BFMonth }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.BFDate }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.BFAmountFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -549,18 +601,18 @@
           <tbody>
             <sc-for list="{{ dieselTxRows }}" as="r" hint-placeholder-count="4">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DisplaySL }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.VehicleNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ChalanNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ r.Time }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.DieselQuantity }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.RateFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Driver }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.DisplaySL }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.VehicleNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.ChalanNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted);">{{ r.Time }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.DieselQuantity }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.RateFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.ValueFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Driver }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -584,13 +636,13 @@
           <tbody>
             <sc-for list="{{ dieselPayRows }}" as="r" hint-placeholder-count="3">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -613,12 +665,12 @@
           <tbody>
             <sc-for list="{{ dieselBFRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.BFMonth }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.BFDate }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.BFAmountFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Supplier }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.BFMonth }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.BFDate }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.BFAmountFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -641,11 +693,11 @@
           <tbody>
             <sc-for list="{{ siteRows }}" as="r" hint-placeholder-count="4">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.SiteName }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.purchaseFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.paidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Status }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.SiteName }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.purchaseFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.paidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Status }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -669,11 +721,11 @@
           <tbody>
             <sc-for list="{{ materialAnalysis }}" as="r" hint-placeholder-count="4">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.MaterialName }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.qty }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DefaultUnit }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.avgRate }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.value }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.MaterialName }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.qty }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.DefaultUnit }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.avgRate }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.value }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -753,15 +805,15 @@
           <tbody>
             <sc-for list="{{ staffCards }}" as="r" hint-placeholder-count="3">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;cursor:pointer;color:#d4af37;" onClick="{{ r.onView }}">{{ r.Name }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Role }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ContactNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.SalaryBasis }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.rateFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.bfFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalDueFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalPaidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;font-weight:600;cursor:pointer;color:#d4af37;" onClick="{{ r.onView }}">{{ r.Name }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Role }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.ContactNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.SalaryBasis }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.rateFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.bfFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.totalDueFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.totalPaidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onView }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">View</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -802,11 +854,11 @@
           <tbody>
             <sc-for list="{{ staffDetail.salaryRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Month }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BasicFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.DAFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.DeductionsFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.NetSalaryFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Month }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.BasicFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.DAFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.DeductionsFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.NetSalaryFmt }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;">
                   <button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button>
                   <button onClick="{{ r.onExport }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Export PDF</button>
@@ -836,10 +888,10 @@
           <tbody>
             <sc-for list="{{ staffDetail.paymentRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.ReferenceNumber }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onExport }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">PDF</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -861,8 +913,8 @@
           <tbody>
             <sc-for list="{{ staffDetail.attendanceRows }}" as="r" hint-placeholder-count="4">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Status }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Status }}</td>
               </tr>
             </sc-for>
           </tbody>
@@ -888,12 +940,12 @@
           <tbody>
             <sc-for list="{{ mistriCards }}" as="r" hint-placeholder-count="3">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;cursor:pointer;color:#d4af37;" onClick="{{ r.onView }}">{{ r.Name }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ContactNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.bfFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalDueFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalPaidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;font-weight:600;cursor:pointer;color:#d4af37;" onClick="{{ r.onView }}">{{ r.Name }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.ContactNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.bfFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.totalDueFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.totalPaidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onView }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">View</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -931,9 +983,9 @@
           <tbody>
             <sc-for list="{{ mistriDetail.dueRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Month }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.NetDueFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Month }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.NetDueFmt }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -971,11 +1023,11 @@
           <tbody>
             <sc-for list="{{ mistriDetail.paymentRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.ReferenceNumber }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -999,11 +1051,11 @@
           <tbody>
             <sc-for list="{{ mistriDetail.advanceRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.From }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.From }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Remarks }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1032,13 +1084,13 @@
           <tbody>
             <sc-for list="{{ labourCards }}" as="r" hint-placeholder-count="3">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;cursor:pointer;color:#d4af37;" onClick="{{ r.onView }}">{{ r.Name }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ContactNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.DefaultSite }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.bfFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalDueFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.totalPaidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;font-weight:600;cursor:pointer;color:#d4af37;" onClick="{{ r.onView }}">{{ r.Name }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.ContactNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.DefaultSite }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.bfFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.totalDueFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.totalPaidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onView }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">View</button><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1090,12 +1142,12 @@
           <tbody>
             <sc-for list="{{ labourDetail.entryRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Month }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Type }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.NetAmountFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Month }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Type }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.NetAmountFmt }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1123,11 +1175,11 @@
           <tbody>
             <sc-for list="{{ labourDetail.paymentRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.ReferenceNumber }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1168,11 +1220,11 @@
           <tbody>
             <sc-for list="{{ labourDetail.advanceRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.From }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.From }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Remarks }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1216,12 +1268,12 @@
           <tbody>
             <sc-for list="{{ staffPaymentsListRows }}" as="r" hint-placeholder-count="5">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.StaffName }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;font-weight:700;">{{ r.AmountPaidFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.ReferenceNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.StaffName }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;font-weight:700;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.ReferenceNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Remarks }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1256,9 +1308,9 @@
           <tbody>
             <sc-for list="{{ attendanceToolRows }}" as="r" hint-placeholder-count="4">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;">{{ r.Name }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Role }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.StatusLabel }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;font-weight:600;">{{ r.Name }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Role }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.StatusLabel }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:normal;min-width:220px;">
                   <button disabled="{{ r.btnDisabled }}" onClick="{{ r.onMarkPresent }}" style="background:{{ r.presentBg }};opacity:{{ r.btnOpacity }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Present</button>
                   <button disabled="{{ r.btnDisabled }}" onClick="{{ r.onMarkHalf }}" style="background:{{ r.halfBg }};opacity:{{ r.btnOpacity }};color:#fff;border:none;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin:2px;">Half</button>
@@ -1285,9 +1337,9 @@
           <tbody>
             <sc-for list="{{ attendanceLogRows }}" as="r" hint-placeholder-count="6">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.StaffName }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Status }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.StaffName }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Status }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:normal;min-width:180px;">
                   <button onClick="{{ r.onMarkPresent }}" style="background:transparent;border:1px solid var(--border);color:#1a7f37;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:12px;margin:2px;">Present</button>
                   <button onClick="{{ r.onMarkHalf }}" style="background:transparent;border:1px solid var(--border);color:#b8860b;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:12px;margin:2px;">Half</button>
@@ -1359,15 +1411,15 @@
               <sc-for list="{{ userBalanceBreakdown }}" as="r" hint-placeholder-count="2">
                 <tr onClick="{{ r.onToggle }}" style="cursor:pointer;">
                   <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);color:var(--muted);width:24px;">{{ r.toggleIcon }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;">{{ r.Name }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.receivedFmt }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toSupplierFmt }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toDieselFmt }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toStaffFmt }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toMistriFmt }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toLabourFmt }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.toSiteFmt }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.balanceColor }};font-weight:700;">{{ r.balanceFmt }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;font-weight:600;">{{ r.Name }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.receivedFmt }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.toSupplierFmt }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.toDieselFmt }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.toStaffFmt }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.toMistriFmt }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.toLabourFmt }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.toSiteFmt }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.balanceColor }};font-weight:700;">{{ r.balanceFmt }}</td>
                 </tr>
                 <sc-if value="{{ r.isExpanded }}">
                   <tr>
@@ -1455,12 +1507,12 @@
           <tbody>
             <sc-for list="{{ fundTransferRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.From }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.To }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.PaymentMethod }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.From }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.To }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Remarks }}</td>
                 <sc-if value="{{ isOwnerOrAdmin1 }}"><td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td></sc-if>
               </tr>
             </sc-for>
@@ -1491,45 +1543,11 @@
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;" data-card-grid>
         <sc-for list="{{ siteWalletCards }}" as="sc" hint-placeholder-count="3">
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;">
-            <div onClick="{{ sc.onToggle }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:14px;"><span style="color:var(--muted);font-size:12px;">{{ sc.toggleIcon }}</span>{{ sc.SiteName }}</div>
+          <div onClick="{{ sc.onOpen }}" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer;">
+            <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:14px;">{{ sc.SiteName }}</div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Received</span><span style="color:#2e9e5b;font-weight:600;">{{ sc.receivedFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Total Expenditure</span><span style="color:#e2574c;font-weight:600;">{{ sc.totalExpendFmt }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:8px;border-top:1px solid var(--border-soft);"><span style="color:var(--muted);">Balance</span><span style="color:#d4af37;font-weight:700;">{{ sc.balanceFmt }}</span></div>
-            <sc-if value="{{ sc.isExpanded }}">
-              <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border-soft);">
-                <sc-for list="{{ sc.expendBreakdown }}" as="b" hint-placeholder-count="3">
-                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--muted);">{{ b.label }}</span><span>{{ b.valueFmt }}</span></div>
-                </sc-for>
-              </div>
-              <div style="margin-top:8px;overflow:auto;">
-                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Date-wise activity</div>
-                <table style="width:100%;border-collapse:collapse;min-width:280px;">
-                  <thead><tr>
-                    <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Sl</th>
-                    <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Date</th>
-                    <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Category</th>
-                    <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Detail</th>
-                    <th style="text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Remarks</th>
-                    <th style="text-align:right;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Received</th>
-                    <th style="text-align:right;font-size:10px;color:var(--muted);text-transform:uppercase;padding:4px 6px;">Sent</th>
-                  </tr></thead>
-                  <tbody>
-                    <sc-for list="{{ sc.txns }}" as="tx" hint-placeholder-count="2">
-                      <tr>
-                        <td style="padding:4px 6px;font-size:11px;color:var(--muted);">{{ tx.Sl }}</td>
-                        <td style="padding:4px 6px;font-size:11px;white-space:nowrap;">{{ tx.Date }}</td>
-                        <td style="padding:4px 6px;font-size:11px;">{{ tx.Category }}</td>
-                        <td style="padding:4px 6px;font-size:11px;color:var(--muted);">{{ tx.Detail }}</td>
-                        <td style="padding:4px 6px;font-size:11px;color:var(--muted);">{{ tx.Remarks }}</td>
-                        <td style="padding:4px 6px;font-size:11px;text-align:right;color:#2e9e5b;font-weight:600;">{{ tx.receivedFmt }}</td>
-                        <td style="padding:4px 6px;font-size:11px;text-align:right;color:#e2574c;font-weight:600;">{{ tx.sentFmt }}</td>
-                      </tr>
-                    </sc-for>
-                  </tbody>
-                </table>
-              </div>
-            </sc-if>
           </div>
         </sc-for>
       </div>
@@ -1551,10 +1569,10 @@
           <tbody>
             <sc-for list="{{ siteExpenseRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#e2574c;font-weight:600;">{{ r.AmountFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#e2574c;font-weight:600;">{{ r.AmountFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Remarks }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1582,12 +1600,12 @@
           <tbody>
             <sc-for list="{{ allocationRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.User }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.User }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.AmountFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Remarks }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1617,14 +1635,14 @@
           <tbody>
             <sc-for list="{{ otherPaymentRows }}" as="r" hint-placeholder-count="2">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.From }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:#d4af37;font-weight:600;">{{ r.WalletUserDisplay }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;">{{ r.Name }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Purpose }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#e2574c;font-weight:600;">{{ r.AmountFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Remarks }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.From }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:#d4af37;font-weight:600;">{{ r.WalletUserDisplay }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;font-weight:600;">{{ r.Name }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Purpose }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#e2574c;font-weight:600;">{{ r.AmountFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Remarks }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:#d4af37;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
               </tr>
             </sc-for>
@@ -1708,11 +1726,11 @@
             <tbody>
               <sc-for list="{{ supplierReportRows }}" as="r" hint-placeholder-count="4">
                 <tr>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BF }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Purchase }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Paid }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.OutstandingColor }};font-weight:600;">{{ r.Outstanding }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Supplier }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.BF }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Purchase }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Paid }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.OutstandingColor }};font-weight:600;">{{ r.Outstanding }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1733,12 +1751,12 @@
             <tbody>
               <sc-for list="{{ siteReportRows }}" as="r" hint-placeholder-count="4">
                 <tr>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Site }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Material }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.OtherExpenditure }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Mistri }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Labour }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:700;">{{ r.Expenditure }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Material }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.OtherExpenditure }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Mistri }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Labour }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:700;">{{ r.Expenditure }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1757,9 +1775,9 @@
             <tbody>
               <sc-for list="{{ materialReportRows }}" as="r" hint-placeholder-count="4">
                 <tr>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Material }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Quantity }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:#d4af37;font-weight:600;">{{ r.Value }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Material }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Quantity }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#d4af37;font-weight:600;">{{ r.Value }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1778,10 +1796,10 @@
             <tbody>
               <sc-for list="{{ monthlyReportRows }}" as="r" hint-placeholder-count="3">
                 <tr>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Month }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Purchase }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Paid }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.OutstandingColor }};font-weight:600;">{{ r.Outstanding }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Month }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Purchase }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Paid }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.OutstandingColor }};font-weight:600;">{{ r.Outstanding }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1802,11 +1820,11 @@
             <tbody>
               <sc-for list="{{ dieselReportRows }}" as="r" hint-placeholder-count="4">
                 <tr>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Supplier }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BF }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Cost }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Paid }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.OutstandingColor }};font-weight:600;">{{ r.Outstanding }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Supplier }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.BF }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Cost }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Paid }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.OutstandingColor }};font-weight:600;">{{ r.Outstanding }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1827,12 +1845,12 @@
             <tbody>
               <sc-for list="{{ staffDueReportRows }}" as="r" hint-placeholder-count="6">
                 <tr style="{{ r.rowStyle }}">
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:{{ r.nameWeight }};">{{ r.StaffName }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Month }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Basic }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Addition }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Deduction }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.NetSalaryColor }};font-weight:700;">{{ r.NetSalary }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;font-weight:{{ r.nameWeight }};">{{ r.StaffName }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Month }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Basic }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Addition }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Deduction }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.NetSalaryColor }};font-weight:700;">{{ r.NetSalary }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1854,12 +1872,12 @@
             <tbody>
               <sc-for list="{{ labourReportRows }}" as="r" hint-placeholder-count="4">
                 <tr>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.Name }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.BF }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Due }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Advances }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;">{{ r.Paid }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);text-align:right;color:{{ r.OutstandingColor }};font-weight:700;">{{ r.Outstanding }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Name }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.BF }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Due }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Advances }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Paid }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.OutstandingColor }};font-weight:700;">{{ r.Outstanding }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -1947,10 +1965,10 @@
             <tbody>
               <sc-for list="{{ pendingUsers }}" as="pu" hint-placeholder-count="2">
                 <tr>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);font-weight:600;">{{ pu.Name }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ pu.ContactNumber }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ pu.CreatedAtFmt }}</td>
-                  <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;font-weight:600;">{{ pu.Name }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ pu.ContactNumber }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted);">{{ pu.CreatedAtFmt }}</td>
+                  <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">
                     <select value="{{ pu.roleChoice }}" onChange="{{ pu.onRoleChange }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 8px;font-size:13px;">
                       <option value="Admin 3">Admin 3</option>
                       <option value="Admin 2">Admin 2</option>
@@ -1985,12 +2003,12 @@
           <tbody>
             <sc-for list="{{ users }}" as="u" hint-placeholder-count="4">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ u.Name }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ u.Role }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ u.Status }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ u.ContactNumber }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ u.LastLoginFmt }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ u.Name }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ u.Role }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ u.Status }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ u.ContactNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted);">{{ u.LastLoginFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">
                   <sc-if value="{{ isHrushikesh }}">
                     <button onClick="{{ u.onToggleMoney }}" style="background:{{ u.moneyOn ? 'rgba(46,158,91,0.15)' : 'rgba(226,87,76,0.15)' }};color:{{ u.moneyOn ? '#2e9e5b' : '#e2574c' }};border:none;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;">{{ u.moneyLabel }}</button>
                   </sc-if>
@@ -2038,11 +2056,11 @@
           <tbody>
             <sc-for list="{{ auditLog }}" as="a" hint-placeholder-count="4">
               <tr>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ a.Timestamp }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ a.User }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ a.Action }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ a.Module }}</td>
-                <td style="padding:12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--muted);">{{ a.Details }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ a.Timestamp }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ a.User }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ a.Action }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ a.Module }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted);">{{ a.Details }}</td>
               </tr>
             </sc-for>
           </tbody>
@@ -2126,7 +2144,8 @@
           <input type="date" name="Date" required="true" defaultValue="{{ payDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <select name="Supplier" required="true" defaultValue="{{ payDefaults.Supplier }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ payDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <select name="WalletUser" defaultValue="{{ payDefaults.WalletUser }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ moneyEnabledUserOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">Debit from {{ opt }}'s wallet</option></sc-for></select>
+          <input type="hidden" name="WalletUser" value="Sukadev" />
+          <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ payDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ payDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ payDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
@@ -2187,7 +2206,8 @@
           <input type="text" name="Supplier" placeholder="Supplier / Fuel Station" required="true" defaultValue="{{ dieselPayDefaults.Supplier }}" list="dieselSupplierList2" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="dieselSupplierList2"><sc-for list="{{ dieselSupplierOptions }}" as="opt" hint-placeholder-count="2"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ dieselPayDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <select name="WalletUser" defaultValue="{{ dieselPayDefaults.WalletUser }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ moneyEnabledUserOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">Debit from {{ opt }}'s wallet</option></sc-for></select>
+          <input type="hidden" name="WalletUser" value="Sukadev" />
+          <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ dieselPayDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ dieselPayDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ dieselPayDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
@@ -2311,7 +2331,8 @@
           </sc-if>
           <input type="date" name="Date" required="true" defaultValue="{{ staffPaymentDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ staffPaymentDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <select name="WalletUser" defaultValue="{{ staffPaymentDefaults.WalletUser }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ moneyEnabledUserOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">Debit from {{ opt }}'s wallet</option></sc-for></select>
+          <input type="hidden" name="WalletUser" value="Sukadev" />
+          <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ staffPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ staffPaymentDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ staffPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
@@ -2357,7 +2378,8 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ siteAllocationDefaults.Site }}" list="allocSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="allocSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="Amount" placeholder="Amount (₹)" required="true" defaultValue="{{ siteAllocationDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <select name="WalletUser" defaultValue="{{ siteAllocationDefaults.WalletUser }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ moneyEnabledUserOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">Debit from {{ opt }}'s wallet</option></sc-for></select>
+          <input type="hidden" name="WalletUser" value="Sukadev" />
+          <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ siteAllocationDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;">
             <option value="Cash">Cash</option>
             <option value="A/C">A/C</option>
@@ -2390,12 +2412,8 @@
         <form key="{{ formKey }}" onSubmit="{{ submitOtherPayment }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="date" name="Date" required="true" defaultValue="{{ otherPaymentDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <input type="text" name="Name" placeholder="Name" required="true" defaultValue="{{ otherPaymentDefaults.Name }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <div>
-            <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Debit From Wallet (whose fund balance this comes out of)</label>
-            <select name="WalletUser" defaultValue="{{ otherPaymentDefaults.WalletUser }}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;">
-              <sc-for list="{{ moneyEnabledUserOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for>
-            </select>
-          </div>
+          <input type="hidden" name="WalletUser" value="Sukadev" />
+          <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <input type="text" name="Purpose" placeholder="Purpose" required="true" defaultValue="{{ otherPaymentDefaults.Purpose }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="number" step="any" name="Amount" placeholder="Amount (₹)" required="true" defaultValue="{{ otherPaymentDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <select name="PaymentMethod" defaultValue="{{ otherPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;">
@@ -2454,7 +2472,8 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ mistriPaymentDefaults.Site }}" list="mistriPaySiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="mistriPaySiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ mistriPaymentDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <select name="WalletUser" defaultValue="{{ mistriPaymentDefaults.WalletUser }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ moneyEnabledUserOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">Debit from {{ opt }}'s wallet</option></sc-for></select>
+          <input type="hidden" name="WalletUser" value="Sukadev" />
+          <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ mistriPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ mistriPaymentDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ mistriPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
@@ -2531,7 +2550,8 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ labourPaymentDefaults.Site }}" list="labourPaySiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="labourPaySiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ labourPaymentDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <select name="WalletUser" defaultValue="{{ labourPaymentDefaults.WalletUser }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ moneyEnabledUserOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">Debit from {{ opt }}'s wallet</option></sc-for></select>
+          <input type="hidden" name="WalletUser" value="Sukadev" />
+          <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ labourPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ labourPaymentDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ labourPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
@@ -2558,9 +2578,9 @@ class Component extends DCLogic {
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [],
     staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], otherPayments: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
-    selectedSupplier: null, selectedMistri: null, selectedLabour: null, modal: null, editRecord: null,
+    selectedSupplier: null, selectedMistri: null, selectedLabour: null, selectedSite: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
-    detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
+    detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, siteDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
     fundTransferFilter: { from: '', to: '', party: '' }, userBalanceFilter: { from: '', to: '', name: '' }, fundTransferShowAll: false,
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
     reportTab: 'supplier', showPassword: false, theme: 'light', maintenance: { enabled: false, message: '' }
@@ -2770,7 +2790,7 @@ class Component extends DCLogic {
   }
   toggleTheme() { this.setState(function (s) { const t = s.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('panda_theme', t); return { theme: t }; }); }
   setView(view) {
-    this.setState({ view: view, selectedSupplier: null, modal: null, mobileNavOpen: false });
+    this.setState({ view: view, selectedSupplier: null, selectedSite: null, modal: null, mobileNavOpen: false });
     if (view === 'settings') {
       const self = this;
       PandaAPI.call('getAuditLog').then(function (r) { if (r && r.success) self.setState({ auditLog: r.data || [] }); });
@@ -2790,6 +2810,7 @@ class Component extends DCLogic {
   openSupplier(name) { this.setState({ view: 'supplierDetail', selectedSupplier: name, mobileNavOpen: false }); }
   openStaffDetail(name) { this.setState({ view: 'staffDetail', selectedStaff: name, modal: null, mobileNavOpen: false }); }
   openMistriDetail(name) { this.setState({ view: 'mistriDetail', selectedMistri: name, modal: null, mobileNavOpen: false }); }
+  openSiteDetail(name) { this.setState({ view: 'siteDetail', selectedSite: name, modal: null, mobileNavOpen: false }); }
   openLabourDetail(name) { this.setState({ view: 'labourDetail', selectedLabour: name, modal: null, mobileNavOpen: false }); }
   setTaskDate(e) { this.setState({ taskDate: e.target.value }); }
   setAttendanceDate(e) { this.setState({ attendanceDate: e.target.value }); }
@@ -3047,7 +3068,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Supplier.value || !f.AmountPaid.value) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: f.WalletUser.value || this.currentUserName(), CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updatePayment', payload, 'Payment updated successfully.'); }
     else this.submitGeneric('addPayment', payload, 'Payment saved successfully.');
   }
@@ -3074,7 +3095,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Supplier.value || !f.AmountPaid.value) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: f.WalletUser.value || this.currentUserName(), CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateDieselPayment', payload, 'Diesel payment updated successfully.'); }
     else this.submitGeneric('addDieselPayment', payload, 'Diesel payment saved successfully.');
   }
@@ -3188,7 +3209,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.MistriName.value || !f.Site.value.trim() || !f.AmountPaid.value) { this.showToast('Date, mistri, site and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, MistriName: f.MistriName.value, Site: f.Site.value.trim(), AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: f.WalletUser.value || this.currentUserName(), CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, MistriName: f.MistriName.value, Site: f.Site.value.trim(), AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateMistriPayment', payload, 'Mistri payment updated successfully.'); }
     else this.submitGeneric('addMistriPayment', payload, 'Mistri payment saved successfully.');
   }
@@ -3228,7 +3249,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.LabourName.value || !f.Site.value.trim() || !f.AmountPaid.value) { this.showToast('Date, labour, site and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, LabourName: f.LabourName.value, Site: f.Site.value.trim(), AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: f.WalletUser.value || this.currentUserName(), CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, LabourName: f.LabourName.value, Site: f.Site.value.trim(), AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateLabourPayment', payload, 'Labour payment updated successfully.'); }
     else this.submitGeneric('addLabourPayment', payload, 'Labour payment saved successfully.');
   }
@@ -3270,7 +3291,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.AmountPaid.value) { this.showToast('Date and Amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, StaffName: f.StaffName.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: f.WalletUser.value || this.currentUserName(), CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, StaffName: f.StaffName.value, AmountPaid: f.AmountPaid.value, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateStaffPayment', payload, 'Staff payment updated successfully.'); }
     else this.submitGeneric('addStaffPayment', payload, 'Staff payment saved successfully.');
   }
@@ -3288,7 +3309,7 @@ class Component extends DCLogic {
     if (f.To.value.indexOf('MISTRI::') === 0) {
       const mistriName = f.To.value.slice(8);
       if (!f.Site.value.trim()) { this.showToast('Site is required for a Mistri advance.'); return; }
-      const payload = { Date: f.Date.value, From: this.currentUserName(), MistriName: mistriName, Site: f.Site.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+      const payload = { Date: f.Date.value, From: 'Sukadev', MistriName: mistriName, Site: f.Site.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
       if (ed && ed._isAdvance) { payload.AdvanceID = ed.AdvanceID; this.submitGeneric('updateMistriAdvance', payload, 'Advance updated successfully.'); }
       else this.submitGeneric('addMistriAdvance', payload, 'Advance sent successfully.');
       return;
@@ -3296,7 +3317,7 @@ class Component extends DCLogic {
     if (f.To.value.indexOf('LABOUR::') === 0) {
       const labourName = f.To.value.slice(8);
       if (!f.Site.value.trim()) { this.showToast('Site is required for a Labour advance.'); return; }
-      const payload = { Date: f.Date.value, From: this.currentUserName(), LabourName: labourName, Site: f.Site.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+      const payload = { Date: f.Date.value, From: 'Sukadev', LabourName: labourName, Site: f.Site.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
       if (ed && ed._isLabourAdvance) { payload.AdvanceID = ed.AdvanceID; this.submitGeneric('updateLabourAdvance', payload, 'Advance updated successfully.'); }
       else this.submitGeneric('addLabourAdvance', payload, 'Advance sent successfully.');
       return;
@@ -3308,7 +3329,7 @@ class Component extends DCLogic {
       else this.submitGeneric('addStaffPayment', payload, 'Staff payment sent successfully.');
       return;
     }
-    const payload = { Date: f.Date.value, From: this.currentUserName(), To: f.To.value, Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, From: (f.To.value === 'Sukadev' ? this.currentUserName() : 'Sukadev'), To: f.To.value, Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed && !ed._isAdvance) { payload.TransferID = ed.TransferID; payload.From = ed.From; this.submitGeneric('updateFundTransfer', payload, 'Fund transfer updated successfully.'); }
     else this.submitGeneric('addFundTransfer', payload, 'Fund transfer saved successfully.');
   }
@@ -3317,7 +3338,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Site.value || !f.Amount.value) { this.showToast('Date, site and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, User: this.currentUserName(), Site: f.Site.value, Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, WalletUser: f.WalletUser.value || this.currentUserName(), CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, User: this.currentUserName(), Site: f.Site.value, Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', CreatedBy: this.currentUserName() };
     if (ed) { payload.AllocationID = ed.AllocationID; payload.User = ed.User; this.submitGeneric('updateSiteAllocation', payload, 'Site allocation updated successfully.'); }
     else this.submitGeneric('addSiteAllocation', payload, 'Site allocation saved successfully.');
   }
@@ -3335,7 +3356,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Name.value.trim() || !f.Purpose.value.trim() || !f.Amount.value) { this.showToast('Date, name, purpose and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, From: this.currentUserName(), WalletUser: f.WalletUser.value || this.currentUserName(), Name: f.Name.value.trim(), Purpose: f.Purpose.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, From: this.currentUserName(), WalletUser: 'Sukadev', Name: f.Name.value.trim(), Purpose: f.Purpose.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; payload.From = ed.From; this.submitGeneric('updateOtherPayment', payload, 'Payment updated successfully.'); }
     else this.submitGeneric('addOtherPayment', payload, 'Payment sent successfully.');
   }
@@ -4008,7 +4029,7 @@ class Component extends DCLogic {
       const outstanding = bfAmt + purchase - paid;
       supplierDetail = {
         name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding), outstandingColor: this.oc(outstanding),
-        rows: filteredTx.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteTransaction(r); } }); }),
+        rows: filteredTx.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
         allTxRaw: allTx.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         payRaw: pay.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, outstandingN: outstanding,
@@ -4282,13 +4303,14 @@ class Component extends DCLogic {
       transactions: s.view === 'transactions', payments: s.view === 'payments', bf: s.view === 'bf',
       dieselTx: s.view === 'dieselTx', dieselPayments: s.view === 'dieselPayments', dieselBF: s.view === 'dieselBF',
       sites: s.view === 'sites', materials: s.view === 'materials', reports: s.view === 'reports', settings: s.view === 'settings',
-      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', labour: s.view === 'labour', labourDetail: s.view === 'labourDetail', funds: s.view === 'funds', attendance: s.view === 'attendance'
+      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', labour: s.view === 'labour', labourDetail: s.view === 'labourDetail', funds: s.view === 'funds', attendance: s.view === 'attendance', siteDetail: s.view === 'siteDetail'
     };
     const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel', staffDue: s.reportTab === 'staffDue', labour: s.reportTab === 'labour' };
     const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment', labour: s.modal === 'labour', labourEntry: s.modal === 'labourEntry', labourPayment: s.modal === 'labourPayment', otherPayment: s.modal === 'otherPayment' };
     const editRecordRaw = s.editRecord || {};
     const myName = s.session ? s.session.name : '';
     const isHrushikesh = !!(s.session && s.session.name === 'Hrushikesh Padhi');
+    const isSukadev = !!(s.session && s.session.name === 'Sukadev');
     const activeUsers = s.users.filter(function (u) { return u.Status === 'Active' || !u.Status; });
     const fmtSignupDate = function (v) { if (!v) return '—'; const d = new Date(v); return isNaN(d.getTime()) ? String(v) : d.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); };
     const pendingUsers = s.users.filter(function (u) { return u.Status === 'Pending'; }).map(function (u) { return {
@@ -4365,8 +4387,33 @@ class Component extends DCLogic {
         { label: 'To Mistri', valueFmt: fmt(mistriPaid) },
         { label: 'To Labour', valueFmt: fmt(labourPaid) }
       ];
-      return { SiteName: site.SiteName, receivedFmt: fmt(received), expendFmt: fmt(expend), mistriPaidFmt: fmt(mistriPaid), labourPaidFmt: fmt(labourPaid), totalExpendFmt: fmt(totalExpend), expendBreakdown: expendBreakdown, balanceFmt: fmt(balance), balanceColor: self.oc(-balance), hasActivity: received !== 0 || expend !== 0 || mistriPaid !== 0 || labourPaid !== 0, txns: txns, isExpanded: isExpanded, toggleIcon: isExpanded ? '▾' : '▸', onToggle: function () { self.toggleSiteBalance(site.SiteName); } };
+      return { SiteName: site.SiteName, receivedFmt: fmt(received), expendFmt: fmt(expend), mistriPaidFmt: fmt(mistriPaid), labourPaidFmt: fmt(labourPaid), totalExpendFmt: fmt(totalExpend), expendBreakdown: expendBreakdown, balanceFmt: fmt(balance), balanceColor: self.oc(-balance), hasActivity: received !== 0 || expend !== 0 || mistriPaid !== 0 || labourPaid !== 0, txns: txns, isExpanded: isExpanded, toggleIcon: isExpanded ? '▾' : '▸', onToggle: function () { self.toggleSiteBalance(site.SiteName); }, onOpen: function () { self.openSiteDetail(site.SiteName); } };
     }).filter(function (r) { return r.hasActivity; });
+    let siteDetail = { name: '', receivedFmt: fmt(0), totalExpendFmt: fmt(0), balanceFmt: fmt(0), balanceColor: '', expendBreakdown: [], txns: [] };
+    if (s.selectedSite) {
+      const siteName = s.selectedSite;
+      const sdf = s.siteDetailFilter;
+      const receivedRowsD = s.siteAllocations.filter(function (a) { return a.Site === siteName && self.inRange(a.Date, sdf.from, sdf.to); });
+      const receivedD = self.sum(receivedRowsD, 'Amount');
+      const expendD = self.siteOtherExpenditure(siteName, s, sdf.from, sdf.to);
+      const mistriPaidD = self.siteMistriPaid(siteName, s, sdf.from, sdf.to);
+      const labourPaidD = self.siteLabourPaid(siteName, s, sdf.from, sdf.to);
+      const balanceD = receivedD - expendD - mistriPaidD - labourPaidD;
+      const dTxns = [];
+      receivedRowsD.forEach(function (a) { dTxns.push({ Date: a.Date, Category: 'Allocated to Site', Detail: 'by ' + a.User, Remarks: a.Remarks || '', AmountN: Number(a.Amount) || 0, isReceived: true }); });
+      s.siteExpenses.filter(function (e) { return e.Site === siteName && self.inRange(e.Date, sdf.from, sdf.to); }).forEach(function (e) { dTxns.push({ Date: e.Date, Category: 'Site Expenditure', Detail: '', Remarks: e.Remarks || '', AmountN: Number(e.Amount) || 0, isReceived: false }); });
+      s.mistriPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, sdf.from, sdf.to); }).forEach(function (p) { dTxns.push({ Date: p.Date, Category: 'To Mistri', Detail: p.MistriName, Remarks: p.Remarks || '', AmountN: Number(p.AmountPaid) || 0, isReceived: false }); });
+      s.labourPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, sdf.from, sdf.to); }).forEach(function (p) { dTxns.push({ Date: p.Date, Category: 'To Labour', Detail: p.LabourName, Remarks: p.Remarks || '', AmountN: Number(p.AmountPaid) || 0, isReceived: false }); });
+      s.payments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, sdf.from, sdf.to); }).forEach(function (p) { dTxns.push({ Date: p.Date, Category: 'To Supplier', Detail: p.Supplier, Remarks: p.Remarks || '', AmountN: Number(p.AmountPaid) || 0, isReceived: false }); });
+      s.dieselPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, sdf.from, sdf.to); }).forEach(function (p) { dTxns.push({ Date: p.Date, Category: 'To Diesel', Detail: p.Supplier, Remarks: p.Remarks || '', AmountN: Number(p.AmountPaid) || 0, isReceived: false }); });
+      dTxns.sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); });
+      dTxns.forEach(function (tx, i) { tx.Sl = i + 1; tx.receivedFmt = tx.isReceived ? fmt(tx.AmountN) : ''; tx.sentFmt = tx.isReceived ? '' : fmt(tx.AmountN); });
+      siteDetail = {
+        name: siteName, receivedFmt: fmt(receivedD), totalExpendFmt: fmt(expendD + mistriPaidD + labourPaidD), balanceFmt: fmt(balanceD), balanceColor: self.oc(-balanceD),
+        expendBreakdown: [{ label: 'Other Expenditure', valueFmt: fmt(expendD) }, { label: 'To Mistri', valueFmt: fmt(mistriPaidD) }, { label: 'To Labour', valueFmt: fmt(labourPaidD) }],
+        txns: dTxns
+      };
+    }
     const siteExpenseRows = s.siteExpenses.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('siteExpense', r); }, onDelete: function () { self.deleteRecord('deleteSiteExpense', { ExpenseID: r.ExpenseID }, 'siteExpenses'); } }); });
     const ubf = s.userBalanceFilter;
     const userBalanceBreakdown = canSeeAllFunds ? s.users.filter(function (u) { return !ubf.name || u.Name.toLowerCase().includes(ubf.name.toLowerCase()); }).map(function (u) {
@@ -4448,7 +4495,7 @@ class Component extends DCLogic {
       saveStatus: s.saveStatus, savingActive: s.saveStatus === 'saving', savedActive: s.saveStatus === 'saved',
       passwordFieldType: s.showPassword ? 'text' : 'password', showPasswordLabel: s.showPassword ? 'Hide' : 'Show', toggleShowPassword: this.toggleShowPassword.bind(this),
       authIsLogin: s.authMode === 'login', toggleAuthMode: this.toggleAuthMode.bind(this), submitSignup: this.submitSignup.bind(this), signupError: s.signupError, signingUp: s.signingUp, signupBtnLabel: s.signingUp ? 'Submitting…' : 'Request Account', activeUsers: activeUsers, isHrushikesh: isHrushikesh, pendingUsers: pendingUsers, hasPendingUsers: hasPendingUsers,
-      moneyEnabled: moneyEnabled, moneyGateTitle: moneyGateTitle, moneyGateOpacity: moneyGateOpacity, moneyGateCursor: moneyGateCursor, toggleMoneyPermission: this.toggleMoneyPermission.bind(this),
+      moneyEnabled: moneyEnabled, moneyGateTitle: moneyGateTitle, moneyGateOpacity: moneyGateOpacity, moneyGateCursor: moneyGateCursor, toggleMoneyPermission: this.toggleMoneyPermission.bind(this), isSukadev: isSukadev,
       theme: s.theme, themeToggleLabel: s.theme === 'light' ? 'Dark Mode' : 'Light Mode', toggleTheme: this.toggleTheme.bind(this),
       handleLogin: this.handleLogin.bind(this), logout: this.logout.bind(this),
       navDashboard: function () { self.setView('dashboard'); }, navSuppliers: function () { self.setView('suppliers'); }, navTransactions: function () { self.setView('transactions'); },
@@ -4532,6 +4579,7 @@ class Component extends DCLogic {
       navLabour: function () { self.setView('labour'); }, openLabourModal: function () { self.openModal('labour'); }, openLabourEntryModal: function () { self.openLabourEntryModal(null); }, openLabourPaymentModal: function () { self.openModal('labourPayment'); },
       submitLabour: this.submitLabour.bind(this), submitLabourEntry: this.submitLabourEntry.bind(this), submitLabourPayment: this.submitLabourPayment.bind(this),
       myFundBalanceFmt: fmt(myFundBalanceN), fundReceivedFmt: fmt(fundReceivedN), totalMyExpenditureFmt: fmt(totalMyExpenditureN), myExpenditureBreakdown: myExpenditureBreakdown, expandedMyExpenditure: s.expandedMyExpenditure, toggleMyExpenditure: this.toggleMyExpenditure.bind(this), showMyFundBalance: showMyFundBalance, userBalanceBreakdown: userBalanceBreakdown, siteWalletCards: siteWalletCards, siteWalletFilter: s.siteWalletFilter,
+      siteDetail: siteDetail, openSiteDetail: this.openSiteDetail.bind(this), navSitesFund: function () { self.setView('funds'); }, siteDetailFilter: s.siteDetailFilter, onSiteDetailFrom: this.setGenericFilter('siteDetailFilter', 'from'), onSiteDetailTo: this.setGenericFilter('siteDetailFilter', 'to'), onSiteDetailMonth: this.setMonthShortcut('siteDetailFilter'),
       sectionExpanded: sectionExpanded, sectionToggle: sectionToggle, sectionIcon: sectionIcon,
       fundTransferFilter: s.fundTransferFilter, onFundTransferFrom: this.setFundTransferFilter('from'), onFundTransferTo: this.setFundTransferFilter('to'), onFundTransferMonth: this.setMonthShortcut('fundTransferFilter'), onFundTransferParty: this.setFundTransferFilter('party'),
       userBalanceFilter: s.userBalanceFilter, onUserBalanceFrom: this.setUserBalanceFilter('from'), onUserBalanceTo: this.setUserBalanceFilter('to'), onUserBalanceMonth: this.setMonthShortcut('userBalanceFilter'), onUserBalanceName: this.setUserBalanceFilter('name'),
