@@ -2772,6 +2772,12 @@ class Component extends DCLogic {
     });
   }
   toggleShowPassword() { this.setState(function (s) { return { showPassword: !s.showPassword }; }); }
+  fmtIST(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return String(ts);
+    return d.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  }
   toggleAuthMode() { this.setState(function (s) { return { authMode: s.authMode === 'login' ? 'signup' : 'login', signupError: '', loginError: '' }; }); }
   submitSignup(e) {
     e.preventDefault();
@@ -4602,7 +4608,7 @@ class Component extends DCLogic {
       maintenanceToggleStyle: 'padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:' + ((s.maintenance && s.maintenance.enabled) ? '#e2574c' : '#2ea043') + ';color:#fff;',
       onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this), onMigrate: this.migrateFromSheets.bind(this),
       viewIs: viewIs, pageTitle: pageTitles[s.view] || '', navStyle: navStyle, reportTabStyle: reportTabStyle, reportTabIs: reportTabIs, modal: s.modal, modalIs: modalIs, hasNew: hasNew, newCount: newCount, billing: billing,
-      users: usersWithContact, auditLog: s.auditLog, dataSourceLabel: isDemo ? 'Demo mode — data stored in this browser only. Paste your Apps Script Web App URL into config.js to switch to live Google Sheet.' : 'Connected to Google Sheets via Apps Script.',
+      users: usersWithContact, auditLog: s.auditLog.map(function (a) { return Object.assign({}, a, { Timestamp: self.fmtIST(a.Timestamp) }); }), dataSourceLabel: isDemo ? 'Demo mode — data stored in this browser only. Paste your Apps Script Web App URL into config.js to switch to live Google Sheet.' : 'Connected to Google Sheets via Apps Script.',
       dashFilters: s.dashFilters, supplierOptions: supplierOptions, siteOptions: siteOptions, materialOptions: materialOptions, dieselSupplierOptions: dieselSupplierOptions, unitOptions: unitOptions, monthShortcutOptions: monthShortcutOptions, onDashMonth: this.setMonthShortcut('dashFilters'), paymentMethodOptions: paymentMethodOptions,
       onDashFrom: this.setDashFilter('from'), onDashTo: this.setDashFilter('to'), onDashSupplier: this.setDashFilter('supplier'), onDashSite: this.setDashFilter('site'), onDashMaterial: this.setDashFilter('material'), onDashVehicle: this.setDashFilter('vehicle'),
       onDetailSite: this.setDetailFilter('site'), onDetailMaterial: this.setDetailFilter('material'), onDetailVehicle: this.setDetailFilter('vehicle'),

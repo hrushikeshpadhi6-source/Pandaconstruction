@@ -5,7 +5,7 @@
 // ============================================================
 (function () {
   const db = window.fsdb;
-  const USER_PASSWORDS = { "Subrat Panda": "00000", "Hrushikesh Padhi": "11111", "Ayaskanta Giri": "22222", "Sukadev": "33333" };
+  const USER_PASSWORDS = { "Subrat Panda": "00000", "Hrushikesh Padhi": "955690", "Ayaskanta Giri": "22222", "Sukadev": "33333" };
 
   // Business-style IDs (e.g. "PAY7"), kept sequential via a counters doc so tables still read
   // like "SL No 1, 2, 3..." instead of random strings. Verifies against the actual collection
