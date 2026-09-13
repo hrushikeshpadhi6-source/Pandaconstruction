@@ -3096,7 +3096,7 @@ class Component extends DCLogic {
   submitBF(e) {
     e.preventDefault();
     const f = e.target.elements;
-    if (!f.Supplier.value || !f.BFAmount.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    if (!f.Supplier.value || !f.BFAmount.value) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
     const payload = { Supplier: f.Supplier.value, BFMonth: f.BFMonth.value, BFDate: f.BFDate.value, BFAmount: f.BFAmount.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.OrigSupplier = ed.Supplier; payload.OrigBFMonth = ed.BFMonth; payload.OrigBFDate = ed.BFDate; this.submitGeneric('updateBF', payload, 'BF balance updated successfully.'); }
@@ -3123,7 +3123,7 @@ class Component extends DCLogic {
   submitDieselBF(e) {
     e.preventDefault();
     const f = e.target.elements;
-    if (!f.Supplier.value || !f.BFAmount.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    if (!f.Supplier.value || !f.BFAmount.value) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
     const payload = { Supplier: f.Supplier.value, BFMonth: f.BFMonth.value, BFDate: f.BFDate.value, BFAmount: f.BFAmount.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.OrigSupplier = ed.Supplier; payload.OrigBFMonth = ed.BFMonth; payload.OrigBFDate = ed.BFDate; this.submitGeneric('updateDieselBF', payload, 'Diesel BF updated successfully.'); }
