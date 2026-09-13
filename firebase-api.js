@@ -68,7 +68,8 @@
     FundTransfer: { coll: "fundTransfers", idField: "TransferID", counter: "TransferID", prefix: "FT", def: { Status: "Active" } },
     SiteAllocation: { coll: "siteAllocations", idField: "AllocationID", counter: "AllocationID", prefix: "SA", def: { Status: "Active" } },
     SiteExpense: { coll: "siteExpenses", idField: "ExpenseID", counter: "ExpenseID", prefix: "SE", def: { Status: "Active" } },
-    OtherPayment: { coll: "otherPayments", idField: "PaymentID", counter: "OtherPaymentID", prefix: "OTH", def: { Status: "Active" } }
+    OtherPayment: { coll: "otherPayments", idField: "PaymentID", counter: "OtherPaymentID", prefix: "OTH", def: { Status: "Active" } },
+    User: { coll: "users", idField: "UserID", counter: "UserID", prefix: "USR", def: { Status: "Pending", Role: "Pending" } }
   };
 
   async function genericAdd(key, payload) {
@@ -112,6 +113,36 @@
     return (Number(p.DailyPrice) || 0) * (Number(p.HowManyLabour) || 0) + additional + fare;
   }
 
+  async function computeUserBalance(walletUserName) {
+    const [fundTransfers, siteAllocations, payments, dieselPayments, staffPayments, mistriPayments, mistriAdvances, labourPayments, labourAdvances, otherPayments] = await Promise.all([
+      colToArray("fundTransfers"), colToArray("siteAllocations"), colToArray("payments"), colToArray("dieselPayments"),
+      colToArray("staffPayments"), colToArray("mistriPayments"), colToArray("mistriAdvances"), colToArray("labourPayments"), colToArray("labourAdvances"), colToArray("otherPayments")
+    ]);
+    const sumBy = function (arr, field, matchFn) { return arr.filter(matchFn).reduce(function (a, r) { return a + (Number(r[field]) || 0); }, 0); };
+    const byWallet = function (fallbackField) { return function (r) { return (r.WalletUser || r[fallbackField]) === walletUserName; }; };
+    const received = sumBy(fundTransfers, "Amount", function (t) { return t.To === walletUserName; });
+    const sentOut = sumBy(fundTransfers, "Amount", function (t) { return t.From === walletUserName; });
+    const toSite = sumBy(siteAllocations, "Amount", byWallet("User"));
+    const toSupplier = sumBy(payments, "AmountPaid", byWallet("CreatedBy"));
+    const toDiesel = sumBy(dieselPayments, "AmountPaid", byWallet("CreatedBy"));
+    const toStaff = sumBy(staffPayments, "AmountPaid", byWallet("CreatedBy"));
+    const toMistri = sumBy(mistriPayments, "AmountPaid", byWallet("CreatedBy")) + sumBy(mistriAdvances, "Amount", byWallet("From"));
+    const toLabour = sumBy(labourPayments, "AmountPaid", byWallet("CreatedBy")) + sumBy(labourAdvances, "Amount", byWallet("From"));
+    const toOther = sumBy(otherPayments, "Amount", byWallet("From"));
+    return received - sentOut - toSite - toSupplier - toDiesel - toStaff - toMistri - toLabour - toOther;
+  }
+
+  async function checkMoneySpend(requesterName, walletUserName, amount) {
+    const users = await colToArray("users");
+    const req = users.find(function (x) { return x.Name === requesterName; });
+    if (req && req.Role !== "Owner" && req.MoneyEnabled === false) return { ok: false, message: "You don't have permission to send money yet. Ask Hrushikesh Padhi to enable it." };
+    const wu = users.find(function (x) { return x.Name === walletUserName; });
+    if (wu && wu.Role === "Owner") return { ok: true };
+    const balance = await computeUserBalance(walletUserName);
+    if (Number(amount) > balance) return { ok: false, message: "Insufficient balance in " + walletUserName + "'s wallet (available \u20b9" + Math.round(balance) + ")." };
+    return { ok: true };
+  }
+
   async function getSettingsMap() {
     const snap = await db.collection("settings").get();
     const map = {};
@@ -131,9 +162,12 @@
     switch (action) {
       case "login": {
         const users = await colToArray("users");
-        const u = users.find(function (x) { return String(x.Name).toLowerCase() === String(p.name || "").toLowerCase() && x.Status === "Active"; });
-        const pass = USER_PASSWORDS[u && u.Name];
-        if (u && pass && String(p.password) === pass) {
+        const u = users.find(function (x) { return String(x.Name).toLowerCase() === String(p.name || "").toLowerCase(); });
+        if (!u) return { success: false, message: "Invalid name or password." };
+        if (u.Status === "Pending") return { success: false, message: "Your account is awaiting approval from Hrushikesh Padhi." };
+        if (u.Status !== "Active") return { success: false, message: "This account is not active. Contact Admin." };
+        const pass = u.Password || USER_PASSWORDS[u.Name];
+        if (pass && String(p.password) === String(pass)) {
           await db.collection("users").doc(u.UserID).set({ LastLogin: new Date().toISOString() }, { merge: true });
           return { success: true, user: { name: u.Name, role: u.Role }, maintenance: await getMaintenanceStatus() };
         }
@@ -180,8 +214,8 @@
       case "deleteTransaction": await genericDelete("Transaction", p.SLNo); await auditLog(p.CreatedBy, "Deleted Transaction", "SupplierTransactions", p.SLNo, ""); return { success: true, message: "Transaction deleted successfully." };
 
       case "getPayments": return { success: true, data: await colToArray("payments") };
-      case "addPayment": { const r = await genericAdd("Payment", { Date: p.Date, Supplier: p.Supplier, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber || "", Site: p.Site, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Supplier Payment", "SupplierPayments", r.id, p.Supplier + " ₹" + p.AmountPaid); return { success: true, message: "Payment saved successfully." }; }
-      case "updatePayment": { const ok = await genericUpdate("Payment", p, { Date: p.Date, Supplier: p.Supplier, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber, Site: p.Site, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Payment not found." }; await auditLog(p.CreatedBy, "Updated Supplier Payment", "SupplierPayments", p.PaymentID, p.Supplier + " ₹" + p.AmountPaid); return { success: true, message: "Payment updated successfully." }; }
+      case "addPayment": { const chk = await checkMoneySpend(p.CreatedBy, p.WalletUser || p.CreatedBy, p.AmountPaid); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("Payment", { Date: p.Date, Supplier: p.Supplier, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber || "", Site: p.Site, Remarks: p.Remarks || "", WalletUser: p.WalletUser || p.CreatedBy, CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Supplier Payment", "SupplierPayments", r.id, p.Supplier + " ₹" + p.AmountPaid); return { success: true, message: "Payment saved successfully." }; }
+      case "updatePayment": { const ok = await genericUpdate("Payment", p, { Date: p.Date, Supplier: p.Supplier, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber, Site: p.Site, Remarks: p.Remarks, WalletUser: p.WalletUser }); if (!ok) return { success: false, message: "Payment not found." }; await auditLog(p.CreatedBy, "Updated Supplier Payment", "SupplierPayments", p.PaymentID, p.Supplier + " ₹" + p.AmountPaid); return { success: true, message: "Payment updated successfully." }; }
       case "deletePayment": await genericDelete("Payment", p.PaymentID); await auditLog(p.CreatedBy, "Deleted Payment", "SupplierPayments", p.PaymentID, ""); return { success: true, message: "Payment deleted successfully." };
 
       case "getBF": return { success: true, data: await colToArray("bf") };
@@ -195,8 +229,8 @@
       case "deleteDieselTransaction": await genericDelete("DieselTransaction", p.SLNo); await auditLog(p.CreatedBy, "Deleted Diesel Transaction", "DieselTransactions", p.SLNo, ""); return { success: true, message: "Diesel transaction deleted successfully." };
 
       case "getDieselPayments": return { success: true, data: await colToArray("dieselPayments") };
-      case "addDieselPayment": { const r = await genericAdd("DieselPayment", { Date: p.Date, Supplier: p.Supplier, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber || "", Site: p.Site, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Diesel Payment", "DieselPayments", r.id, p.Supplier + " ₹" + p.AmountPaid); return { success: true, message: "Diesel payment saved successfully." }; }
-      case "updateDieselPayment": { const ok = await genericUpdate("DieselPayment", p, { Date: p.Date, Supplier: p.Supplier, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber, Site: p.Site, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Diesel payment not found." }; await auditLog(p.CreatedBy, "Updated Diesel Payment", "DieselPayments", p.PaymentID, p.Supplier + " ₹" + p.AmountPaid); return { success: true, message: "Diesel payment updated successfully." }; }
+      case "addDieselPayment": { const chk = await checkMoneySpend(p.CreatedBy, p.WalletUser || p.CreatedBy, p.AmountPaid); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("DieselPayment", { Date: p.Date, Supplier: p.Supplier, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber || "", Site: p.Site, Remarks: p.Remarks || "", WalletUser: p.WalletUser || p.CreatedBy, CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Diesel Payment", "DieselPayments", r.id, p.Supplier + " ₹" + p.AmountPaid); return { success: true, message: "Diesel payment saved successfully." }; }
+      case "updateDieselPayment": { const ok = await genericUpdate("DieselPayment", p, { Date: p.Date, Supplier: p.Supplier, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber, Site: p.Site, Remarks: p.Remarks, WalletUser: p.WalletUser }); if (!ok) return { success: false, message: "Diesel payment not found." }; await auditLog(p.CreatedBy, "Updated Diesel Payment", "DieselPayments", p.PaymentID, p.Supplier + " ₹" + p.AmountPaid); return { success: true, message: "Diesel payment updated successfully." }; }
       case "deleteDieselPayment": await genericDelete("DieselPayment", p.PaymentID); await auditLog(p.CreatedBy, "Deleted Diesel Payment", "DieselPayments", p.PaymentID, ""); return { success: true, message: "Diesel payment deleted successfully." };
 
       case "getDieselBF": return { success: true, data: await colToArray("dieselBF") };
@@ -225,8 +259,8 @@
       case "deleteStaffSalary": await genericDelete("StaffSalary", p.SalaryID); await auditLog(p.CreatedBy, "Deleted Staff Salary", "StaffSalary", p.SalaryID, ""); return { success: true, message: "Salary slip deleted successfully." };
 
       case "getStaffPayments": return { success: true, data: await colToArray("staffPayments") };
-      case "addStaffPayment": { const r = await genericAdd("StaffPayment", { Date: p.Date, StaffName: p.StaffName, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Staff Payment", "StaffPayments", r.id, p.StaffName + " ₹" + p.AmountPaid); return { success: true, message: "Staff payment saved successfully." }; }
-      case "updateStaffPayment": { const ok = await genericUpdate("StaffPayment", p, { Date: p.Date, StaffName: p.StaffName, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Staff payment not found." }; await auditLog(p.CreatedBy, "Updated Staff Payment", "StaffPayments", p.PaymentID, p.StaffName + " ₹" + p.AmountPaid); return { success: true, message: "Staff payment updated successfully." }; }
+      case "addStaffPayment": { const chk = await checkMoneySpend(p.CreatedBy, p.WalletUser || p.CreatedBy, p.AmountPaid); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("StaffPayment", { Date: p.Date, StaffName: p.StaffName, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber || "", Remarks: p.Remarks || "", WalletUser: p.WalletUser || p.CreatedBy, CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Staff Payment", "StaffPayments", r.id, p.StaffName + " ₹" + p.AmountPaid); return { success: true, message: "Staff payment saved successfully." }; }
+      case "updateStaffPayment": { const ok = await genericUpdate("StaffPayment", p, { Date: p.Date, StaffName: p.StaffName, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber, Remarks: p.Remarks, WalletUser: p.WalletUser }); if (!ok) return { success: false, message: "Staff payment not found." }; await auditLog(p.CreatedBy, "Updated Staff Payment", "StaffPayments", p.PaymentID, p.StaffName + " ₹" + p.AmountPaid); return { success: true, message: "Staff payment updated successfully." }; }
       case "deleteStaffPayment": await genericDelete("StaffPayment", p.PaymentID); await auditLog(p.CreatedBy, "Deleted Staff Payment", "StaffPayments", p.PaymentID, ""); return { success: true, message: "Staff payment deleted successfully." };
 
       case "getStaffAttendance": return { success: true, data: await colToArray("staffAttendance") };
@@ -244,12 +278,12 @@
       case "deleteMistriDue": await genericDelete("MistriDue", p.DueID); await auditLog(p.CreatedBy, "Deleted Mistri Due", "MistriDue", p.DueID, ""); return { success: true, message: "Mistri due deleted successfully." };
 
       case "getMistriPayments": return { success: true, data: await colToArray("mistriPayments") };
-      case "addMistriPayment": { const r = await genericAdd("MistriPayment", { Date: p.Date, MistriName: p.MistriName, Site: p.Site, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod || "", ReferenceNumber: p.ReferenceNumber || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Mistri Payment", "MistriPayments", r.id, p.MistriName + " @ " + p.Site + " ₹" + p.AmountPaid); return { success: true, message: "Mistri payment saved successfully." }; }
-      case "updateMistriPayment": { const ok = await genericUpdate("MistriPayment", p, { Date: p.Date, MistriName: p.MistriName, Site: p.Site, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Mistri payment not found." }; await auditLog(p.CreatedBy, "Updated Mistri Payment", "MistriPayments", p.PaymentID, p.MistriName + " @ " + p.Site + " ₹" + p.AmountPaid); return { success: true, message: "Mistri payment updated successfully." }; }
+      case "addMistriPayment": { const chk = await checkMoneySpend(p.CreatedBy, p.WalletUser || p.CreatedBy, p.AmountPaid); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("MistriPayment", { Date: p.Date, MistriName: p.MistriName, Site: p.Site, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod || "", ReferenceNumber: p.ReferenceNumber || "", Remarks: p.Remarks || "", WalletUser: p.WalletUser || p.CreatedBy, CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Mistri Payment", "MistriPayments", r.id, p.MistriName + " @ " + p.Site + " ₹" + p.AmountPaid); return { success: true, message: "Mistri payment saved successfully." }; }
+      case "updateMistriPayment": { const ok = await genericUpdate("MistriPayment", p, { Date: p.Date, MistriName: p.MistriName, Site: p.Site, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber, Remarks: p.Remarks, WalletUser: p.WalletUser }); if (!ok) return { success: false, message: "Mistri payment not found." }; await auditLog(p.CreatedBy, "Updated Mistri Payment", "MistriPayments", p.PaymentID, p.MistriName + " @ " + p.Site + " ₹" + p.AmountPaid); return { success: true, message: "Mistri payment updated successfully." }; }
       case "deleteMistriPayment": await genericDelete("MistriPayment", p.PaymentID); await auditLog(p.CreatedBy, "Deleted Mistri Payment", "MistriPayments", p.PaymentID, ""); return { success: true, message: "Mistri payment deleted successfully." };
 
       case "getMistriAdvances": return { success: true, data: await colToArray("mistriAdvances") };
-      case "addMistriAdvance": { const r = await genericAdd("MistriAdvance", { Date: p.Date, From: p.From || "", MistriName: p.MistriName, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Mistri Advance", "MistriAdvances", r.id, p.MistriName + " @ " + p.Site + " ₹" + p.Amount); return { success: true, message: "Advance sent successfully." }; }
+      case "addMistriAdvance": { const chk = await checkMoneySpend(p.CreatedBy, p.From || p.CreatedBy, p.Amount); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("MistriAdvance", { Date: p.Date, From: p.From || "", MistriName: p.MistriName, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Mistri Advance", "MistriAdvances", r.id, p.MistriName + " @ " + p.Site + " ₹" + p.Amount); return { success: true, message: "Advance sent successfully." }; }
       case "updateMistriAdvance": { const ok = await genericUpdate("MistriAdvance", p, { Date: p.Date, From: p.From, MistriName: p.MistriName, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Advance not found." }; await auditLog(p.CreatedBy, "Updated Mistri Advance", "MistriAdvances", p.AdvanceID, p.MistriName + " @ " + p.Site + " ₹" + p.Amount); return { success: true, message: "Advance updated successfully." }; }
       case "deleteMistriAdvance": await genericDelete("MistriAdvance", p.AdvanceID); await auditLog(p.CreatedBy, "Deleted Mistri Advance", "MistriAdvances", p.AdvanceID, ""); return { success: true, message: "Advance deleted successfully." };
 
@@ -264,23 +298,23 @@
       case "deleteLabourEntry": await genericDelete("LabourEntry", p.EntryID); await auditLog(p.CreatedBy, "Deleted Labour Entry", "LabourEntries", p.EntryID, ""); return { success: true, message: "Labour entry deleted successfully." };
 
       case "getLabourPayments": return { success: true, data: await colToArray("labourPayments") };
-      case "addLabourPayment": { const r = await genericAdd("LabourPayment", { Date: p.Date, LabourName: p.LabourName, Site: p.Site, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod || "", ReferenceNumber: p.ReferenceNumber || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Labour Payment", "LabourPayments", r.id, p.LabourName + " @ " + p.Site + " ₹" + p.AmountPaid); return { success: true, message: "Labour payment saved successfully." }; }
-      case "updateLabourPayment": { const ok = await genericUpdate("LabourPayment", p, { Date: p.Date, LabourName: p.LabourName, Site: p.Site, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Labour payment not found." }; await auditLog(p.CreatedBy, "Updated Labour Payment", "LabourPayments", p.PaymentID, p.LabourName + " @ " + p.Site + " ₹" + p.AmountPaid); return { success: true, message: "Labour payment updated successfully." }; }
+      case "addLabourPayment": { const chk = await checkMoneySpend(p.CreatedBy, p.WalletUser || p.CreatedBy, p.AmountPaid); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("LabourPayment", { Date: p.Date, LabourName: p.LabourName, Site: p.Site, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod || "", ReferenceNumber: p.ReferenceNumber || "", Remarks: p.Remarks || "", WalletUser: p.WalletUser || p.CreatedBy, CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Labour Payment", "LabourPayments", r.id, p.LabourName + " @ " + p.Site + " ₹" + p.AmountPaid); return { success: true, message: "Labour payment saved successfully." }; }
+      case "updateLabourPayment": { const ok = await genericUpdate("LabourPayment", p, { Date: p.Date, LabourName: p.LabourName, Site: p.Site, AmountPaid: p.AmountPaid, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber, Remarks: p.Remarks, WalletUser: p.WalletUser }); if (!ok) return { success: false, message: "Labour payment not found." }; await auditLog(p.CreatedBy, "Updated Labour Payment", "LabourPayments", p.PaymentID, p.LabourName + " @ " + p.Site + " ₹" + p.AmountPaid); return { success: true, message: "Labour payment updated successfully." }; }
       case "deleteLabourPayment": await genericDelete("LabourPayment", p.PaymentID); await auditLog(p.CreatedBy, "Deleted Labour Payment", "LabourPayments", p.PaymentID, ""); return { success: true, message: "Labour payment deleted successfully." };
 
       case "getLabourAdvances": return { success: true, data: await colToArray("labourAdvances") };
-      case "addLabourAdvance": { const r = await genericAdd("LabourAdvance", { Date: p.Date, From: p.From || "", LabourName: p.LabourName, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Labour Advance", "LabourAdvances", r.id, p.LabourName + " @ " + p.Site + " ₹" + p.Amount); return { success: true, message: "Advance sent successfully." }; }
+      case "addLabourAdvance": { const chk = await checkMoneySpend(p.CreatedBy, p.From || p.CreatedBy, p.Amount); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("LabourAdvance", { Date: p.Date, From: p.From || "", LabourName: p.LabourName, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Labour Advance", "LabourAdvances", r.id, p.LabourName + " @ " + p.Site + " ₹" + p.Amount); return { success: true, message: "Advance sent successfully." }; }
       case "updateLabourAdvance": { const ok = await genericUpdate("LabourAdvance", p, { Date: p.Date, From: p.From, LabourName: p.LabourName, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Advance not found." }; await auditLog(p.CreatedBy, "Updated Labour Advance", "LabourAdvances", p.AdvanceID, p.LabourName + " @ " + p.Site + " ₹" + p.Amount); return { success: true, message: "Advance updated successfully." }; }
       case "deleteLabourAdvance": await genericDelete("LabourAdvance", p.AdvanceID); await auditLog(p.CreatedBy, "Deleted Labour Advance", "LabourAdvances", p.AdvanceID, ""); return { success: true, message: "Advance deleted successfully." };
 
       case "getFundTransfers": return { success: true, data: await colToArray("fundTransfers") };
-      case "addFundTransfer": { const r = await genericAdd("FundTransfer", { Date: p.Date, From: p.From, To: p.To, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Fund Transfer", "FundTransfers", r.id, p.From + " -> " + p.To + " Rs." + p.Amount); return { success: true, message: "Fund transfer saved successfully." }; }
+      case "addFundTransfer": { const chk = await checkMoneySpend(p.CreatedBy, p.From, p.Amount); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("FundTransfer", { Date: p.Date, From: p.From, To: p.To, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Fund Transfer", "FundTransfers", r.id, p.From + " -> " + p.To + " Rs." + p.Amount); return { success: true, message: "Fund transfer saved successfully." }; }
       case "updateFundTransfer": { const ok = await genericUpdate("FundTransfer", p, { Date: p.Date, From: p.From, To: p.To, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "", Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Fund transfer not found." }; await auditLog(p.CreatedBy, "Updated Fund Transfer", "FundTransfers", p.TransferID, p.From + " -> " + p.To + " Rs." + p.Amount); return { success: true, message: "Fund transfer updated successfully." }; }
       case "deleteFundTransfer": await genericDelete("FundTransfer", p.TransferID); await auditLog(p.CreatedBy, "Deleted Fund Transfer", "FundTransfers", p.TransferID, ""); return { success: true, message: "Fund transfer deleted successfully." };
 
       case "getSiteAllocations": return { success: true, data: await colToArray("siteAllocations") };
-      case "addSiteAllocation": { const r = await genericAdd("SiteAllocation", { Date: p.Date, User: p.User, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Site Allocation", "SiteAllocations", r.id, p.User + " -> " + p.Site + " Rs." + p.Amount); return { success: true, message: "Site allocation saved successfully." }; }
-      case "updateSiteAllocation": { const ok = await genericUpdate("SiteAllocation", p, { Date: p.Date, User: p.User, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Site allocation not found." }; await auditLog(p.CreatedBy, "Updated Site Allocation", "SiteAllocations", p.AllocationID, p.User + " -> " + p.Site + " Rs." + p.Amount); return { success: true, message: "Site allocation updated successfully." }; }
+      case "addSiteAllocation": { const chk = await checkMoneySpend(p.CreatedBy, p.WalletUser || p.User, p.Amount); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("SiteAllocation", { Date: p.Date, User: p.User, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", WalletUser: p.WalletUser || p.User, CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Site Allocation", "SiteAllocations", r.id, p.User + " -> " + p.Site + " Rs." + p.Amount); return { success: true, message: "Site allocation saved successfully." }; }
+      case "updateSiteAllocation": { const ok = await genericUpdate("SiteAllocation", p, { Date: p.Date, User: p.User, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", WalletUser: p.WalletUser }); if (!ok) return { success: false, message: "Site allocation not found." }; await auditLog(p.CreatedBy, "Updated Site Allocation", "SiteAllocations", p.AllocationID, p.User + " -> " + p.Site + " Rs." + p.Amount); return { success: true, message: "Site allocation updated successfully." }; }
       case "deleteSiteAllocation": await genericDelete("SiteAllocation", p.AllocationID); await auditLog(p.CreatedBy, "Deleted Site Allocation", "SiteAllocations", p.AllocationID, ""); return { success: true, message: "Site allocation deleted successfully." };
 
       case "getSiteExpenses": return { success: true, data: await colToArray("siteExpenses") };
@@ -289,8 +323,40 @@
       case "deleteSiteExpense": await genericDelete("SiteExpense", p.ExpenseID); await auditLog(p.CreatedBy, "Deleted Site Expense", "SiteExpenses", p.ExpenseID, ""); return { success: true, message: "Site expenditure deleted successfully." };
 
       case "getOtherPayments": return { success: true, data: await colToArray("otherPayments") };
-      case "addOtherPayment": { const r = await genericAdd("OtherPayment", { Date: p.Date, From: p.From, Name: p.Name, Purpose: p.Purpose, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Other Payment", "OtherPayments", r.id, p.Name + " ₹" + p.Amount); return { success: true, message: "Payment saved successfully." }; }
-      case "updateOtherPayment": { const ok = await genericUpdate("OtherPayment", p, { Date: p.Date, From: p.From, Name: p.Name, Purpose: p.Purpose, Amount: p.Amount, PaymentMethod: p.PaymentMethod, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Payment not found." }; await auditLog(p.CreatedBy, "Updated Other Payment", "OtherPayments", p.PaymentID, p.Name + " ₹" + p.Amount); return { success: true, message: "Payment updated successfully." }; }
+
+      case "signup": {
+        const name = String(p.Name || "").trim();
+        if (!name || !p.Password) return { success: false, message: "Name and password are required." };
+        const users = await colToArray("users");
+        const dup = users.find(function (x) { return String(x.Name).toLowerCase() === name.toLowerCase(); });
+        if (dup) return { success: false, message: "That name is already registered. Choose a different name or contact Admin." };
+        const r = await genericAdd("User", { Name: name, Password: String(p.Password), ContactNumber: p.ContactNumber || "" });
+        await auditLog(name, "Requested Account", "Users", r.id, "Signup pending approval");
+        return { success: true, message: "Account request submitted. Hrushikesh Padhi needs to approve it before you can log in." };
+      }
+      case "approveUser": {
+        if (String(p.RequestedBy || "").toLowerCase() !== "hrushikesh padhi") return { success: false, message: "Only Hrushikesh Padhi can approve accounts." };
+        const ok = await genericUpdate("User", { UserID: p.UserID }, { Status: "Active", Role: p.Role || "Admin 3", MoneyEnabled: false });
+        if (!ok) return { success: false, message: "User not found." };
+        await auditLog(p.RequestedBy, "Approved User", "Users", p.UserID, p.Name + " as " + (p.Role || "Admin 3"));
+        return { success: true, message: p.Name + " approved and can now log in. Money features are off until you enable them." };
+      }
+      case "setMoneyPermission": {
+        if (String(p.RequestedBy || "").toLowerCase() !== "hrushikesh padhi") return { success: false, message: "Only Hrushikesh Padhi can change money permissions." };
+        const ok = await genericUpdate("User", { UserID: p.UserID }, { MoneyEnabled: !!p.Enabled });
+        if (!ok) return { success: false, message: "User not found." };
+        await auditLog(p.RequestedBy, p.Enabled ? "Enabled Money Access" : "Disabled Money Access", "Users", p.UserID, p.Name || "");
+        return { success: true, message: (p.Name || "User") + (p.Enabled ? " can now send/spend money." : "'s money access was turned off.") };
+      }
+      case "rejectUser": {
+        if (String(p.RequestedBy || "").toLowerCase() !== "hrushikesh padhi") return { success: false, message: "Only Hrushikesh Padhi can reject accounts." };
+        const ok = await genericUpdate("User", { UserID: p.UserID }, { Status: "Rejected" });
+        if (!ok) return { success: false, message: "User not found." };
+        await auditLog(p.RequestedBy, "Rejected User", "Users", p.UserID, p.Name || "");
+        return { success: true, message: "Request rejected." };
+      }
+      case "addOtherPayment": { const chk = await checkMoneySpend(p.CreatedBy, p.WalletUser || p.From, p.Amount); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("OtherPayment", { Date: p.Date, From: p.From, WalletUser: p.WalletUser || p.From, Name: p.Name, Purpose: p.Purpose, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Other Payment", "OtherPayments", r.id, p.Name + " ₹" + p.Amount); return { success: true, message: "Payment saved successfully." }; }
+      case "updateOtherPayment": { const ok = await genericUpdate("OtherPayment", p, { Date: p.Date, From: p.From, WalletUser: p.WalletUser || p.From, Name: p.Name, Purpose: p.Purpose, Amount: p.Amount, PaymentMethod: p.PaymentMethod, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Payment not found." }; await auditLog(p.CreatedBy, "Updated Other Payment", "OtherPayments", p.PaymentID, p.Name + " ₹" + p.Amount); return { success: true, message: "Payment updated successfully." }; }
       case "deleteOtherPayment": await genericDelete("OtherPayment", p.PaymentID); await auditLog(p.CreatedBy, "Deleted Other Payment", "OtherPayments", p.PaymentID, ""); return { success: true, message: "Payment deleted successfully." };
 
       case "getTaskCompletions": return { success: true, data: await colToArray("taskCompletions") };
