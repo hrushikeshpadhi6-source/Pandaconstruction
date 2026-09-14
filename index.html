@@ -4245,16 +4245,9 @@ class Component extends DCLogic {
   async loadLogoDataUrl() {
     if (this._logoDataUrl) return this._logoDataUrl;
     try {
-      const res = await fetch(new URL('logo-pdf.png', document.baseURI).href);
-      if (!res.ok) throw new Error('logo fetch failed');
-      const blob = await res.blob();
-      this._logoDataUrl = await new Promise(function (resolve, reject) {
-        const reader = new FileReader();
-        reader.onload = function () { resolve(reader.result); };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-    } catch (e) { this._logoDataUrl = null; } // not cached — retried on next export
+      const mod = await import('./logo-b64.js');
+      this._logoDataUrl = 'data:image/png;base64,' + mod.LOGO_B64;
+    } catch (e) { this._logoDataUrl = null; }
     return this._logoDataUrl;
   }
 
