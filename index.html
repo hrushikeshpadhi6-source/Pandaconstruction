@@ -47,8 +47,9 @@
 <script src="firebase-config.js"></script>
 <script src="firebase-api.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script>if (window.jspdf && !window.jsPDF) { window.jsPDF = window.jspdf.jsPDF; }</script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <style>@keyframes pandaLoadBar { 0% { left:-40%; } 100% { left:100%; } }
 @keyframes pandaSpin { to { transform:rotate(360deg); } }</style>
 </helmet>
@@ -636,6 +637,7 @@
         </div>
         <button onClick="{{ openDieselTxModal }}" style="background:var(--gold);color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;white-space:nowrap;">+ Add Diesel Entry</button>
       </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px;"><button onClick="{{ exportDieselTxExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button><button onClick="{{ exportDieselTxPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button></div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
         <table style="width:100%;border-collapse:collapse;min-width:900px;">
           <thead><tr>
@@ -888,6 +890,15 @@
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">BF Balance</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.bfFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Paid</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.totalPaidFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Outstanding</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:{{ staffDetail.outstandingColor }};">{{ staffDetail.outstandingFmt }}</div></div>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ staffDetail.detailFilterFrom }}" onChange="{{ staffDetail.onDetailFilterFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ staffDetail.detailFilterTo }}" onChange="{{ staffDetail.onDetailFilterTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div style="font-size:12px;color:var(--muted2);align-self:center;">Filters Attendance &amp; Payments in the export</div>
+        <div style="flex:1;"></div>
+        <button onClick="{{ staffDetail.exportStaffDetailExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
+        <button onClick="{{ staffDetail.exportStaffDetailPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -2169,6 +2180,20 @@
         </div>
       </sc-if>
 
+      <div style="font-weight:700;margin-bottom:10px;">Activity Tracker <span style="color:var(--muted);font-weight:400;font-size:12px;">(live, visible to everyone)</span></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ activityTrackerFilter.from }}" onChange="{{ onActivityTrackerFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ activityTrackerFilter.to }}" onChange="{{ onActivityTrackerTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <button type="button" onClick="{{ onActivityTrackerToday }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Today</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;"><div style="font-size:12px;color:var(--muted);">Supplier Transactions</div><div style="font-size:22px;font-weight:800;margin-top:4px;">{{ activityCounts.transactions }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;"><div style="font-size:12px;color:var(--muted);">Payments (all types)</div><div style="font-size:22px;font-weight:800;margin-top:4px;">{{ activityCounts.payments }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;"><div style="font-size:12px;color:var(--muted);">Labour Entries</div><div style="font-size:22px;font-weight:800;margin-top:4px;">{{ activityCounts.labourEntries }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;"><div style="font-size:12px;color:var(--muted);">Site Entries</div><div style="font-size:22px;font-weight:800;margin-top:4px;">{{ activityCounts.siteEntries }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;"><div style="font-size:12px;color:var(--muted);">Attendance Marked</div><div style="font-size:22px;font-weight:800;margin-top:4px;">{{ activityCounts.attendance }}</div></div>
+      </div>
+
       <div style="font-weight:700;margin-bottom:10px;">Recent Activity (Audit Log)</div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
         <table style="width:100%;border-collapse:collapse;">
@@ -2728,8 +2753,14 @@ class Component extends DCLogic {
     let lastSeen = {};
     try { lastSeen = JSON.parse(localStorage.getItem('panda_lastseen')) || {}; } catch (e) {}
     this.state.lastSeen = lastSeen;
-    if (sess) { this.setState({ session: sess, view: 'dashboard' }); this.loadAll(); this.loadBilling(); }
+    if (sess) { this.setState({ session: sess, view: 'dashboard' }); this.loadAll(); this.loadBilling(); this.runMonthlyRolloverCheck(); }
     else this.setState({ loading: false });
+  }
+  runMonthlyRolloverCheck() {
+    PandaAPI.call('runMonthlyRollover', {}).then(function (r) {
+      if (r && r.success && !r.skipped && r.rolled > 0) this.showToast(r.message);
+      if (r && r.success && !r.skipped) this.loadAll();
+    }.bind(this)).catch(function () {});
   }
   loadBilling() {
     const self = this;
@@ -2955,7 +2986,7 @@ class Component extends DCLogic {
     const cover = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Labour Statement — ' + d.name], ['Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today')], ['Generated: ' + new Date().toLocaleString('en-IN')], [], ['BF Balance', d.bfAmt], ['Total Net Due', d.due], ['Total Paid', d.paid], ['Outstanding', d.outstanding]];
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cover), 'Cover');
     const entryAoa = [['Date', 'Month', 'Type', 'Site', 'How Many', 'Rate', 'Extra', 'Remarks', 'Net Amount']];
-    d.entryRows.forEach(function (r) { entryAoa.push([r.Date, r.Month, r.Type, r.Site, r.HowManyLabourFmt, r.DailyPriceFmt, r.ExtraFmt, r.Remarks, r.NetAmount]); });
+    d.entryRows.forEach(function (r) { const extra = (Number(r.AdditionalAmount) || 0) + (Number(r.Fare) || 0); entryAoa.push([r.Date, r.Month, r.Type, r.Site, r.HowManyLabour || '', r.DailyPrice || '', extra || '', r.Remarks, r.NetAmount]); });
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(entryAoa), 'Entries');
     const payAoa = [['Date', 'Site', 'Amount Paid', 'Method', 'Reference']];
     d.paymentRows.forEach(function (r) { payAoa.push([r.Date, r.Site, r.AmountPaid, r.PaymentMethod, r.ReferenceNumber]); });
@@ -2980,7 +3011,7 @@ class Component extends DCLogic {
     doc.setFontSize(10); doc.setFont(undefined, 'bold');
     doc.text('BF: ' + fmt(d.bfAmt), 40, y); doc.text('Total Due: ' + fmt(d.due), 160, y); doc.text('Paid: ' + fmt(d.paid), 300, y); doc.text('Outstanding: ' + fmt(d.outstanding), 420, y); y += 16;
     doc.setFont(undefined, 'normal');
-    doc.autoTable({ startY: y + 6, head: [['Date', 'Month', 'Type', 'Site', 'How Many', 'Rate', 'Extra', 'Remarks', 'Net Amount']], body: d.entryRows.map(function (r) { return [r.Date, r.Month, r.Type, r.Site, r.HowManyLabourFmt, r.DailyPriceFmt, r.ExtraFmt, r.Remarks, fmt(r.NetAmount)]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.autoTable({ startY: y + 6, head: [['Date', 'Month', 'Type', 'Site', 'How Many', 'Rate', 'Extra', 'Remarks', 'Net Amount']], body: d.entryRows.map(function (r) { const extra = (Number(r.AdditionalAmount) || 0) + (Number(r.Fare) || 0); return [r.Date, r.Month, r.Type, r.Site, r.HowManyLabour || '—', r.DailyPrice ? fmt(r.DailyPrice) : '—', extra ? fmt(extra) : '—', r.Remarks, fmt(r.NetAmount)]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
     let y2 = doc.lastAutoTable.finalY + 20;
     doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Payments', 40, y2); y2 += 6;
     doc.autoTable({ startY: y2 + 4, head: [['Date', 'Site', 'Amount Paid', 'Method', 'Reference']], body: d.paymentRows.map(function (r) { return [r.Date, r.Site, fmt(r.AmountPaid), r.PaymentMethod, r.ReferenceNumber]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
@@ -3051,6 +3082,80 @@ class Component extends DCLogic {
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Sites — Material Purchase Overview', 40, y); y += 16;
     doc.autoTable({ startY: y + 6, head: [['Site Name', 'Purchase', 'Paid', 'Outstanding', 'Status']], body: rows.map(function (r) { return [r.SiteName, r.purchaseFmt, r.paidFmt, r.outstandingFmt, r.Status]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
     doc.save('panda-construction-sites.pdf');
+  }
+  exportDieselTxExcel() {
+    if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
+    const d = this._lastDieselTxRows; if (!d) return;
+    const wb = XLSX.utils.book_new();
+    const cover = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Diesel Transactions'], ['Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today')], ['Generated: ' + new Date().toLocaleString('en-IN')]];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cover), 'Cover');
+    const aoa = [['Date', 'Fuel Station', 'Vehicle', 'Chalan No.', 'Time', 'Qty (L)', 'Rate', 'Value', 'Site', 'Driver']];
+    let totalQty = 0, totalValue = 0;
+    d.rows.forEach(function (r) { totalQty += Number(r.DieselQuantity) || 0; totalValue += Number(r.Value) || 0; aoa.push([r.Date, r.Supplier, r.VehicleNumber || '', r.ChalanNumber || '', r.Time || '', Number(r.DieselQuantity) || 0, Number(r.Rate) || 0, Number(r.Value) || 0, r.Site || '', r.Driver || '']); });
+    aoa.push(['', '', '', '', 'TOTAL', totalQty, '', totalValue, '', '']);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'Diesel Transactions');
+    XLSX.writeFile(wb, 'panda-construction-diesel-transactions.xlsx');
+  }
+  async exportDieselTxPDF() {
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const d = this._lastDieselTxRows; if (!d) return;
+    const fmt = this.fmtPdf.bind(this);
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    let y = 40;
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
+    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Diesel Transactions', 40, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today'), 40, y); y += 14;
+    let totalQty = 0, totalValue = 0;
+    const body = d.rows.map(function (r) { totalQty += Number(r.DieselQuantity) || 0; totalValue += Number(r.Value) || 0; return [r.Date, r.Supplier, r.VehicleNumber || '', r.ChalanNumber || '', r.Time || '', Number(r.DieselQuantity) || 0, fmt(r.Rate), fmt(r.Value), r.Site || '', r.Driver || '']; });
+    body.push(['', '', '', '', 'TOTAL', totalQty, '', fmt(totalValue), '', '']);
+    doc.autoTable({ startY: y + 6, head: [['Date', 'Fuel Station', 'Vehicle', 'Chalan No.', 'Time', 'Qty (L)', 'Rate', 'Value', 'Site', 'Driver']], body: body, styles: { fontSize: 7 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.save('panda-construction-diesel-transactions.pdf');
+  }
+  exportStaffDetailExcel() {
+    if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
+    const d = this._lastStaffDetail; if (!d) return;
+    const wb = XLSX.utils.book_new();
+    const cover = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Staff Statement — ' + d.name], ['Role: ' + d.role + '  |  ' + d.basisLabel], ['Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today')], ['Generated: ' + new Date().toLocaleString('en-IN')], [], ['BF Balance', d.bfAmt], ['This Month Earned (Attendance)', d.monthEarned], ['Total Net Due', d.due + d.monthEarned], ['Total Paid', d.paid], ['Outstanding', d.outstanding], [], ['Present Days', d.presentCount], ['Half Days', d.halfCount], ['Absent Days', d.absentCount]];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cover), 'Summary');
+    const attAoa = [['Date', 'Status']];
+    d.attendanceRows.forEach(function (r) { attAoa.push([r.Date, r.Status]); });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(attAoa), 'Attendance');
+    const salAoa = [['Month', 'Basic', 'DA', 'Deductions', 'Net Salary']];
+    d.salaryRows.forEach(function (r) { salAoa.push([r.Month, Number(r.Basic) || 0, Number(r.DA) || 0, Number(r.Deductions) || 0, Number(r.NetSalary) || 0]); });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(salAoa), 'Salary Slips');
+    const payAoa = [['Date', 'Amount Paid', 'Method', 'Reference']];
+    d.paymentRows.forEach(function (r) { payAoa.push([r.Date, Number(r.AmountPaid) || 0, r.PaymentMethod || '', r.ReferenceNumber || '']); });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(payAoa), 'Payments');
+    XLSX.writeFile(wb, 'panda-construction-' + d.name.replace(/\s+/g, '-') + '-staff-statement.xlsx');
+  }
+  async exportStaffDetailPDF() {
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const d = this._lastStaffDetail; if (!d) return;
+    const fmt = this.fmtPdf.bind(this);
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    let y = 40;
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
+    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Staff Statement — ' + d.name, 40, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text(d.role + '  |  ' + d.basisLabel, 40, y); y += 14;
+    doc.text('Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today'), 40, y); y += 18;
+    doc.setFontSize(10); doc.setFont(undefined, 'bold');
+    doc.text('BF: ' + fmt(d.bfAmt), 40, y); doc.text('Due: ' + fmt(d.due + d.monthEarned), 160, y); doc.text('Paid: ' + fmt(d.paid), 300, y); doc.text('Outstanding: ' + fmt(d.outstanding), 420, y); y += 16;
+    doc.text('Present: ' + d.presentCount + '  Half: ' + d.halfCount + '  Absent: ' + d.absentCount, 40, y); y += 10;
+    doc.setFont(undefined, 'normal');
+    doc.autoTable({ startY: y + 6, head: [['Date', 'Status']], body: d.attendanceRows.map(function (r) { return [r.Date, r.Status]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    let y2 = doc.lastAutoTable.finalY + 20;
+    doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Salary Slips', 40, y2); y2 += 6;
+    doc.autoTable({ startY: y2 + 4, head: [['Month', 'Basic', 'DA', 'Deductions', 'Net Salary']], body: d.salaryRows.map(function (r) { return [r.Month, fmt(r.Basic), fmt(r.DA), fmt(r.Deductions), fmt(r.NetSalary)]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    let y3 = doc.lastAutoTable.finalY + 20;
+    doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Payments', 40, y3); y3 += 6;
+    doc.autoTable({ startY: y3 + 4, head: [['Date', 'Amount Paid', 'Method', 'Reference']], body: d.paymentRows.map(function (r) { return [r.Date, fmt(r.AmountPaid), r.PaymentMethod, r.ReferenceNumber]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.save('panda-construction-' + d.name.replace(/\s+/g, '-') + '-staff-statement.pdf');
   }
   exportSiteWalletExcel() {
     if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
@@ -3156,7 +3261,7 @@ class Component extends DCLogic {
     const d = this._lastSupplierDetail;
     if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
     const wb = XLSX.utils.book_new();
-    const summaryAoa = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Supplier Statement — ' + name], ['Generated: ' + new Date().toLocaleString('en-IN')], [],
+    const summaryAoa = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Supplier Statement — ' + name], ['Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today')], ['Generated: ' + new Date().toLocaleString('en-IN')], [],
       ['BF Balance', d.bfAmt], ['Total Purchase (Material)', d.materialN], ['Supplier Vehicle Fare', d.supplierFareN], ['Self Vehicle Fare (excluded)', d.selfFareN], ['Total (Material + Supplier Fare)', d.purchaseN], ['Total Paid', d.paidN], ['Outstanding (BF + Total - Paid)', d.outstandingN]];
     const wsSummary = XLSX.utils.aoa_to_sheet(summaryAoa);
     wsSummary['!cols'] = [{ wch: 30 }, { wch: 18 }];
@@ -3197,7 +3302,7 @@ class Component extends DCLogic {
     doc.setDrawColor(212, 175, 55); doc.setLineWidth(1.2); doc.line(40, y, pageWidth - 40, y);
     y += 20;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(20, 20, 20); doc.text('Supplier Statement — ' + name, 40, y);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(110, 110, 110); doc.text('Generated: ' + new Date().toLocaleString('en-IN'), 40, y + 14);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(110, 110, 110); doc.text('Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today') + '  |  Generated: ' + new Date().toLocaleString('en-IN'), 40, y + 14);
     y += 30;
 
     doc.autoTable({
@@ -4028,6 +4133,7 @@ class Component extends DCLogic {
   monthShortcutRange(v) { if (!v) return { from: '', to: '' }; const y = Number(v.slice(0, 4)), m = Number(v.slice(5, 7)); const last = new Date(y, m, 0).getDate(); const pad = function (n) { return String(n).padStart(2, '0'); }; return { from: v + '-01', to: y + '-' + pad(m) + '-' + pad(last) }; }
   setMonthShortcut(stateKey) { return function (e) { const range = this.monthShortcutRange(e.target.value); this.setState(function (s) { const nf = Object.assign({}, s[stateKey] || {}, range); return (function () { const o = {}; o[stateKey] = nf; return o; })(); }); }.bind(this); }
   setGenericFilter(stateKey, key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s[stateKey] || {}); nf[key] = e.target.value; return (function () { const o = {}; o[stateKey] = nf; return o; })(); }); }.bind(this); }
+  setActivityTrackerToday() { const t = new Date().toISOString().slice(0, 10); this.setState({ activityTrackerFilter: { from: t, to: t } }); }
   setStaffPaymentsFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.staffPaymentsFilter); nf[key] = e.target.value; return { staffPaymentsFilter: nf }; }); }.bind(this); }
   setFundTransferFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.fundTransferFilter); nf[key] = e.target.value; return { fundTransferFilter: nf }; }); }.bind(this); }
   toggleUserBalance(name) { this.setState(function (s) { return { expandedUserBalance: s.expandedUserBalance === name ? null : name }; }); }
@@ -4086,7 +4192,7 @@ class Component extends DCLogic {
   async loadLogoDataUrl() {
     if (this._logoDataUrl) return this._logoDataUrl;
     try {
-      const res = await fetch('logo.png');
+      const res = await fetch('logo-pdf.png');
       const blob = await res.blob();
       this._logoDataUrl = await new Promise(function (resolve, reject) {
         const reader = new FileReader();
@@ -4104,6 +4210,12 @@ class Component extends DCLogic {
     if (!rows.length) return 0;
     const latest = rows.reduce(function (a, b) { return String(b.BFDate || '') >= String(a.BFDate || '') ? b : a; });
     return Number(latest.BFAmount) || 0;
+  }
+  latestBFDateFor(list, name) {
+    const rows = (list || []).filter(function (r) { return r.Supplier === name; });
+    if (!rows.length) return '';
+    const latest = rows.reduce(function (a, b) { return String(b.BFDate || '') >= String(a.BFDate || '') ? b : a; });
+    return latest.BFDate || '';
   }
   sumLatestBF(list) {
     const self = this;
@@ -4345,6 +4457,16 @@ class Component extends DCLogic {
     };
     if (!s.mistriDetailFilter) s.mistriDetailFilter = { from: '', to: '' };
     if (!s.labourDetailFilter) s.labourDetailFilter = { from: '', to: '' };
+    if (!s.staffDetailFilter) s.staffDetailFilter = { from: '', to: '' };
+    if (!s.activityTrackerFilter) { const t = new Date().toISOString().slice(0, 10); s.activityTrackerFilter = { from: t, to: t }; }
+    const atf = s.activityTrackerFilter;
+    const activityCounts = {
+      transactions: s.transactions.filter(function (t) { return self.inRange(t.Date, atf.from, atf.to); }).length,
+      payments: s.payments.filter(function (p) { return self.inRange(p.Date, atf.from, atf.to); }).length + s.dieselPayments.filter(function (p) { return self.inRange(p.Date, atf.from, atf.to); }).length + s.staffPayments.filter(function (p) { return self.inRange(p.Date, atf.from, atf.to); }).length + s.mistriPayments.filter(function (p) { return self.inRange(p.Date, atf.from, atf.to); }).length + s.labourPayments.filter(function (p) { return self.inRange(p.Date, atf.from, atf.to); }).length,
+      labourEntries: s.labourEntries.filter(function (r) { return self.inRange(r.Date, atf.from, atf.to); }).length,
+      siteEntries: s.siteAllocations.filter(function (a) { return self.inRange(a.Date, atf.from, atf.to); }).length + s.siteExpenses.filter(function (e) { return self.inRange(e.Date, atf.from, atf.to); }).length,
+      attendance: s.staffAttendance.filter(function (r) { return self.inRange(r.Date, atf.from, atf.to); }).length
+    };
     const sectionIds = ['salarySlips', 'staffPayments', 'staffPaymentsReport', 'mistriDue', 'mistriPayments', 'mistriAdvances', 'labourEntries', 'labourPayments', 'labourAdvances', 'fundTransfers', 'siteExpenditure', 'siteAllocations', 'otherPayments', 'supplierTx', 'supplierPay', 'supplierBF', 'usersList'];
     const sectionExpanded = {}; const sectionToggle = {}; const sectionIcon = {};
     sectionIds.forEach(function (id) { sectionExpanded[id] = !!s.expandedSections[id]; sectionIcon[id] = s.expandedSections[id] ? '▾' : '▸'; sectionToggle[id] = function () { self.toggleSection(id); }; });
@@ -4440,8 +4562,9 @@ class Component extends DCLogic {
     const paymentMethodOptions = ['Bank Transfer', 'Cheque', 'Cash', 'UPI', 'Other'];
 
     const supplierCards = s.suppliers.map(function (sup) {
-      const purchase = self.sum(s.transactions.filter(function (t) { return t.Supplier === sup.SupplierName; }), 'Value');
-      const paid = self.sum(s.payments.filter(function (p) { return p.Supplier === sup.SupplierName; }), 'AmountPaid');
+      const bfDate = self.latestBFDateFor(s.bf, sup.SupplierName);
+      const purchase = self.sum(s.transactions.filter(function (t) { return t.Supplier === sup.SupplierName && (!bfDate || t.Date > bfDate); }), 'Value');
+      const paid = self.sum(s.payments.filter(function (p) { return p.Supplier === sup.SupplierName && (!bfDate || p.Date > bfDate); }), 'AmountPaid');
       const bfAmt = self.latestBFFor(s.bf, sup.SupplierName);
       const outstanding = bfAmt + purchase - paid;
       return Object.assign({}, sup, { purchase: fmt(purchase), paid: fmt(paid), outstanding: fmt(outstanding), outstandingColor: self.oc(outstanding), onOpen: function () { self.openSupplier(sup.SupplierName); }, onEdit: function () { self.openModal('supplier', sup); }, onDelete: function () { self.deleteSupplier(sup); } });
@@ -4451,9 +4574,10 @@ class Component extends DCLogic {
     if (s.selectedSupplier) {
       const name = s.selectedSupplier;
       const dfl = s.detailFilters;
+      const bfDate = self.latestBFDateFor(s.bf, name);
       const filteredTx = s.transactions.filter(function (t) { return t.Supplier === name && self.inRange(t.Date, dfl.from, dfl.to) && (!dfl.site || t.Site === dfl.site) && (!dfl.material || t.Material === dfl.material) && (!dfl.vehicle || String(t.VehicleNumber || '').toLowerCase().indexOf(dfl.vehicle.toLowerCase()) !== -1); });
-      const allTx = s.transactions.filter(function (t) { return t.Supplier === name; });
-      const pay = s.payments.filter(function (p) { return p.Supplier === name; });
+      const allTx = s.transactions.filter(function (t) { return t.Supplier === name && (!bfDate || t.Date > bfDate); });
+      const pay = s.payments.filter(function (p) { return p.Supplier === name && (!bfDate || p.Date > bfDate); });
       const bfEntries = s.bf.filter(function (b) { return b.Supplier === name; });
       const purchase = this.sum(allTx, 'Value');
       const paid = this.sum(pay, 'AmountPaid');
@@ -4471,9 +4595,9 @@ class Component extends DCLogic {
         materialFmt: fmt(materialTotal), supplierFareFmt: fmt(supplierFareTotal), selfFareFmt: fmt(selfFareTotal), totalFmt: fmt(materialTotal + supplierFareTotal),
         materialN: materialTotal, supplierFareN: supplierFareTotal, selfFareN: selfFareTotal,
         rows: filteredTx.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), FareTypeLabel: fareTypeLabel(r), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
-        allTxRaw: allTx.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
-        payRaw: pay.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
-        bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, outstandingN: outstanding,
+        allTxRaw: filteredTx.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
+        payRaw: pay.filter(function (p) { return self.inRange(p.Date, dfl.from, dfl.to); }).sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
+        bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, outstandingN: outstanding, filter: dfl,
         onExportExcel: function () { self.exportSupplierExcel(name); }, onExportPDF: function () { self.exportSupplierPDF(name); }
       };
       this._lastSupplierDetail = supplierDetail;
@@ -4610,7 +4734,23 @@ class Component extends DCLogic {
         paymentRows: payRows2.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('staffPayment', r); }, onDelete: function () { self.deleteStaffPayment(r); }, onExport: function () { self.exportPaymentSlipPDF(stRow, r); } }); }),
         attendanceRows: attRowsAll.slice().sort(function (a, b) { return a.Date < b.Date ? 1 : -1; }).slice(0, 31).map(function (r) {
           return Object.assign({}, r, { onMarkPresent: function () { self.markAttendance(stName, r.Date, 'Present'); }, onMarkAbsent: function () { self.markAttendance(stName, r.Date, 'Absent'); } });
-        })
+        }),
+        exportStaffDetailExcel: this.exportStaffDetailExcel.bind(this), exportStaffDetailPDF: this.exportStaffDetailPDF.bind(this),
+        detailFilterFrom: (s.staffDetailFilter || {}).from || '', detailFilterTo: (s.staffDetailFilter || {}).to || '',
+        onDetailFilterFrom: this.setGenericFilter('staffDetailFilter', 'from'), onDetailFilterTo: this.setGenericFilter('staffDetailFilter', 'to')
+      };
+      const sdf2 = s.staffDetailFilter || { from: '', to: '' };
+      const attInRange = attRowsAll.filter(function (r) { return self.inRange(r.Date, sdf2.from, sdf2.to); });
+      const payInRange = payRows2.filter(function (r) { return self.inRange(r.Date, sdf2.from, sdf2.to); });
+      this._lastStaffDetail = {
+        name: staffDetail.Name, role: staffDetail.Role, basisLabel: staffDetail.basisLabel, filter: sdf2,
+        bfAmt: bfAmt, due: due, monthEarned: monthEarned, paid: paid, outstanding: fin.outstanding,
+        presentCount: attInRange.filter(function (r) { return r.Status === 'Present'; }).length,
+        halfCount: attInRange.filter(function (r) { return r.Status === 'Half'; }).length,
+        absentCount: attInRange.filter(function (r) { return r.Status === 'Absent'; }).length,
+        attendanceRows: attInRange.slice().sort(function (a, b) { return a.Date < b.Date ? 1 : -1; }),
+        salaryRows: salRows.slice().sort(function (a, b) { return (a.Month || '').localeCompare(b.Month || ''); }),
+        paymentRows: payInRange.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); })
       };
     }
 
@@ -4985,6 +5125,7 @@ class Component extends DCLogic {
       weatherLocation: s.weatherLocationName || 'Locating…',
       viewIs: viewIs, pageTitle: pageTitles[s.view] || '', navStyle: navStyle, reportTabStyle: reportTabStyle, reportTabIs: reportTabIs, modal: s.modal, modalIs: modalIs, hasNew: hasNew, newCount: newCount, billing: billing,
       users: usersWithContact, auditLog: s.auditLog.map(function (a) { return Object.assign({}, a, { Timestamp: self.fmtIST(a.Timestamp) }); }), dataSourceLabel: isDemo ? 'Demo mode — data stored in this browser only. Paste your Apps Script Web App URL into config.js to switch to live Google Sheet.' : 'Connected to Google Sheets via Apps Script.',
+      activityTrackerFilter: atf, onActivityTrackerFrom: this.setGenericFilter('activityTrackerFilter', 'from'), onActivityTrackerTo: this.setGenericFilter('activityTrackerFilter', 'to'), onActivityTrackerToday: this.setActivityTrackerToday.bind(this), activityCounts: activityCounts,
       dashFilters: s.dashFilters, supplierOptions: supplierOptions, siteOptions: siteOptions, materialOptions: materialOptions, dieselSupplierOptions: dieselSupplierOptions, unitOptions: unitOptions, monthShortcutOptions: monthShortcutOptions, onDashMonth: this.setMonthShortcut('dashFilters'), paymentMethodOptions: paymentMethodOptions,
       onDashFrom: this.setDashFilter('from'), onDashTo: this.setDashFilter('to'), onDashSupplier: this.setDashFilter('supplier'), onDashSite: this.setDashFilter('site'), onDashMaterial: this.setDashFilter('material'), onDashVehicle: this.setDashFilter('vehicle'),
       onDetailSite: this.setDetailFilter('site'), onDetailMaterial: this.setDetailFilter('material'), onDetailVehicle: this.setDetailFilter('vehicle'),
@@ -5012,7 +5153,7 @@ class Component extends DCLogic {
       txRows: txF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), FareTypeLabel: r.FareType === 'Self' ? 'Self' : 'Supplier', ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
       payRows: payF.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
       bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
-      dieselTxRows: dieselTxF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }),
+      dieselTxRows: dieselTxF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }), exportDieselTxExcel: this.exportDieselTxExcel.bind(this), exportDieselTxPDF: this.exportDieselTxPDF.bind(this),
       dieselPayRows: dieselPayF.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
       dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
       formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,

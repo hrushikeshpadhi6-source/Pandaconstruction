@@ -183,6 +183,50 @@
         return { success: true, message: "Maintenance settings updated.", maintenance: await getMaintenanceStatus() };
       }
       case "getCollection": return { success: true, data: await colToArray(p.name) };
+      case "runMonthlyRollover": {
+        const now = new Date();
+        const monthKey = now.toISOString().slice(0, 7);
+        const settingsRef = db.collection("meta").doc("monthlyRollover");
+        const existingDoc = await settingsRef.get();
+        const lastRunMonth = existingDoc.exists ? existingDoc.data().lastRunMonth : null;
+        if (lastRunMonth === monthKey) return { success: true, skipped: true, message: "Already rolled over for this month." };
+        await settingsRef.set({ lastRunMonth: monthKey, ranAt: now.toISOString() }, { merge: true });
+        const monthLabel = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        const bfDateStr = monthKey + "-01";
+        const latestBF = function (list, name) {
+          const rows = list.filter(function (r) { return r.Supplier === name; });
+          if (!rows.length) return { amt: 0, date: "" };
+          const latest = rows.reduce(function (a, b) { return String(b.BFDate || "") >= String(a.BFDate || "") ? b : a; });
+          return { amt: Number(latest.BFAmount) || 0, date: latest.BFDate || "" };
+        };
+        const [suppliers, transactions, payments, bf, dieselTx, dieselPayments, dieselBF] = await Promise.all(
+          ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF"].map(colToArray)
+        );
+        let rolled = 0;
+        for (const sup of suppliers) {
+          const name = sup.SupplierName;
+          const { amt: bfAmt, date: bfDate } = latestBF(bf, name);
+          const purchase = transactions.filter(function (t) { return t.Supplier === name && (!bfDate || t.Date > bfDate); }).reduce(function (a, t) { return a + (Number(t.Value) || 0); }, 0);
+          const paid = payments.filter(function (p2) { return p2.Supplier === name && (!bfDate || p2.Date > bfDate); }).reduce(function (a, p2) { return a + (Number(p2.AmountPaid) || 0); }, 0);
+          if (bfDate === bfDateStr) continue; // already rolled this month
+          const outstanding = bfAmt + purchase - paid;
+          const id = await nextId("BF", "BF", "bf");
+          await db.collection("bf").doc(id).set({ BFID: id, Supplier: name, BFMonth: monthLabel, BFDate: bfDateStr, BFAmount: outstanding, Site: "", Remarks: "Auto month-end rollover", CreatedBy: "System", CreatedAt: now.toISOString() });
+          rolled++;
+        }
+        const dieselNames = Array.from(new Set(dieselTx.map(function (t) { return t.Supplier; }).concat(dieselBF.map(function (b) { return b.Supplier; })).filter(Boolean)));
+        for (const name of dieselNames) {
+          const { amt: bfAmt, date: bfDate } = latestBF(dieselBF, name);
+          const cost = dieselTx.filter(function (t) { return t.Supplier === name && (!bfDate || t.Date > bfDate); }).reduce(function (a, t) { return a + (Number(t.Value) || 0); }, 0);
+          const paid = dieselPayments.filter(function (p2) { return p2.Supplier === name && (!bfDate || p2.Date > bfDate); }).reduce(function (a, p2) { return a + (Number(p2.AmountPaid) || 0); }, 0);
+          if (bfDate === bfDateStr) continue;
+          const outstanding = bfAmt + cost - paid;
+          const id = await nextId("DieselBF", "DBF", "dieselBF");
+          await db.collection("dieselBF").doc(id).set({ DieselBFID: id, Supplier: name, BFMonth: monthLabel, BFDate: bfDateStr, BFAmount: outstanding, Site: "", Remarks: "Auto month-end rollover", CreatedBy: "System", CreatedAt: now.toISOString() });
+          rolled++;
+        }
+        return { success: true, skipped: false, rolled: rolled, message: "Monthly rollover complete (" + rolled + " BF entries added)." };
+      }
       case "getAllData": {
         const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions"];
         const arrs = await Promise.all(names.map(colToArray));
