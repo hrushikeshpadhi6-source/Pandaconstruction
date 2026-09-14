@@ -156,6 +156,10 @@
     const st = await getSettingsMap();
     return { enabled: String(st.MaintenanceMode) === "TRUE", message: st.MaintenanceMessage || "" };
   }
+  async function getAnnouncementStatus() {
+    const st = await getSettingsMap();
+    return { enabled: String(st.AnnouncementEnabled) === "TRUE", message: st.AnnouncementMessage || "" };
+  }
 
   async function route(action, p) {
     p = p || {};
@@ -169,7 +173,7 @@
         const pass = u.Password || USER_PASSWORDS[u.Name];
         if (pass && String(p.password) === String(pass)) {
           await db.collection("users").doc(u.UserID).set({ LastLogin: new Date().toISOString() }, { merge: true });
-          return { success: true, user: { name: u.Name, role: u.Role }, maintenance: await getMaintenanceStatus() };
+          return { success: true, user: { name: u.Name, role: u.Role }, maintenance: await getMaintenanceStatus(), announcement: await getAnnouncementStatus() };
         }
         return { success: false, message: "Invalid name or password." };
       }
@@ -181,6 +185,15 @@
         if (p.Message !== undefined) await setSettingValue("MaintenanceMessage", p.Message);
         await auditLog(p.RequestedBy, p.Enabled ? "Enabled Maintenance Mode" : "Disabled Maintenance Mode", "Settings", "", p.Message || "");
         return { success: true, message: "Maintenance settings updated.", maintenance: await getMaintenanceStatus() };
+      }
+      case "setAnnouncement": {
+        const users2 = await colToArray("users");
+        const requester2 = users2.find(function (x) { return String(x.Name).toLowerCase() === String(p.RequestedBy || "").toLowerCase(); });
+        if (!requester2 || requester2.Role !== "Admin 1") return { success: false, message: "Only Admin 1 can change the announcement." };
+        await setSettingValue("AnnouncementEnabled", p.Enabled ? "TRUE" : "FALSE");
+        if (p.Message !== undefined) await setSettingValue("AnnouncementMessage", p.Message);
+        await auditLog(p.RequestedBy, p.Enabled ? "Enabled Announcement" : "Disabled Announcement", "Settings", "", p.Message || "");
+        return { success: true, message: "Announcement updated.", announcement: await getAnnouncementStatus() };
       }
       case "getCollection": return { success: true, data: await colToArray(p.name) };
       case "runMonthlyRollover": {
@@ -243,6 +256,7 @@
         }
         out.auditLog = []; // fetched separately via getAuditLog only when the Settings/Audit tab is opened
         out.maintenance = await getMaintenanceStatus();
+        out.announcement = await getAnnouncementStatus();
         return out;
       }
       case "getUsers": return { success: true, data: await colToArray("users") };
