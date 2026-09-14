@@ -188,6 +188,15 @@
         const arrs = await Promise.all(names.map(colToArray));
         const out = { success: true };
         names.forEach(function (n, i) { out[n] = arrs[i]; });
+        if (p.user) {
+          const usersArr = out.users || [];
+          const u2 = usersArr.find(function (x) { return String(x.Name).toLowerCase() === String(p.user).toLowerCase(); });
+          if (u2) {
+            const nowIso = new Date().toISOString();
+            u2.LastRefresh = nowIso;
+            db.collection("users").doc(u2.UserID).set({ LastRefresh: nowIso }, { merge: true }).catch(function () {});
+          }
+        }
         out.auditLog = []; // fetched separately via getAuditLog only when the Settings/Audit tab is opened
         out.maintenance = await getMaintenanceStatus();
         return out;

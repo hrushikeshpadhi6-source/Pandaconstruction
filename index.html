@@ -194,6 +194,9 @@
           <div style="font-size:22px;font-weight:800;color:var(--gold);">{{ weatherTemp }}</div>
           <div style="font-size:13px;color:var(--muted);margin-top:4px;">{{ weatherLocation }}</div>
         </div>
+        <button onClick="{{ onManualRefresh }}" disabled="{{ refreshing }}" title="Refresh data" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap;opacity:{{ refreshOpacity }};">
+          <span style="display:inline-block;transform:{{ refreshSpin }};transition:transform 0.6s;">⟳</span> {{ refreshLabel }}
+        </button>
       </div>
     </sc-if>
 
@@ -2041,7 +2044,7 @@
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Role</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Status</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">WhatsApp Number</th>
-            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Last Login</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Last Refresh</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Money Access</th>
             <sc-if value="{{ isOwnerOrAdmin1 }}"><th style="padding:12px;border-bottom:1px solid var(--border);"></th></sc-if>
           </tr></thead>
@@ -2693,7 +2696,7 @@ class Component extends DCLogic {
     this.setState({ loading: true });
     const self = this;
     const timeoutGuard = setTimeout(function () { self.setState(function (s) { return s.loading ? { loading: false } : null; }); self.showToast('Data load timed out — check your connection and try again.'); }, 15000);
-    return PandaAPI.call('getAllData').then(function (r) {
+    return PandaAPI.call('getAllData', { user: this.state.session && this.state.session.name }).then(function (r) {
       clearTimeout(timeoutGuard);
       if (!r || !r.success) { this.setState({ loading: false }); this.showToast((r && r.message) || 'Failed to load data.'); return; }
       this.setState({
@@ -2734,7 +2737,7 @@ class Component extends DCLogic {
   // refresh never blocks or re-flashes the UI.
   loadAllQuiet() {
     const self = this;
-    return PandaAPI.call('getAllData').then(function (r) {
+    return PandaAPI.call('getAllData', { user: this.state.session && this.state.session.name }).then(function (r) {
       if (!r || !r.success) return;
       self.setState({
         suppliers: r.suppliers || [], transactions: r.transactions || [], payments: r.payments || [], bf: r.bf || [],
@@ -2814,6 +2817,14 @@ class Component extends DCLogic {
     }
   }
   componentWillUnmount() { if (this._clockTimer) clearInterval(this._clockTimer); }
+  manualRefresh() {
+    const self = this;
+    this.setState({ manualRefreshing: true });
+    this.loadAllQuiet().then(function () {
+      self.setState({ manualRefreshing: false });
+      self.showToast('Data refreshed.');
+    }).catch(function () { self.setState({ manualRefreshing: false }); });
+  }
   toggleShowPassword() { this.setState(function (s) { return { showPassword: !s.showPassword }; }); }
   fmtIST(ts) {
     if (!ts) return '';
@@ -4244,7 +4255,7 @@ class Component extends DCLogic {
     const showMaintenanceLock = !!(s.session && s.maintenance && s.maintenance.enabled && s.session.role !== 'Admin 1');
     const appAccessible = !showMaintenanceLock;
     const fmtLastLogin = function (v) { if (!v) return '—'; const d = new Date(v); return isNaN(d.getTime()) ? String(v) : d.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
-    const usersWithContact = s.users.map(function (u) { return Object.assign({}, u, { LastLoginFmt: fmtLastLogin(u.LastLogin), onEditContact: function () { self.openModal('userContact', u); }, moneyOn: u.Role === 'Owner' || u.MoneyEnabled !== false, moneyLabel: (u.Role === 'Owner' || u.MoneyEnabled !== false) ? 'Enabled' : 'Disabled', onToggleMoney: function () { self.toggleMoneyPermission(u); } }); });
+    const usersWithContact = s.users.map(function (u) { return Object.assign({}, u, { LastLoginFmt: fmtLastLogin(u.LastRefresh || u.LastLogin), onEditContact: function () { self.openModal('userContact', u); }, moneyOn: u.Role === 'Owner' || u.MoneyEnabled !== false, moneyLabel: (u.Role === 'Owner' || u.MoneyEnabled !== false) ? 'Enabled' : 'Disabled', onToggleMoney: function () { self.toggleMoneyPermission(u); } }); });
 
     const taskDateResolved = s.taskDate || todayStr;
     const taskAdmins = s.users.filter(function (u) { return u.Role === 'Admin 2' || u.Role === 'Admin 3'; });
@@ -4705,6 +4716,9 @@ class Component extends DCLogic {
       maintenanceToggleStyle: 'padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:' + ((s.maintenance && s.maintenance.enabled) ? '#e2574c' : '#2ea043') + ';color:#fff;',
       onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this), onMigrate: this.migrateFromSheets.bind(this), markAllPresent: this.markAllPresent.bind(this),
       clockTime: (function () { const n = new Date(); return n.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }); })(),
+      onManualRefresh: this.manualRefresh.bind(this), refreshing: !!s.manualRefreshing,
+      refreshLabel: s.manualRefreshing ? 'Refreshing…' : 'Refresh', refreshOpacity: s.manualRefreshing ? '0.6' : '1',
+      refreshSpin: s.manualRefreshing ? 'rotate(360deg)' : 'rotate(0deg)',
       clockDay: new Date().toLocaleDateString('en-IN', { weekday: 'long' }),
       clockDate: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }),
       weatherTemp: s.weatherTempN != null ? s.weatherTempN + '°C' : '—',
@@ -4736,10 +4750,10 @@ class Component extends DCLogic {
       supplierCards: supplierCards, openSupplierModal: function () { self.openModal('supplier'); },
       supplierDetail: supplierDetail,
       txRows: txF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
-      payRows: payF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
+      payRows: payF.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
       bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
       dieselTxRows: dieselTxF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }),
-      dieselPayRows: dieselPayF.slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
+      dieselPayRows: dieselPayF.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
       dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
       formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
       totalDieselQty: totalDieselQty, avgDieselRate: avgDieselRate, currentMonthDiesel: currentMonthDiesel,
