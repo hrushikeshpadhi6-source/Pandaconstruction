@@ -2180,6 +2180,27 @@
         </div>
       </sc-if>
 
+      <div style="font-weight:700;margin-bottom:10px;">Letterhead Pad</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:120px;height:160px;background:#fff;border:1px solid var(--border);border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:flex;flex-direction:column;padding:10px 8px;overflow:hidden;">
+            <div style="display:flex;align-items:flex-start;gap:5px;">
+              <img src="logo-pdf.png" style="width:24px;height:auto;flex-shrink:0;" />
+              <div>
+                <div style="font-size:6px;font-weight:800;color:#8a6d1f;letter-spacing:0.3px;">PANDA CONSTRUCTION</div>
+                <div style="font-size:3.2px;color:#999;margin-top:1px;">AT/PO LANGALESWAR, BALASORE</div>
+              </div>
+            </div>
+            <div style="width:100%;border-top:1.5px solid #d4af37;margin-top:6px;"></div>
+            <div style="font-size:3.2px;color:#666;margin-top:6px;text-align:right;">Memo No.: ______<br/>Date: ______</div>
+            <div style="flex:1;"></div>
+            <div style="width:100%;border-top:1px solid #eee;"></div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);max-width:340px;">Official A4 letterhead — logo top-left, blank Memo No. &amp; Date fields top-right, ready to print or use for any official letter.</div>
+        </div>
+        <button type="button" onClick="{{ onExportLetterhead }}" style="padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:#1a1a1a;color:var(--gold);">Download Letterhead PDF</button>
+      </div>
+
       <div style="font-weight:700;margin-bottom:10px;">Activity Tracker <span style="color:var(--muted);font-weight:400;font-size:12px;">(live, visible to everyone)</span></div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ activityTrackerFilter.from }}" onChange="{{ onActivityTrackerFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
@@ -2965,7 +2986,7 @@ class Component extends DCLogic {
     const logo = await this.loadLogoDataUrl();
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Site Activity — ' + d.name, 40, y); y += 16;
@@ -3003,7 +3024,7 @@ class Component extends DCLogic {
     const logo = await this.loadLogoDataUrl();
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Labour Statement — ' + d.name, 40, y); y += 16;
@@ -3044,7 +3065,7 @@ class Component extends DCLogic {
     const logo = await this.loadLogoDataUrl();
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Mistri Statement — ' + d.name, 40, y); y += 16;
@@ -3076,7 +3097,7 @@ class Component extends DCLogic {
     const logo = await this.loadLogoDataUrl();
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Sites — Material Purchase Overview', 40, y); y += 16;
@@ -3103,7 +3124,7 @@ class Component extends DCLogic {
     const logo = await this.loadLogoDataUrl();
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Diesel Transactions', 40, y); y += 16;
@@ -3118,7 +3139,7 @@ class Component extends DCLogic {
     if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
     const d = this._lastStaffDetail; if (!d) return;
     const wb = XLSX.utils.book_new();
-    const cover = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Staff Statement — ' + d.name], ['Role: ' + d.role + '  |  ' + d.basisLabel], ['Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today')], ['Generated: ' + new Date().toLocaleString('en-IN')], [], ['BF Balance', d.bfAmt], ['This Month Earned (Attendance)', d.monthEarned], ['Total Net Due', d.due + d.monthEarned], ['Total Paid', d.paid], ['Outstanding', d.outstanding], [], ['Present Days', d.presentCount], ['Half Days', d.halfCount], ['Absent Days', d.absentCount]];
+    const cover = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Staff Statement — ' + d.name], ['Role: ' + d.role + '  |  ' + d.basisLabel.replace('₹', 'Rs.')], ['Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today')], ['Generated: ' + new Date().toLocaleString('en-IN')], [], ['BF Balance', d.bfAmt], ['This Month Earned (Attendance)', d.monthEarned], ['Total Net Due', d.due + d.monthEarned], ['Total Paid', d.paid], ['Outstanding', d.outstanding], [], ['Present Days', d.presentCount], ['Half Days', d.halfCount], ['Absent Days', d.absentCount]];
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cover), 'Summary');
     const attAoa = [['Date', 'Status']];
     d.attendanceRows.forEach(function (r) { attAoa.push([r.Date, r.Status]); });
@@ -3131,25 +3152,57 @@ class Component extends DCLogic {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(payAoa), 'Payments');
     XLSX.writeFile(wb, 'panda-construction-' + d.name.replace(/\s+/g, '-') + '-staff-statement.xlsx');
   }
+  async exportBlankLetterhead() {
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 32, 58, 30); } catch (e) {} }
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(20, 20, 20);
+    doc.text('PANDA CONSTRUCTION', 108, 48);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(90, 90, 90);
+    doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 108, 60);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(60, 60, 60);
+    doc.text('Memo No.: ____________________', pageWidth - 40, 40, { align: 'right' });
+    doc.text('Date: ____________________', pageWidth - 40, 56, { align: 'right' });
+    doc.setDrawColor(212, 175, 55); doc.setLineWidth(1.5);
+    doc.line(40, 78, pageWidth - 40, 78);
+    doc.setDrawColor(230, 230, 230); doc.setLineWidth(0.75);
+    doc.line(40, pageHeight - 60, pageWidth - 40, pageHeight - 60);
+    doc.setFontSize(8); doc.setTextColor(150, 150, 150);
+    doc.text('AT/PO LANGALESWAR , BALASORE , ODISHA  |  PH: 9938353942', pageWidth / 2, pageHeight - 44, { align: 'center' });
+    doc.save('panda-construction-letterhead.pdf');
+  }
   async exportStaffDetailPDF() {
     if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
     const d = this._lastStaffDetail; if (!d) return;
     const fmt = this.fmtPdf.bind(this);
+    const basisLabel = d.salaryBasis === 'Daily' ? ('Daily \u2014 ' + fmt(d.dailyRate) + '/day') : ('Monthly \u2014 ' + fmt(d.monthlyAmount) + '/month');
     const logo = await this.loadLogoDataUrl();
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Staff Statement — ' + d.name, 40, y); y += 16;
-    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text(d.role + '  |  ' + d.basisLabel, 40, y); y += 14;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text(d.role + '  |  ' + basisLabel, 40, y); y += 14;
     doc.text('Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today'), 40, y); y += 18;
     doc.setFontSize(10); doc.setFont(undefined, 'bold');
     doc.text('BF: ' + fmt(d.bfAmt), 40, y); doc.text('Due: ' + fmt(d.due + d.monthEarned), 160, y); doc.text('Paid: ' + fmt(d.paid), 300, y); doc.text('Outstanding: ' + fmt(d.outstanding), 420, y); y += 16;
-    doc.text('Present: ' + d.presentCount + '  Half: ' + d.halfCount + '  Absent: ' + d.absentCount, 40, y); y += 10;
+    doc.text('Present: ' + d.presentCount + '  Half: ' + d.halfCount + '  Absent: ' + d.absentCount, 40, y); y += 12;
+    doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Attendance', 40, y); y += 6;
     doc.setFont(undefined, 'normal');
-    doc.autoTable({ startY: y + 6, head: [['Date', 'Status']], body: d.attendanceRows.map(function (r) { return [r.Date, r.Status]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
-    let y2 = doc.lastAutoTable.finalY + 20;
+    const perRow = 16;
+    const statusAbbr = function (s) { return s === 'Present' ? 'P' : s === 'Half' ? 'H' : s === 'Absent' ? 'A' : '-'; };
+    const attSorted = d.attendanceRows.slice().sort(function (a, b) { return a.Date < b.Date ? -1 : 1; });
+    let ay = y + 8;
+    for (let i = 0; i < attSorted.length; i += perRow) {
+      const chunk = attSorted.slice(i, i + perRow);
+      doc.autoTable({ startY: ay, head: [chunk.map(function (r) { return r.Date.slice(5); })], body: [chunk.map(function (r) { return statusAbbr(r.Status); })], styles: { fontSize: 7, halign: 'center', cellPadding: 3 }, headStyles: { fillColor: [212, 175, 55], fontSize: 6.5 }, margin: { left: 40, right: 40 } });
+      ay = doc.lastAutoTable.finalY + 4;
+    }
+    let y2 = ay + 16;
     doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Salary Slips', 40, y2); y2 += 6;
     doc.autoTable({ startY: y2 + 4, head: [['Month', 'Basic', 'DA', 'Deductions', 'Net Salary']], body: d.salaryRows.map(function (r) { return [r.Month, fmt(r.Basic), fmt(r.DA), fmt(r.Deductions), fmt(r.NetSalary)]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
     let y3 = doc.lastAutoTable.finalY + 20;
@@ -3172,7 +3225,7 @@ class Component extends DCLogic {
     const logo = await this.loadLogoDataUrl();
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Site Balances', 40, y); y += 16;
@@ -3295,7 +3348,7 @@ class Component extends DCLogic {
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     const pageWidth = doc.internal.pageSize.getWidth();
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(20, 20, 20); doc.text('PANDA CONSTRUCTION', 120, y + 10);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(90, 90, 90); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y + 24);
     y += 50;
@@ -3855,7 +3908,7 @@ class Component extends DCLogic {
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     const ubf = this.state.userBalanceFilter;
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Balance by User', 40, y); y += 16;
@@ -3969,7 +4022,7 @@ class Component extends DCLogic {
       if (!first) doc.addPage();
       first = false;
       let y = 40;
-      if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+      if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
       doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
       doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
       doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text(data.title + ' — ' + name, 40, y); y += 16;
@@ -4005,7 +4058,7 @@ class Component extends DCLogic {
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     const ftf = this.state.fundTransferFilter;
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Fund Transfers', 40, y); y += 16;
@@ -4026,7 +4079,7 @@ class Component extends DCLogic {
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     const spf = this.state.staffPaymentsFilter;
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y + 10);
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y + 24);
     y += 50;
@@ -4050,7 +4103,7 @@ class Component extends DCLogic {
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     const pageWidth = doc.internal.pageSize.getWidth();
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(20, 20, 20);
     doc.text('PANDA CONSTRUCTION', 120, y + 16);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(90, 90, 90);
@@ -4097,7 +4150,7 @@ class Component extends DCLogic {
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     const pageWidth = doc.internal.pageSize.getWidth();
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(20, 20, 20);
     doc.text('PANDA CONSTRUCTION', 120, y + 16);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(90, 90, 90);
@@ -4159,7 +4212,7 @@ class Component extends DCLogic {
     const logo = await this.loadLogoDataUrl();
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Transactions — ' + name, 40, y); y += 16;
@@ -4192,7 +4245,8 @@ class Component extends DCLogic {
   async loadLogoDataUrl() {
     if (this._logoDataUrl) return this._logoDataUrl;
     try {
-      const res = await fetch('logo-pdf.png');
+      const res = await fetch(new URL('logo-pdf.png', document.baseURI).href);
+      if (!res.ok) throw new Error('logo fetch failed');
       const blob = await res.blob();
       this._logoDataUrl = await new Promise(function (resolve, reject) {
         const reader = new FileReader();
@@ -4200,7 +4254,7 @@ class Component extends DCLogic {
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
-    } catch (e) { this._logoDataUrl = null; }
+    } catch (e) { this._logoDataUrl = null; } // not cached — retried on next export
     return this._logoDataUrl;
   }
 
@@ -4368,7 +4422,7 @@ class Component extends DCLogic {
     const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     const pageWidth = doc.internal.pageSize.getWidth();
     let y = 40;
-    if (logo) { try { doc.addImage(logo, 'PNG', 40, y - 6, 70, 36); } catch (e) {} }
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(20, 20, 20);
     doc.text('PANDA CONSTRUCTION', 120, y + 16);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(90, 90, 90);
@@ -4744,6 +4798,7 @@ class Component extends DCLogic {
       const payInRange = payRows2.filter(function (r) { return self.inRange(r.Date, sdf2.from, sdf2.to); });
       this._lastStaffDetail = {
         name: staffDetail.Name, role: staffDetail.Role, basisLabel: staffDetail.basisLabel, filter: sdf2,
+        salaryBasis: stRow.SalaryBasis || '', dailyRate: Number(stRow.DailyRate) || 0, monthlyAmount: Number(stRow.MonthlyAmount) || 0,
         bfAmt: bfAmt, due: due, monthEarned: monthEarned, paid: paid, outstanding: fin.outstanding,
         presentCount: attInRange.filter(function (r) { return r.Status === 'Present'; }).length,
         halfCount: attInRange.filter(function (r) { return r.Status === 'Half'; }).length,
@@ -5114,7 +5169,7 @@ class Component extends DCLogic {
       maintenanceMessage: (s.maintenance && s.maintenance.message) || 'We\'re doing scheduled maintenance. Please check back shortly.',
       maintenanceToggleLabel: (s.maintenance && s.maintenance.enabled) ? 'Turn Maintenance OFF' : 'Turn Maintenance ON',
       maintenanceToggleStyle: 'padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:' + ((s.maintenance && s.maintenance.enabled) ? '#e2574c' : '#2ea043') + ';color:#fff;',
-      onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this), onMigrate: this.migrateFromSheets.bind(this), markAllPresent: this.markAllPresent.bind(this),
+      onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this), onMigrate: this.migrateFromSheets.bind(this), onExportLetterhead: this.exportBlankLetterhead.bind(this), markAllPresent: this.markAllPresent.bind(this),
       clockTime: (function () { const n = new Date(); return n.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }); })(),
       onManualRefresh: this.manualRefresh.bind(this), refreshing: !!s.manualRefreshing,
       refreshLabel: s.manualRefreshing ? 'Refreshing…' : 'Refresh', refreshOpacity: s.manualRefreshing ? '0.6' : '1',
