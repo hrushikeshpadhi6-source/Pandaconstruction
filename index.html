@@ -305,11 +305,14 @@
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" data-stat-grid>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">BF Balance</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.bfFmt }}</div></div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Purchase</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.purchaseFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Purchase (Material)</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.materialFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Supplier Vehicle Fare</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.supplierFareFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Self Vehicle Fare</div><div style="font-size:20px;font-weight:800;color:var(--muted);">{{ supplierDetail.selfFareFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total (Material + Supplier Fare)</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.totalFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Paid</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.paidFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Outstanding</div><div style="font-size:20px;font-weight:800;color:{{ supplierDetail.outstandingColor }};">{{ supplierDetail.outstandingFmt }}</div></div>
       </div>
-      <div style="color:var(--muted2);font-size:12px;margin-bottom:20px;">Outstanding = BF Balance + Total Purchase − Total Paid</div>
+      <div style="color:var(--muted2);font-size:12px;margin-bottom:20px;">Outstanding = BF Balance + Total (Material + Supplier Fare) − Total Paid. Self vehicle fare is excluded from the supplier's book.</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ detailFilters.from }}" onChange="{{ onDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ detailFilters.to }}" onChange="{{ onDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
@@ -347,6 +350,7 @@
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Unit</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Rate</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Fare</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Fare Type</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Value</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:12px;border-bottom:1px solid var(--border);">Site</th>
             <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
@@ -361,6 +365,7 @@
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Unit }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.RateFmt }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:var(--muted);">{{ r.FareFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.FareTypeLabel }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:var(--gold);font-weight:600;">{{ r.ValueFmt }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Site }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
@@ -473,6 +478,7 @@
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Unit</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Rate</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Fare</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Fare Type</th>
             <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Value</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Site</th>
             <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Remarks</th>
@@ -491,6 +497,7 @@
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Unit }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.RateFmt }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:var(--muted);">{{ r.FareFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.FareTypeLabel }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:var(--gold);font-weight:600;">{{ r.ValueFmt }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;white-space:nowrap;">{{ r.Site }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted);white-space:nowrap;">{{ r.Remarks }}</td>
@@ -2175,10 +2182,14 @@
             <input type="number" step="any" name="Rate" placeholder="Rate (₹)" required="true" defaultValue="{{ txDefaults.Rate }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
             <input type="number" step="any" name="Fare" placeholder="Fare per unit (₹, 0 if none)" defaultValue="{{ txDefaults.Fare }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           </div>
+          <div>
+            <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Vehicle fare paid to</label>
+            <select name="FareType" defaultValue="{{ txDefaults.FareType }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;width:100%;box-sizing:border-box;"><option value="Supplier">Supplier vehicle (adds to supplier book)</option><option value="Self">Self / own vehicle (excluded from supplier book)</option></select>
+          </div>
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ txDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ txDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
-          <div style="color:var(--muted2);font-size:12px;">Value is calculated automatically as Quantity × Rate.</div>
+          <div style="color:var(--muted2);font-size:12px;">Material Amount = Quantity × Rate. Fare = Quantity × Fare/unit, added to supplier's outstanding only if paid to Supplier vehicle — Self vehicle fare is tracked separately and excluded.</div>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
             <button type="submit" style="flex:1;background:var(--gold);color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
@@ -2946,15 +2957,15 @@ class Component extends DCLogic {
     if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
     const wb = XLSX.utils.book_new();
     const summaryAoa = [['PANDA CONSTRUCTION'], ['AT/PO LANGALESWAR , BALASORE , PH-9938353942'], ['Supplier Statement — ' + name], ['Generated: ' + new Date().toLocaleString('en-IN')], [],
-      ['BF Balance', d.bfAmt], ['Total Purchase', d.purchaseN], ['Total Paid', d.paidN], ['Outstanding (BF + Purchase - Paid)', d.outstandingN]];
+      ['BF Balance', d.bfAmt], ['Total Purchase (Material)', d.materialN], ['Supplier Vehicle Fare', d.supplierFareN], ['Self Vehicle Fare (excluded)', d.selfFareN], ['Total (Material + Supplier Fare)', d.purchaseN], ['Total Paid', d.paidN], ['Outstanding (BF + Total - Paid)', d.outstandingN]];
     const wsSummary = XLSX.utils.aoa_to_sheet(summaryAoa);
     wsSummary['!cols'] = [{ wch: 30 }, { wch: 18 }];
     XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
 
-    const txAoa = [['Date', 'Vehicle', 'Material', 'Quantity', 'Unit', 'Rate', 'Value', 'Site', 'Remarks']];
-    d.allTxRaw.forEach(function (r) { txAoa.push([r.Date, r.VehicleNumber || '', r.Material, Number(r.Quantity) || 0, r.Unit || '', Number(r.Rate) || 0, Number(r.Value) || 0, r.Site || '', r.Remarks || '']); });
+    const txAoa = [['Date', 'Vehicle', 'Material', 'Quantity', 'Unit', 'Rate', 'Fare', 'Fare Type', 'Value', 'Site', 'Remarks']];
+    d.allTxRaw.forEach(function (r) { txAoa.push([r.Date, r.VehicleNumber || '', r.Material, Number(r.Quantity) || 0, r.Unit || '', Number(r.Rate) || 0, Number(r.Fare) || 0, r.FareType === 'Self' ? 'Self' : 'Supplier', Number(r.Value) || 0, r.Site || '', r.Remarks || '']); });
     const wsTx = XLSX.utils.aoa_to_sheet(txAoa);
-    wsTx['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 16 }, { wch: 10 }, { wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 16 }, { wch: 20 }];
+    wsTx['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 16 }, { wch: 10 }, { wch: 8 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 16 }, { wch: 20 }];
     XLSX.utils.book_append_sheet(wb, wsTx, 'Material Transactions');
 
     const payAoa = [['Date', 'Amount Paid', 'Payment Method', 'Reference', 'Remarks']];
@@ -2991,8 +3002,8 @@ class Component extends DCLogic {
 
     doc.autoTable({
       startY: y, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 9, cellPadding: 6 },
-      head: [['BF Balance', 'Total Purchase', 'Total Paid', 'Outstanding']],
-      body: [[this.fmtPdf(d.bfAmt), this.fmtPdf(d.purchaseN), this.fmtPdf(d.paidN), this.fmtPdf(d.outstandingN)]],
+      head: [['BF Balance', 'Material', 'Supplier Fare', 'Self Fare', 'Total', 'Paid', 'Outstanding']],
+      body: [[this.fmtPdf(d.bfAmt), this.fmtPdf(d.materialN), this.fmtPdf(d.supplierFareN), this.fmtPdf(d.selfFareN), this.fmtPdf(d.purchaseN), this.fmtPdf(d.paidN), this.fmtPdf(d.outstandingN)]],
       headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' },
       columnStyles: { 0: { halign: 'right' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' } }
     });
@@ -3001,10 +3012,10 @@ class Component extends DCLogic {
     doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text('Material Transactions', 40, y); y += 10;
     doc.autoTable({
       startY: y, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 8, cellPadding: 5 },
-      head: [['Date', 'Vehicle', 'Material', 'Qty', 'Unit', 'Rate', 'Value', 'Site']],
-      body: d.allTxRaw.map(function (r) { return [r.Date, r.VehicleNumber || '', r.Material, r.Quantity, r.Unit || '', self.fmtPdf(r.Rate), self.fmtPdf(r.Value), r.Site || '']; }),
+      head: [['Date', 'Vehicle', 'Material', 'Qty', 'Unit', 'Rate', 'Fare Type', 'Value', 'Site']],
+      body: d.allTxRaw.map(function (r) { return [r.Date, r.VehicleNumber || '', r.Material, r.Quantity, r.Unit || '', self.fmtPdf(r.Rate), r.FareType === 'Self' ? 'Self' : 'Supplier', self.fmtPdf(r.Value), r.Site || '']; }),
       headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' },
-      columnStyles: { 3: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } }
+      columnStyles: { 3: { halign: 'right' }, 5: { halign: 'right' }, 7: { halign: 'right' } }
     });
     y = doc.lastAutoTable.finalY + 24;
     if (y > doc.internal.pageSize.getHeight() - 150) { doc.addPage(); y = 40; }
@@ -3176,7 +3187,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Supplier.value || !f.Material.value.trim() || !f.Quantity.value || !f.Rate.value || !f.Site.value.trim()) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, Time: f.Time.value, Material: f.Material.value.trim(), Quantity: f.Quantity.value, Unit: f.Unit.value, Rate: f.Rate.value, Fare: f.Fare.value || 0, Site: f.Site.value.trim(), Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, Time: f.Time.value, Material: f.Material.value.trim(), Quantity: f.Quantity.value, Unit: f.Unit.value, Rate: f.Rate.value, Fare: f.Fare.value || 0, FareType: f.FareType.value || 'Supplier', Site: f.Site.value.trim(), Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
 
     // Duplicate check: same date + time is the trigger; only then compare vehicle & weight.
     if (payload.Time) {
@@ -4224,9 +4235,18 @@ class Component extends DCLogic {
       const paid = this.sum(pay, 'AmountPaid');
       const bfAmt = this.latestBFFor(bfEntries, name);
       const outstanding = bfAmt + purchase - paid;
+      const matAmtOf = function (r) { return r.MaterialAmount != null ? Number(r.MaterialAmount) : (Number(r.Quantity) || 0) * (Number(r.Rate) || 0); };
+      const fareAmtOf = function (r) { return r.FareAmount != null ? Number(r.FareAmount) : (Number(r.Quantity) || 0) * (Number(r.Fare) || 0); };
+      const isSelfFare = function (r) { return r.FareType === 'Self'; };
+      const materialTotal = allTx.reduce(function (a, r) { return a + matAmtOf(r); }, 0);
+      const selfFareTotal = allTx.filter(isSelfFare).reduce(function (a, r) { return a + fareAmtOf(r); }, 0);
+      const supplierFareTotal = allTx.filter(function (r) { return !isSelfFare(r); }).reduce(function (a, r) { return a + fareAmtOf(r); }, 0);
+      const fareTypeLabel = function (r) { return isSelfFare(r) ? 'Self' : 'Supplier'; };
       supplierDetail = {
         name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding), outstandingColor: this.oc(outstanding),
-        rows: filteredTx.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
+        materialFmt: fmt(materialTotal), supplierFareFmt: fmt(supplierFareTotal), selfFareFmt: fmt(selfFareTotal), totalFmt: fmt(materialTotal + supplierFareTotal),
+        materialN: materialTotal, supplierFareN: supplierFareTotal, selfFareN: selfFareTotal,
+        rows: filteredTx.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), FareTypeLabel: fareTypeLabel(r), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
         allTxRaw: allTx.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         payRaw: pay.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, outstandingN: outstanding,
@@ -4244,7 +4264,7 @@ class Component extends DCLogic {
     });
 
     const siteRows = s.sites.map(function (site) {
-      const purchase = self.sum(s.transactions.filter(function (t) { return t.Site === site.SiteName; }), 'Value');
+      const purchase = self.sum(s.transactions.filter(function (t) { return t.Site === site.SiteName; }), 'Value') + self.sum(s.transactions.filter(function (t) { return t.Site === site.SiteName && t.FareType === 'Self'; }), 'FareAmount');
       const paid = self.sum(s.payments.filter(function (p) { return p.Site === site.SiteName; }), 'AmountPaid');
       return Object.assign({}, site, { purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(purchase - paid), outstandingColor: self.oc(purchase - paid), onEdit: function () { self.openModal('site', site); }, onDelete: function () { self.deleteSite(site); } });
     });
@@ -4424,7 +4444,7 @@ class Component extends DCLogic {
       return { Supplier: sup.SupplierName, BF: fmt(bfAmt), Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(outstanding), OutstandingColor: self.oc(outstanding), _BF: bfAmt, _Purchase: purchase, _Paid: paid, _Outstanding: outstanding };
     });
     const siteReportRows = rSitesF.map(function (site) {
-      const purchase = self.sum(rTxF.filter(function (t) { return t.Site === site.SiteName; }), 'Value');
+      const purchase = self.sum(rTxF.filter(function (t) { return t.Site === site.SiteName; }), 'Value') + self.sum(rTxF.filter(function (t) { return t.Site === site.SiteName && t.FareType === 'Self'; }), 'FareAmount');
       const otherExpenditure = self.siteOtherExpenditure(site.SiteName, s, rf.from, rf.to);
       const mistriPaid = self.siteMistriPaid(site.SiteName, s, rf.from, rf.to);
       const labourPaid = self.siteLabourPaid(site.SiteName, s, rf.from, rf.to);
@@ -4660,7 +4680,7 @@ class Component extends DCLogic {
     const showStaffPicker = !s.selectedStaff;
     const isEditing = !!s.editRecord;
     const formKey = s.modal + ':' + (editRecordRaw.SLNo || editRecordRaw.PaymentID || editRecordRaw.SupplierID || editRecordRaw.SiteID || editRecordRaw.MaterialID || editRecordRaw.StaffID || editRecordRaw.SalaryID || editRecordRaw.MistriID || editRecordRaw.DueID || editRecordRaw.LabourID || editRecordRaw.EntryID || editRecordRaw.AdvanceID || editRecordRaw.Name || (editRecordRaw.Supplier ? editRecordRaw.Supplier + '|' + editRecordRaw.BFDate : 'new'));
-    const txDefaults = { Date: editRecordRaw.Date || todayStr, Time: editRecordRaw.Time || '', Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Fare: editRecordRaw.Fare != null ? editRecordRaw.Fare : 0, Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const txDefaults = { Date: editRecordRaw.Date || todayStr, Time: editRecordRaw.Time || '', Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Fare: editRecordRaw.Fare != null ? editRecordRaw.Fare : 0, FareType: editRecordRaw.FareType || 'Supplier', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const payDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
     const bfDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const dieselTxDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', ChalanNumber: editRecordRaw.ChalanNumber || '', Time: editRecordRaw.Time || '', DieselQuantity: editRecordRaw.DieselQuantity != null ? editRecordRaw.DieselQuantity : '', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Driver: editRecordRaw.Driver || '', Remarks: editRecordRaw.Remarks || '' };
@@ -4749,7 +4769,7 @@ class Component extends DCLogic {
       supplierExpenditure: supplierExpenditure, siteExpenditure: siteExpenditure, materialExpenditure: materialExpenditure, dieselExpenditure: dieselExpenditure,
       supplierCards: supplierCards, openSupplierModal: function () { self.openModal('supplier'); },
       supplierDetail: supplierDetail,
-      txRows: txF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
+      txRows: txF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), FareTypeLabel: r.FareType === 'Self' ? 'Self' : 'Supplier', ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
       payRows: payF.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
       bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
       dieselTxRows: dieselTxF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }),
