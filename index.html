@@ -185,16 +185,16 @@
       <sc-if value="{{ isDemo }}"><div style="background:var(--chip);color:var(--gold);font-size:12px;padding:6px 14px;border-radius:20px;white-space:nowrap;">Demo Data — connect config.js for live Sheet</div></sc-if>
     </div>
     <sc-if value="{{ viewIs.dashboard }}">
-      <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:24px;">
-        <div>
-          <div style="font-size:28px;font-weight:800;line-height:1;letter-spacing:0.5px;">{{ clockTime }}</div>
-          <div style="font-size:13px;color:var(--muted);margin-top:4px;">{{ clockDay }}, {{ clockDate }}</div>
+      <div style="display:flex;flex-wrap:nowrap;gap:16px;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:24px;overflow-x:auto;">
+        <div style="flex:0 0 auto;">
+          <div style="font-size:28px;font-weight:800;line-height:1;letter-spacing:0.5px;white-space:nowrap;">{{ clockTime }}</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px;white-space:nowrap;">{{ clockDay }}, {{ clockDate }}</div>
         </div>
-        <div style="text-align:right;">
-          <div style="font-size:22px;font-weight:800;color:var(--gold);">{{ weatherTemp }}</div>
-          <div style="font-size:13px;color:var(--muted);margin-top:4px;">{{ weatherLocation }}</div>
+        <div style="text-align:right;flex:0 0 auto;">
+          <div style="font-size:22px;font-weight:800;color:var(--gold);white-space:nowrap;">{{ weatherTemp }}</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px;white-space:nowrap;">{{ weatherLocation }}</div>
         </div>
-        <button onClick="{{ onManualRefresh }}" disabled="{{ refreshing }}" title="Refresh data" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap;opacity:{{ refreshOpacity }};">
+        <button onClick="{{ onManualRefresh }}" disabled="{{ refreshing }}" title="Refresh data" style="flex:0 0 auto;background:transparent;border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap;opacity:{{ refreshOpacity }};">
           <span style="display:inline-block;transform:{{ refreshSpin }};transition:transform 0.6s;">⟳</span> {{ refreshLabel }}
         </button>
       </div>
