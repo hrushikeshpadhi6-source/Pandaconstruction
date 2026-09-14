@@ -131,9 +131,15 @@
     <div style="position:absolute;top:0;left:0;height:100%;width:40%;background:var(--gold);animation:pandaLoadBar 1.1s ease-in-out infinite;"></div>
   </div>
 </sc-if>
-<div data-app-theme="{{ theme }}" data-app-shell style="display:flex;min-height:100vh;background:var(--bg);font-family:'Manrope',sans-serif;color:var(--text);">
+<div data-app-theme="{{ theme }}" data-app-shell style="display:flex;min-height:100vh;background:var(--bg);font-family:'Manrope',sans-serif;color:var(--text);margin-top:{{ announcementOffsetPx }}px;">
 
-  <div data-mobile-topbar style="position:fixed;top:0;left:0;right:0;height:60px;z-index:250;background:var(--sidebar);border-bottom:1px solid var(--border);align-items:center;gap:12px;padding:0 16px;box-sizing:border-box;">
+  <sc-if value="{{ announcement.enabled }}">
+    <div style="position:fixed;top:0;left:0;right:0;z-index:260;background:var(--gold);overflow:hidden;white-space:nowrap;padding:7px 0;box-shadow:0 1px 4px rgba(0,0,0,0.2);">
+      <div style="display:inline-block;padding-left:100%;animation:pandaConvoy 18s linear infinite;color:#0e0e10;font-weight:700;font-size:13px;">{{ announcement.message }}</div>
+    </div>
+  </sc-if>
+
+  <div data-mobile-topbar style="position:fixed;top:{{ announcementOffsetPx }}px;left:0;right:0;height:60px;z-index:250;background:var(--sidebar);border-bottom:1px solid var(--border);align-items:center;gap:12px;padding:0 16px;box-sizing:border-box;">
     <button onClick="{{ toggleMobileNav }}" style="background:transparent;border:1px solid var(--border);color:var(--text);width:38px;height:38px;border-radius:8px;cursor:pointer;font-size:18px;flex-shrink:0;">&#9776;</button>
     <img src="logo.png" alt="logo" style="width:30px;height:30px;object-fit:contain;flex-shrink:0;" />
     <div style="font-weight:800;font-size:13px;">PANDA CONSTRUCTION</div>
@@ -2180,6 +2186,20 @@
         </div>
       </sc-if>
 
+      <sc-if value="{{ isAdmin1 }}">
+        <div style="font-weight:700;margin-bottom:10px;">Announcement Banner <span style="font-size:11px;color:var(--muted);font-weight:500;">(Admin 1 only — runs under the logo for everyone)</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px;display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div style="font-size:13px;color:var(--muted);">When ON, a scrolling banner runs under the logo for every user.</div>
+            <button type="button" onClick="{{ onToggleAnnouncement }}" style="{{ announcementToggleStyle }}">{{ announcementToggleLabel }}</button>
+          </div>
+          <form onSubmit="{{ onSaveAnnouncementMessage }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;">
+            <textarea name="Message" placeholder="e.g. 2 days left to pay this month's subscription — please clear dues." defaultValue="{{ announcement.message }}" style="flex:1;min-width:220px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:13px;resize:vertical;min-height:50px;box-sizing:border-box;"></textarea>
+            <button type="submit" style="background:var(--gold);color:#0e0e10;font-weight:700;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Save Message</button>
+          </form>
+        </div>
+      </sc-if>
+
       <div style="font-weight:700;margin-bottom:10px;">Letterhead Pad</div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
         <div style="display:flex;align-items:center;gap:16px;">
@@ -2759,7 +2779,7 @@ class Component extends DCLogic {
     detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, siteDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
     fundTransferFilter: { from: '', to: '', party: '' }, userBalanceFilter: { from: '', to: '', name: '' }, userBalanceExportScope: 'site', userRowFilter: {}, fundTransferShowAll: false,
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
-    reportTab: 'supplier', showPassword: false, theme: 'light', maintenance: { enabled: false, message: '' }
+    reportTab: 'supplier', showPassword: false, theme: 'light', maintenance: { enabled: false, message: '' }, announcement: { enabled: false, message: '' }
   };
 
   componentDidMount() {
@@ -2842,6 +2862,7 @@ class Component extends DCLogic {
         labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [],
         fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
         maintenance: r.maintenance || { enabled: false, message: '' },
+        announcement: r.announcement || { enabled: false, message: '' },
         loading: false
       });
     }.bind(this)).catch(function (e) {
@@ -2894,7 +2915,7 @@ class Component extends DCLogic {
     PandaAPI.call('login', { name: name, password: password }).then(function (res) {
       if (res.success) {
         localStorage.setItem('panda_session', JSON.stringify(res.user));
-        self.setState({ session: res.user, view: 'dashboard', loginError: '', loggingIn: false, maintenance: res.maintenance || { enabled: false, message: '' } });
+        self.setState({ session: res.user, view: 'dashboard', loginError: '', loggingIn: false, maintenance: res.maintenance || { enabled: false, message: '' }, announcement: res.announcement || { enabled: false, message: '' } });
         self.loadAll();
       } else {
         self.setState({ loginError: res.message || 'Login failed.', loggingIn: false });
@@ -2922,6 +2943,23 @@ class Component extends DCLogic {
     PandaAPI.call('setMaintenance', { Enabled: next, Message: this.state.maintenance.message, RequestedBy: this.currentUserName() }).then(function (res) {
       if (res.success) { self.setState({ maintenance: res.maintenance || { enabled: next, message: self.state.maintenance.message } }); self.showToast('Maintenance mode turned ' + (next ? 'ON.' : 'OFF.')); }
       else self.showToast(res.message || 'Could not update maintenance mode.');
+    });
+  }
+  toggleAnnouncement() {
+    const self = this;
+    const next = !this.state.announcement.enabled;
+    PandaAPI.call('setAnnouncement', { Enabled: next, Message: this.state.announcement.message, RequestedBy: this.currentUserName() }).then(function (res) {
+      if (res.success) { self.setState({ announcement: res.announcement || { enabled: next, message: self.state.announcement.message } }); self.showToast('Announcement turned ' + (next ? 'ON.' : 'OFF.')); }
+      else self.showToast(res.message || 'Could not update announcement.');
+    });
+  }
+  saveAnnouncementMessage(e) {
+    e.preventDefault();
+    const self = this;
+    const msg = e.target.elements.Message.value;
+    PandaAPI.call('setAnnouncement', { Enabled: this.state.announcement.enabled, Message: msg, RequestedBy: this.currentUserName() }).then(function (res) {
+      if (res.success) { self.setState({ announcement: res.announcement || { enabled: self.state.announcement.enabled, message: msg } }); self.showToast('Announcement message saved.'); }
+      else self.showToast(res.message || 'Could not save message.');
     });
   }
   saveMaintenanceMessage(e) {
@@ -5161,7 +5199,12 @@ class Component extends DCLogic {
       maintenanceMessage: (s.maintenance && s.maintenance.message) || 'We\'re doing scheduled maintenance. Please check back shortly.',
       maintenanceToggleLabel: (s.maintenance && s.maintenance.enabled) ? 'Turn Maintenance OFF' : 'Turn Maintenance ON',
       maintenanceToggleStyle: 'padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:' + ((s.maintenance && s.maintenance.enabled) ? '#e2574c' : '#2ea043') + ';color:#fff;',
-      onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this), onMigrate: this.migrateFromSheets.bind(this), onExportLetterhead: this.exportBlankLetterhead.bind(this), markAllPresent: this.markAllPresent.bind(this),
+      onToggleMaintenance: this.toggleMaintenance.bind(this), onSaveMaintenanceMessage: this.saveMaintenanceMessage.bind(this),
+      announcement: s.announcement || { enabled: false, message: '' },
+      announcementToggleLabel: (s.announcement && s.announcement.enabled) ? 'Turn Announcement OFF' : 'Turn Announcement ON',
+      announcementToggleStyle: 'padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:' + ((s.announcement && s.announcement.enabled) ? '#e2574c' : 'var(--gold)') + ';color:' + ((s.announcement && s.announcement.enabled) ? '#fff' : '#0e0e10') + ';',
+      onToggleAnnouncement: this.toggleAnnouncement.bind(this), onSaveAnnouncementMessage: this.saveAnnouncementMessage.bind(this),
+      announcementOffsetPx: (s.announcement && s.announcement.enabled) ? 34 : 0, onMigrate: this.migrateFromSheets.bind(this), onExportLetterhead: this.exportBlankLetterhead.bind(this), markAllPresent: this.markAllPresent.bind(this),
       clockTime: (function () { const n = new Date(); return n.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }); })(),
       onManualRefresh: this.manualRefresh.bind(this), refreshing: !!s.manualRefreshing,
       refreshLabel: s.manualRefreshing ? 'Refreshing…' : 'Refresh', refreshOpacity: s.manualRefreshing ? '0.6' : '1',
