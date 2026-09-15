@@ -251,6 +251,60 @@
       // One-time-per-row fill: any BF row for August with no BFDate gets dated to the last day
       // of August, so the "since this date" purchase/due/payment scoping actually has a cutoff
       // instead of silently counting all history.
+      case "autoMaintenanceCheck": {
+        // Combines the seed/fill/cleanup one-time-ish maintenance actions into a single round
+        // trip (cheap either way, but 1 call beats 4 sequential ones), and is only invoked by
+        // the client once per calendar day per browser \u2014 not on every login \u2014 to keep this
+        // off the hot path entirely most of the time.
+        let seeded = 0, filled = 0, removed = 0, rolled = 0;
+        {
+          const flagRef3 = db.collection("meta").doc("personBFSeed");
+          const flagDoc3 = await flagRef3.get();
+          if (!(flagDoc3.exists && flagDoc3.data().done)) {
+            const seedList = [["staff", "staffBF", "StaffBFID", "SBF"], ["labour", "labourBF", "LabourBFID", "LBF"], ["mistri", "mistriBF", "MistriBFID", "MBF"]];
+            for (const [srcColl, bfColl, counter, prefix] of seedList) {
+              const [people, existingBF] = await Promise.all([colToArray(srcColl), colToArray(bfColl)]);
+              const namesWithBF = new Set(existingBF.map(function (r) { return r.Name; }));
+              for (const person of people) {
+                if (namesWithBF.has(person.Name)) continue;
+                const amt = Number(person.BFAmount) || 0;
+                if (!amt) continue;
+                const id = await nextId(counter, prefix, bfColl);
+                await db.collection(bfColl).doc(id).set({ BFID: id, Name: person.Name, BFMonth: "August", BFDate: "2026-08-31", BFAmount: amt, Remarks: "", CreatedBy: "System", CreatedAt: new Date().toISOString() });
+                seeded++;
+              }
+            }
+            await flagRef3.set({ done: true, seeded: seeded, ranAt: new Date().toISOString() }, { merge: true });
+          }
+        }
+        {
+          const flagRef4 = db.collection("meta").doc("augustBFDateFill");
+          const flagDoc4 = await flagRef4.get();
+          if (!(flagDoc4.exists && flagDoc4.data().done)) {
+            for (const coll of ["bf", "dieselBF", "staffBF", "labourBF", "mistriBF"]) {
+              const snap2 = await db.collection(coll).get();
+              for (const doc of snap2.docs) {
+                const dd = doc.data();
+                const hasDate = dd.BFDate !== undefined && dd.BFDate !== null && String(dd.BFDate).trim() !== "";
+                if (!hasDate && String(dd.BFMonth || "").toLowerCase().indexOf("august") !== -1) { await doc.ref.set({ BFDate: "2026-08-31" }, { merge: true }); filled++; }
+              }
+            }
+            await flagRef4.set({ done: true, filled: filled, ranAt: new Date().toISOString() }, { merge: true });
+          }
+        }
+        {
+          const nowC = new Date();
+          const monthKeyC = nowC.toISOString().slice(0, 7);
+          for (const coll of ["bf", "dieselBF", "staffBF", "labourBF", "mistriBF"]) {
+            const snap = await db.collection(coll).where("CreatedBy", "==", "System").get();
+            for (const doc of snap.docs) {
+              const dd = doc.data();
+              if (dd.BFMonth && monthKeyOfLabel(dd.BFMonth) === monthKeyC) { await doc.ref.delete(); removed++; }
+            }
+          }
+        }
+        return { success: true, seeded: seeded, filled: filled, removed: removed };
+      }
       case "autoSeedPersonBF": {
         const flagRef3 = db.collection("meta").doc("personBFSeed");
         const flagDoc3 = await flagRef3.get();
@@ -468,13 +522,13 @@
       case "deleteSite": await genericDelete("Site", p.SiteID); await auditLog(p.CreatedBy, "Deleted Site", "Sites", p.SiteID, ""); return { success: true, message: "Site deleted successfully." };
 
       case "getVehicles": return { success: true, data: await colToArray("vehicles") };
-      case "addVehicle": { const r = await genericAdd("Vehicle", { VehicleNumber: p.VehicleNumber, DriverName: p.DriverName || "", DieselSource: p.DieselSource || "Calculated", Mileage: p.Mileage || 0, Notes: p.Notes || "" }); await auditLog(p.CreatedBy, "Added Vehicle", "Vehicles", r.id, p.VehicleNumber); return { success: true, message: "Vehicle saved successfully." }; }
-      case "updateVehicle": { const ok = await genericUpdate("Vehicle", p, { VehicleNumber: p.VehicleNumber, DriverName: p.DriverName || "", DieselSource: p.DieselSource || "Calculated", Mileage: p.Mileage || 0, Notes: p.Notes || "" }); if (!ok) return { success: false, message: "Vehicle not found." }; await auditLog(p.CreatedBy, "Updated Vehicle", "Vehicles", p.VehicleID, p.VehicleNumber); return { success: true, message: "Vehicle updated successfully." }; }
+      case "addVehicle": { const r = await genericAdd("Vehicle", { VehicleNumber: p.VehicleNumber, DriverName: p.DriverName || "", VehicleType: p.VehicleType || "Truck", Mileage: p.Mileage || 0, HourlyRate: p.HourlyRate || 0, MonthlyRent: p.MonthlyRent || 0, Notes: p.Notes || "" }); await auditLog(p.CreatedBy, "Added Vehicle", "Vehicles", r.id, p.VehicleNumber); return { success: true, message: "Vehicle saved successfully." }; }
+      case "updateVehicle": { const ok = await genericUpdate("Vehicle", p, { VehicleNumber: p.VehicleNumber, DriverName: p.DriverName || "", VehicleType: p.VehicleType || "Truck", Mileage: p.Mileage || 0, HourlyRate: p.HourlyRate || 0, MonthlyRent: p.MonthlyRent || 0, Notes: p.Notes || "" }); if (!ok) return { success: false, message: "Vehicle not found." }; await auditLog(p.CreatedBy, "Updated Vehicle", "Vehicles", p.VehicleID, p.VehicleNumber); return { success: true, message: "Vehicle updated successfully." }; }
       case "deleteVehicle": await genericDelete("Vehicle", p.VehicleID); await auditLog(p.CreatedBy, "Deleted Vehicle", "Vehicles", p.VehicleID, ""); return { success: true, message: "Vehicle deleted successfully." };
 
       case "getVehicleLogs": return { success: true, data: await colToArray("vehicleDailyLog") };
-      case "addVehicleLog": { const r = await genericAdd("VehicleLog", { Date: p.Date, VehicleNumber: p.VehicleNumber, KmRun: Number(p.KmRun) || 0, DriverFee: Number(p.DriverFee) || 0, OtherExpense: Number(p.OtherExpense) || 0, OilPricePerLitre: Number(p.OilPricePerLitre) || 0, Remarks: p.Remarks || "" }); await auditLog(p.CreatedBy, "Added Vehicle Log", "VehicleLog", r.id, p.VehicleNumber); return { success: true, message: "Vehicle log saved successfully." }; }
-      case "updateVehicleLog": { const ok = await genericUpdate("VehicleLog", p, { Date: p.Date, VehicleNumber: p.VehicleNumber, KmRun: Number(p.KmRun) || 0, DriverFee: Number(p.DriverFee) || 0, OtherExpense: Number(p.OtherExpense) || 0, OilPricePerLitre: Number(p.OilPricePerLitre) || 0, Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Vehicle log not found." }; await auditLog(p.CreatedBy, "Updated Vehicle Log", "VehicleLog", p.LogID, p.VehicleNumber); return { success: true, message: "Vehicle log updated successfully." }; }
+      case "addVehicleLog": { const r = await genericAdd("VehicleLog", { Date: p.Date, VehicleNumber: p.VehicleNumber, KmRun: Number(p.KmRun) || 0, HoursRun: Number(p.HoursRun) || 0, DriverFee: Number(p.DriverFee) || 0, Fooding: Number(p.Fooding) || 0, OtherExpense: Number(p.OtherExpense) || 0, OilPricePerLitre: Number(p.OilPricePerLitre) || 0, Remarks: p.Remarks || "" }); await auditLog(p.CreatedBy, "Added Vehicle Log", "VehicleLog", r.id, p.VehicleNumber); return { success: true, message: "Vehicle log saved successfully." }; }
+      case "updateVehicleLog": { const ok = await genericUpdate("VehicleLog", p, { Date: p.Date, VehicleNumber: p.VehicleNumber, KmRun: Number(p.KmRun) || 0, HoursRun: Number(p.HoursRun) || 0, DriverFee: Number(p.DriverFee) || 0, Fooding: Number(p.Fooding) || 0, OtherExpense: Number(p.OtherExpense) || 0, OilPricePerLitre: Number(p.OilPricePerLitre) || 0, Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Vehicle log not found." }; await auditLog(p.CreatedBy, "Updated Vehicle Log", "VehicleLog", p.LogID, p.VehicleNumber); return { success: true, message: "Vehicle log updated successfully." }; }
       case "deleteVehicleLog": await genericDelete("VehicleLog", p.LogID); await auditLog(p.CreatedBy, "Deleted Vehicle Log", "VehicleLog", p.LogID, ""); return { success: true, message: "Vehicle log deleted successfully." };
 
       case "getMaterials": return { success: true, data: await colToArray("materials") };
