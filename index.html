@@ -115,6 +115,28 @@
 </sc-if>
 
 <sc-if value="{{ session }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ showAppPicker }}">
+  <div data-app-theme="{{ theme }}" style="min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Manrope',sans-serif;">
+    <div style="width:100%;max-width:560px;text-align:center;">
+      <img src="logo.png" alt="Panda" style="max-width:110px;width:100%;height:auto;margin:0 auto 24px;display:block;" />
+      <div style="font-weight:800;font-size:20px;margin-bottom:6px;color:var(--text);">Choose an app</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:28px;">Pick which Panda tool you want to open.</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+        <button type="button" onClick="{{ pickConstruction }}" style="flex:1;min-width:200px;max-width:240px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 20px;cursor:pointer;text-align:center;">
+          <img src="logo.png" alt="Panda Construction" style="max-width:64px;width:100%;height:auto;margin:0 auto 14px;display:block;" />
+          <div style="font-weight:700;font-size:15px;color:var(--text);">Panda Construction</div>
+          <div style="color:var(--muted);font-size:12px;margin-top:4px;">Site Support Management</div>
+        </button>
+        <button type="button" onClick="{{ pickHomePipes }}" style="flex:1;min-width:200px;max-width:240px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 20px;cursor:pointer;text-align:center;">
+          <img src="logo.png" alt="Panda Home Pipes" style="max-width:64px;width:100%;height:auto;margin:0 auto 14px;display:block;" />
+          <div style="font-weight:700;font-size:15px;color:var(--text);">Panda Home Pipes</div>
+          <div style="color:var(--muted);font-size:12px;margin-top:4px;">Production &amp; Sales</div>
+        </button>
+      </div>
+      <button type="button" onClick="{{ logout }}" style="margin-top:26px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:12px;text-decoration:underline;">Sign out</button>
+    </div>
+  </div>
+</sc-if>
 <sc-if value="{{ showMaintenanceLock }}">
   <div data-app-theme="{{ theme }}" style="min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Manrope',sans-serif;">
     <div style="width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:40px 32px;text-align:center;">
@@ -189,8 +211,17 @@
   <div data-main-content style="flex:1;min-width:0;padding:32px 40px;overflow-y:auto;box-sizing:border-box;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;gap:16px;flex-wrap:wrap;">
       <h1 style="font-size:24px;font-weight:800;margin:0;">{{ pageTitle }}</h1>
-      <sc-if value="{{ isDemo }}"><div style="background:var(--chip);color:var(--gold);font-size:12px;padding:6px 14px;border-radius:20px;white-space:nowrap;">Demo Data — connect config.js for live Sheet</div></sc-if>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <sc-if value="{{ isDemo }}"><div style="background:var(--chip);color:var(--gold);font-size:12px;padding:6px 14px;border-radius:20px;white-space:nowrap;">Demo Data — connect config.js for live Sheet</div></sc-if>
+        <div style="display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:4px;">
+          <button type="button" onClick="{{ onZoomOut }}" title="Zoom out" style="background:transparent;border:none;color:var(--text);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:15px;font-weight:700;">−</button>
+          <span style="font-size:12px;color:var(--muted);width:40px;text-align:center;">{{ zoomLabel }}</span>
+          <button type="button" onClick="{{ onZoomIn }}" title="Zoom in" style="background:transparent;border:none;color:var(--text);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:15px;font-weight:700;">+</button>
+          <button type="button" onClick="{{ onZoomReset }}" title="Reset zoom" style="background:transparent;border:none;color:var(--muted);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:12px;">⟲</button>
+        </div>
+      </div>
     </div>
+    <div style="transform:scale({{ zoomLevel }});transform-origin:top left;width:{{ zoomWidthPct }};">
     <sc-if value="{{ viewIs.dashboard }}">
       <div style="display:flex;flex-wrap:nowrap;gap:16px;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:24px;overflow-x:auto;">
         <div style="flex:0 0 auto;">
@@ -386,7 +417,13 @@
 
     <sc-if value="{{ viewIs.siteDetail }}">
       <button onClick="{{ navSitesFund }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:20px;">← All Sites</button>
-      <div style="font-weight:800;font-size:20px;margin-bottom:16px;">{{ siteDetail.name }}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+        <div style="font-weight:800;font-size:20px;">{{ siteDetail.name }}</div>
+        <div style="display:flex;gap:8px;">
+          <button onClick="{{ onLogExpenseForDetail }}" style="background:var(--gold);color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Log Expenditure</button>
+          <button onClick="{{ onAllocateForDetail }}" disabled="{{ !moneyEnabled }}" title="{{ moneyGateTitle }}" style="background:var(--gold);color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;opacity:{{ moneyGateOpacity }};">+ Allocate to Site</button>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px;">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Received</div><div style="font-size:20px;font-weight:800;color:#2e9e5b;">{{ siteDetail.receivedFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Expenditure</div><div style="font-size:20px;font-weight:800;color:#e2574c;">{{ siteDetail.totalExpendFmt }}</div></div>
@@ -741,30 +778,28 @@
     </sc-if>
 
     <sc-if value="{{ viewIs.sites }}">
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px;"><button onClick="{{ exportSitesExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button><button onClick="{{ exportSitesPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button><button onClick="{{ openSiteModal }}" style="background:var(--gold);color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add Site</button></div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
-        <table style="width:100%;border-collapse:collapse;">
-          <thead><tr>
-            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Site Name</th>
-            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Purchase</th>
-            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Paid</th>
-            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Outstanding</th>
-            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Status</th>
-            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
-          </tr></thead>
-          <tbody>
-            <sc-for list="{{ siteRows }}" as="r" hint-placeholder-count="4">
-              <tr>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.SiteName }}</td>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.purchaseFmt }}</td>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.paidFmt }}</td>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.outstandingColor }};font-weight:600;">{{ r.outstandingFmt }}</td>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Status }}</td>
-                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
-              </tr>
-            </sc-for>
-          </tbody>
-        </table>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <div style="color:var(--muted);font-size:13px;">{{ siteCount }} sites on record</div>
+        <div style="display:flex;gap:8px;"><button onClick="{{ exportSitesExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button><button onClick="{{ exportSitesPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button><button onClick="{{ openSiteModal }}" style="background:var(--gold);color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add Site</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
+        <sc-for list="{{ siteRows }}" as="r" hint-placeholder-count="4">
+          <div onClick="{{ r.onOpen }}" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+              <div style="font-weight:700;font-size:16px;">{{ r.SiteName }}</div>
+              <div><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;">Delete</button></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+              <div><div style="font-size:11px;color:var(--muted);">Purchase</div><div style="font-size:14px;font-weight:700;">{{ r.purchaseFmt }}</div></div>
+              <div><div style="font-size:11px;color:var(--muted);">Paid</div><div style="font-size:14px;font-weight:700;">{{ r.paidFmt }}</div></div>
+              <div><div style="font-size:11px;color:var(--muted);">Outstanding</div><div style="font-size:14px;font-weight:700;color:{{ r.outstandingColor }};">{{ r.outstandingFmt }}</div></div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ r.onLogExpense }}" style="flex:1;background:var(--gold);color:#0e0e10;font-weight:700;padding:8px 10px;border-radius:6px;border:none;cursor:pointer;font-size:12px;">+ Log Expenditure</button>
+              <button onClick="{{ r.onAllocate }}" disabled="{{ !moneyEnabled }}" title="{{ moneyGateTitle }}" style="flex:1;background:var(--gold);color:#0e0e10;font-weight:700;padding:8px 10px;border-radius:6px;border:none;cursor:pointer;font-size:12px;opacity:{{ moneyGateOpacity }};">+ Allocate</button>
+            </div>
+          </div>
+        </sc-for>
       </div>
     </sc-if>
 
@@ -2235,31 +2270,10 @@
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;"><div style="font-size:12px;color:var(--muted);">Attendance Marked</div><div style="font-size:22px;font-weight:800;margin-top:4px;">{{ activityCounts.attendance }}</div></div>
       </div>
 
-      <div style="font-weight:700;margin-bottom:10px;">Recent Activity (Audit Log)</div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
-        <table style="width:100%;border-collapse:collapse;">
-          <thead><tr>
-            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Timestamp</th>
-            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">User</th>
-            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Action</th>
-            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Module</th>
-            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Details</th>
-          </tr></thead>
-          <tbody>
-            <sc-for list="{{ auditLog }}" as="a" hint-placeholder-count="4">
-              <tr>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ a.Timestamp }}</td>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ a.User }}</td>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ a.Action }}</td>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ a.Module }}</td>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted);">{{ a.Details }}</td>
-              </tr>
-            </sc-for>
-          </tbody>
-        </table>
-      </div>
+
     </sc-if>
 
+    </div>
   </div>
 </div>
 
@@ -2925,7 +2939,9 @@ class Component extends DCLogic {
     });
   }
 
-  logout() { localStorage.removeItem('panda_session'); this.setState({ session: null, view: 'login' }); }
+  logout() { localStorage.removeItem('panda_session'); this.setState({ session: null, view: 'login', appPicked: false }); }
+  pickConstruction() { this.setState({ appPicked: true }); }
+  pickHomePipes() { window.location.href = 'panda-homepipes.html'; }
   migrateFromSheets() {
     if (!window.confirm('Copy all data from the old Google Sheets backend into Firestore now?')) return;
     const self = this;
@@ -3310,10 +3326,7 @@ class Component extends DCLogic {
   toggleTheme() { this.setState(function (s) { const t = s.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('panda_theme', t); return { theme: t }; }); }
   setView(view) {
     this.setState({ view: view, selectedSupplier: null, selectedSite: null, modal: null, mobileNavOpen: false });
-    if (view === 'settings') {
-      const self = this;
-      PandaAPI.call('getAuditLog').then(function (r) { if (r && r.success) self.setState({ auditLog: r.data || [] }); });
-    }
+
     if (this._trackedSections && this._trackedSections.indexOf(view) !== -1) {
       const seen = Object.assign({}, this.state.lastSeen); seen[view] = new Date().toISOString();
       localStorage.setItem('panda_lastseen', JSON.stringify(seen));
@@ -3330,6 +3343,11 @@ class Component extends DCLogic {
   openStaffDetail(name) { this.setState({ view: 'staffDetail', selectedStaff: name, modal: null, mobileNavOpen: false }); }
   openMistriDetail(name) { this.setState({ view: 'mistriDetail', selectedMistri: name, modal: null, mobileNavOpen: false }); }
   openSiteDetail(name) { this.setState({ view: 'siteDetail', selectedSite: name, modal: null, mobileNavOpen: false }); }
+  openSiteExpenseModalFor(siteName) { this.setState({ modal: 'siteExpense', editRecord: null, sitePrefill: siteName }); }
+  openSiteAllocationModalFor(siteName) { this.setState({ modal: 'siteAllocation', editRecord: null, sitePrefill: siteName }); }
+  onZoomIn() { this.setState(function (s) { return { zoomLevel: Math.min(1.5, Math.round(((s.zoomLevel || 1) + 0.1) * 100) / 100) }; }); }
+  onZoomOut() { this.setState(function (s) { return { zoomLevel: Math.max(0.5, Math.round(((s.zoomLevel || 1) - 0.1) * 100) / 100) }; }); }
+  onZoomReset() { this.setState({ zoomLevel: 1 }); }
   openLabourDetail(name) { this.setState({ view: 'labourDetail', selectedLabour: name, modal: null, mobileNavOpen: false }); }
   setTaskDate(e) { this.setState({ taskDate: e.target.value }); }
   setAttendanceDate(e) { this.setState({ attendanceDate: e.target.value }); }
@@ -3555,7 +3573,7 @@ class Component extends DCLogic {
   openModal(type, record) { this.setState({ modal: type, editRecord: record || null }); }
   onRemarksKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (e.target.form) e.target.form.requestSubmit(); } }
   openLabourEntryModal(record) { this.setState({ modal: 'labourEntry', editRecord: record || null, labourEntryTypeUI: (record && record.Type) || 'Daily' }); }
-  closeModal() { this.setState({ modal: null, editRecord: null }); }
+  closeModal() { this.setState({ modal: null, editRecord: null, sitePrefill: null }); }
   currentUserName() { return this.state.session ? this.state.session.name : ''; }
 
   submitGeneric(action, payload, successMsg) {
@@ -4698,13 +4716,14 @@ class Component extends DCLogic {
     const siteRows = s.sites.map(function (site) {
       const purchase = self.sum(s.transactions.filter(function (t) { return t.Site === site.SiteName; }), 'Value') + self.sum(s.transactions.filter(function (t) { return t.Site === site.SiteName && t.FareType === 'Self'; }), 'FareAmount');
       const paid = self.sum(s.payments.filter(function (p) { return p.Site === site.SiteName; }), 'AmountPaid');
-      return Object.assign({}, site, { purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(purchase - paid), outstandingColor: self.oc(purchase - paid), onEdit: function () { self.openModal('site', site); }, onDelete: function () { self.deleteSite(site); } });
+      return Object.assign({}, site, { purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(purchase - paid), outstandingColor: self.oc(purchase - paid), onEdit: function (e) { e.stopPropagation(); self.openModal('site', site); }, onDelete: function (e) { e.stopPropagation(); self.deleteSite(site); }, onOpen: function () { self.openSiteDetail(site.SiteName); }, onLogExpense: function (e) { e.stopPropagation(); self.openSiteExpenseModalFor(site.SiteName); }, onAllocate: function (e) { e.stopPropagation(); self.openSiteAllocationModalFor(site.SiteName); } });
     });
     this._lastSiteRows = siteRows;
 
     const isOwnerOrAdmin1 = !!(s.session && (s.session.role === 'Owner' || s.session.role === 'Admin 1' || s.session.name === 'Sukadev'));
     const canSeeAllFunds = !!(s.session && (s.session.role === 'Owner' || s.session.role === 'Admin 1' || s.session.role === 'Admin 2' || s.session.name === 'Sukadev'));
     const isAdmin1 = !!(s.session && s.session.role === 'Admin 1');
+    const showAppPicker = !!(s.session && !s.appPicked);
     const showMaintenanceLock = !!(s.session && s.maintenance && s.maintenance.enabled && s.session.role !== 'Admin 1');
     const appAccessible = !showMaintenanceLock;
     const fmtLastLogin = function (v) { if (!v) return '—'; const d = new Date(v); return isNaN(d.getTime()) ? String(v) : d.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
@@ -5138,8 +5157,8 @@ class Component extends DCLogic {
     }).filter(function (r) { return r.receivedN !== 0 || r.toSupplierN !== 0 || r.toDieselN !== 0 || r.toStaffN !== 0 || r.toMistriN !== 0 || r.toLabourN !== 0 || r.toSiteN !== 0 || r.balanceN !== 0 || r.txns.length > 0; }) : [];
     this._lastUserBalanceBreakdown = userBalanceBreakdown;
     const fundTransferDefaults = { Date: editRecordRaw.Date || todayStr, To: editRecordRaw._isAdvance ? ('MISTRI::' + editRecordRaw.MistriName) : (editRecordRaw._isLabourAdvance ? ('LABOUR::' + editRecordRaw.LabourName) : (editRecordRaw.To || '')), Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '', Site: editRecordRaw.Site || '' };
-    const siteAllocationDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
-    const siteExpenseDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
+    const siteAllocationDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || s.sitePrefill || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
+    const siteExpenseDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || s.sitePrefill || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
     const fundRecipientOptions = s.users.filter(function (u) { return u.Name !== myName; }).map(function (u) { return u.Name; });
     const staffOptions = s.staff.map(function (st) { return st.Name; });
     const showStaffPicker = !s.selectedStaff;
@@ -5195,7 +5214,8 @@ class Component extends DCLogic {
       navMaterials: function () { self.setView('materials'); }, navReports: function () { self.setView('reports'); }, navSettings: function () { self.setView('settings'); },
       navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navMistri: function () { self.setView('mistri'); }, navFunds: function () { self.setView('funds'); }, navAttendance: function () { self.setView('attendance'); },
       mobileNavOpen: s.mobileNavOpen, toggleMobileNav: this.toggleMobileNav.bind(this), closeMobileNav: this.closeMobileNav.bind(this),
-      isOwnerOrAdmin1: isOwnerOrAdmin1, canSeeAllFunds: canSeeAllFunds, isAdmin1: isAdmin1, showMaintenanceLock: showMaintenanceLock, appAccessible: appAccessible,
+      isOwnerOrAdmin1: isOwnerOrAdmin1, canSeeAllFunds: canSeeAllFunds, isAdmin1: isAdmin1, showAppPicker: showAppPicker, pickConstruction: this.pickConstruction.bind(this), pickHomePipes: this.pickHomePipes.bind(this), showMaintenanceLock: showMaintenanceLock, appAccessible: appAccessible,
+      zoomLevel: s.zoomLevel || 1, zoomLabel: Math.round((s.zoomLevel || 1) * 100) + '%', zoomWidthPct: Math.round(100 / (s.zoomLevel || 1)) + '%', onZoomIn: this.onZoomIn.bind(this), onZoomOut: this.onZoomOut.bind(this), onZoomReset: this.onZoomReset.bind(this), siteCount: s.sites.length,
       maintenanceMessage: (s.maintenance && s.maintenance.message) || 'We\'re doing scheduled maintenance. Please check back shortly.',
       maintenanceToggleLabel: (s.maintenance && s.maintenance.enabled) ? 'Turn Maintenance OFF' : 'Turn Maintenance ON',
       maintenanceToggleStyle: 'padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;background:' + ((s.maintenance && s.maintenance.enabled) ? '#e2574c' : '#2ea043') + ';color:#fff;',
@@ -5284,7 +5304,7 @@ class Component extends DCLogic {
       navLabour: function () { self.setView('labour'); }, openLabourModal: function () { self.openModal('labour'); }, openLabourEntryModal: function () { self.openLabourEntryModal(null); }, openLabourPaymentModal: function () { self.openModal('labourPayment'); },
       submitLabour: this.submitLabour.bind(this), submitLabourEntry: this.submitLabourEntry.bind(this), submitLabourPayment: this.submitLabourPayment.bind(this),
       myFundBalanceFmt: fmt(myFundBalanceN), fundReceivedFmt: fmt(fundReceivedN), totalMyExpenditureFmt: fmt(totalMyExpenditureN), myExpenditureBreakdown: myExpenditureBreakdown, expandedMyExpenditure: s.expandedMyExpenditure, toggleMyExpenditure: this.toggleMyExpenditure.bind(this), showMyFundBalance: showMyFundBalance, userBalanceBreakdown: userBalanceBreakdown, siteWalletCards: siteWalletCards, siteWalletFilter: s.siteWalletFilter, myWalletSplit: myWalletSplit, sukadevWallet: sukadevWallet, exportSiteWalletExcel: this.exportSiteWalletExcel.bind(this), exportSiteWalletPDF: this.exportSiteWalletPDF.bind(this),
-      siteDetail: siteDetail, openSiteDetail: this.openSiteDetail.bind(this), navSitesFund: function () { self.setView('funds'); }, exportSiteDetailExcel: this.exportSiteDetailExcel.bind(this), exportSiteDetailPDF: this.exportSiteDetailPDF.bind(this), exportLabourDetailExcel: this.exportLabourDetailExcel.bind(this), exportLabourDetailPDF: this.exportLabourDetailPDF.bind(this), siteDetailFilter: s.siteDetailFilter, onSiteDetailFrom: this.setGenericFilter('siteDetailFilter', 'from'), onSiteDetailTo: this.setGenericFilter('siteDetailFilter', 'to'), onSiteDetailMonth: this.setMonthShortcut('siteDetailFilter'),
+      siteDetail: siteDetail, openSiteDetail: this.openSiteDetail.bind(this), navSitesFund: function () { self.setView('funds'); }, onLogExpenseForDetail: function () { self.openSiteExpenseModalFor(s.selectedSite); }, onAllocateForDetail: function () { self.openSiteAllocationModalFor(s.selectedSite); }, exportSiteDetailExcel: this.exportSiteDetailExcel.bind(this), exportSiteDetailPDF: this.exportSiteDetailPDF.bind(this), exportLabourDetailExcel: this.exportLabourDetailExcel.bind(this), exportLabourDetailPDF: this.exportLabourDetailPDF.bind(this), siteDetailFilter: s.siteDetailFilter, onSiteDetailFrom: this.setGenericFilter('siteDetailFilter', 'from'), onSiteDetailTo: this.setGenericFilter('siteDetailFilter', 'to'), onSiteDetailMonth: this.setMonthShortcut('siteDetailFilter'),
       sectionExpanded: sectionExpanded, sectionToggle: sectionToggle, sectionIcon: sectionIcon,
       fundTransferFilter: s.fundTransferFilter, onFundTransferFrom: this.setFundTransferFilter('from'), onFundTransferTo: this.setFundTransferFilter('to'), onFundTransferMonth: this.setMonthShortcut('fundTransferFilter'), onFundTransferParty: this.setFundTransferFilter('party'),
       userBalanceFilter: s.userBalanceFilter, onUserBalanceFrom: this.setUserBalanceFilter('from'), onUserBalanceTo: this.setUserBalanceFilter('to'), onUserBalanceMonth: this.setMonthShortcut('userBalanceFilter'), onUserBalanceName: this.setUserBalanceFilter('name'),

@@ -69,8 +69,19 @@
     SiteAllocation: { coll: "siteAllocations", idField: "AllocationID", counter: "AllocationID", prefix: "SA", def: { Status: "Active" } },
     SiteExpense: { coll: "siteExpenses", idField: "ExpenseID", counter: "ExpenseID", prefix: "SE", def: { Status: "Active" } },
     OtherPayment: { coll: "otherPayments", idField: "PaymentID", counter: "OtherPaymentID", prefix: "OTH", def: { Status: "Active" } },
-    User: { coll: "users", idField: "UserID", counter: "UserID", prefix: "USR", def: { Status: "Pending", Role: "Pending" } }
+    User: { coll: "users", idField: "UserID", counter: "UserID", prefix: "USR", def: { Status: "Pending", Role: "Pending" } },
+    HPProduction: { coll: "hpProduction", idField: "ProdID", counter: "HPProdID", prefix: "HPP" },
+    HPSale: { coll: "hpSales", idField: "SaleID", counter: "HPSaleID", prefix: "HPS" },
+    HPCashbook: { coll: "hpCashbook", idField: "EntryID", counter: "HPCashID", prefix: "HPC" },
+    HPMistri: { coll: "hpMistri", idField: "MistriID", counter: "HPMistriID", prefix: "HPM", def: { Status: "Active" } },
+    HPMistriPayment: { coll: "hpMistriPayments", idField: "PaymentID", counter: "HPMistriPayID", prefix: "HPMP" },
+    HPMaterialPurchase: { coll: "hpMaterialPurchases", idField: "PurchaseID", counter: "HPMatPurchID", prefix: "HPMPU" },
+    HPMaterialSale: { coll: "hpMaterialSales", idField: "MatSaleID", counter: "HPMatSaleID", prefix: "HPMS" }
   };
+  const HP_MATERIALS = ["Cement", "Rod", "Sand", "Chips", "Binding Wire", "Liquid", "Emulsion", "Bitumin Drums", "Others"];
+  const HP_SELLABLE_MATERIALS = ["Emulsion", "Bitumin Drums"];
+  const HP_CATEGORIES = ["300mm", "450mm", "600mm", "900mm", "1000mm", "GP", "KM Stone", "200M Stone"];
+  const HP_INCH_FACTOR = { "300mm": 12, "450mm": 18, "600mm": 24, "900mm": 36, "1000mm": 40, "GP": 0, "KM Stone": 0, "200M Stone": 0 };
 
   async function genericAdd(key, payload) {
     const m = MAP[key];
@@ -455,6 +466,63 @@
       }
 
       case "migrateFromSheets": return migrateFromSheets(p);
+
+      // ---------- Panda Home Pipes ----------
+      case "hpGetAllData": {
+        const names = ["hpProduction", "hpSales", "hpCashbook", "hpPrices", "hpMistri", "hpMistriPayments", "hpMaterialPurchases", "hpMaterialSales"];
+        const arrs = await Promise.all(names.map(colToArray));
+        const out = { success: true, categories: HP_CATEGORIES, inchFactor: HP_INCH_FACTOR, materials: HP_MATERIALS, sellableMaterials: HP_SELLABLE_MATERIALS };
+        names.forEach(function (n, i) { out[n] = arrs[i]; });
+        const st = await getSettingsMap();
+        out.maintenance = { enabled: st.HPMaintenanceMode === undefined ? true : String(st.HPMaintenanceMode) === "TRUE", message: st.HPMaintenanceMessage || "Panda Home Pipes is being set up. Please check back soon." };
+        return out;
+      }
+      case "hpSetMaintenance": {
+        const users = await colToArray("users");
+        const requester = users.find(function (x) { return String(x.Name).toLowerCase() === String(p.RequestedBy || "").toLowerCase(); });
+        if (!requester || requester.Role !== "Admin 1") return { success: false, message: "Only Hrushikesh Padhi can change Home Pipes maintenance mode." };
+        await setSettingValue("HPMaintenanceMode", p.Enabled ? "TRUE" : "FALSE");
+        if (p.Message !== undefined) await setSettingValue("HPMaintenanceMessage", p.Message);
+        await auditLog(p.RequestedBy, p.Enabled ? "Enabled HP Maintenance" : "Disabled HP Maintenance", "HomePipes", "", p.Message || "");
+        return { success: true, message: "Home Pipes maintenance mode updated." };
+      }
+      case "hpAddProduction": { const r = await genericAdd("HPProduction", { Date: p.Date, Qty: p.Qty || {}, MaterialsUsed: p.MaterialsUsed || {}, ProductionCost: p.ProductionCost || 0, Notes: p.Notes || "", CreatedBy: p.CreatedBy }); await auditLog(p.CreatedBy, "Added HP Production", "HomePipes-Production", r.id, p.Date); return { success: true, id: r.id, rec: r.rec }; }
+      case "updateHPProduction": { const ok = await genericUpdate("HPProduction", p, { Date: p.Date, Qty: p.Qty || {}, MaterialsUsed: p.MaterialsUsed || {}, ProductionCost: p.ProductionCost || 0, Notes: p.Notes || "" }); if (ok) await auditLog(p.CreatedBy, "Updated HP Production", "HomePipes-Production", p.ProdID, p.Date); return { success: ok }; }
+      case "deleteHPProduction": await genericDelete("HPProduction", p.ProdID); await auditLog(p.CreatedBy, "Deleted HP Production", "HomePipes-Production", p.ProdID, ""); return { success: true, message: "Production entry deleted." };
+
+      case "hpAddSale": { const r = await genericAdd("HPSale", { Date: p.Date, PartyName: p.PartyName || "Local", MobileNo: p.MobileNo || "", Qty: p.Qty || {}, Rate: p.Rate || 0, Amount: p.Amount || 0, Freight: p.Freight || 0, Loading: p.Loading || 0, Total: p.Total || 0, Payment: p.Payment || 0, Due: p.Due || 0, CreatedBy: p.CreatedBy }); await auditLog(p.CreatedBy, "Added HP Sale", "HomePipes-Sales", r.id, p.PartyName || ""); return { success: true, id: r.id, rec: r.rec }; }
+      case "updateHPSale": { const ok = await genericUpdate("HPSale", p, { Date: p.Date, PartyName: p.PartyName || "Local", MobileNo: p.MobileNo || "", Qty: p.Qty || {}, Rate: p.Rate || 0, Amount: p.Amount || 0, Freight: p.Freight || 0, Loading: p.Loading || 0, Total: p.Total || 0, Payment: p.Payment || 0, Due: p.Due || 0 }); if (ok) await auditLog(p.CreatedBy, "Updated HP Sale", "HomePipes-Sales", p.SaleID, p.PartyName || ""); return { success: ok }; }
+      case "deleteHPSale": await genericDelete("HPSale", p.SaleID); await auditLog(p.CreatedBy, "Deleted HP Sale", "HomePipes-Sales", p.SaleID, ""); return { success: true, message: "Sale entry deleted." };
+
+      case "hpAddCashbook": { const r = await genericAdd("HPCashbook", { Date: p.Date, Category: p.Category, Type: p.Type, Amount: p.Amount || 0, Description: p.Description || "", CreatedBy: p.CreatedBy }); await auditLog(p.CreatedBy, "Added HP Cashbook Entry", "HomePipes-Cashbook", r.id, p.Category || ""); return { success: true, id: r.id, rec: r.rec }; }
+      case "deleteHPCashbook": await genericDelete("HPCashbook", p.EntryID); await auditLog(p.CreatedBy, "Deleted HP Cashbook Entry", "HomePipes-Cashbook", p.EntryID, ""); return { success: true, message: "Cash book entry deleted." };
+
+      case "hpSetPrice": {
+        const cat = p.Category;
+        await db.collection("hpPrices").doc(cat).set({ Category: cat, SellPrice: p.SellPrice || 0, CostPrice: p.CostPrice || 0, Unit: p.Unit || "Pcs" }, { merge: true });
+        await auditLog(p.CreatedBy, "Updated HP Price", "HomePipes-Prices", cat, "Sell " + p.SellPrice + " / Cost " + p.CostPrice);
+        return { success: true, message: "Price updated." };
+      }
+
+      case "hpAddMistri": { const r = await genericAdd("HPMistri", { Name: p.Name, ContactNumber: p.ContactNumber || "", RatePerInch: p.RatePerInch || 0 }); await auditLog(p.CreatedBy, "Added HP Mistri", "HomePipes-Mistri", r.id, p.Name || ""); return { success: true, id: r.id, rec: r.rec }; }
+      case "updateHPMistri": { const ok = await genericUpdate("HPMistri", p, { Name: p.Name, ContactNumber: p.ContactNumber || "", RatePerInch: p.RatePerInch || 0, Status: p.Status || "Active" }); return { success: ok }; }
+      case "deleteHPMistri": await genericDelete("HPMistri", p.MistriID); return { success: true, message: "Mistri deleted." };
+      case "hpAddMistriPayment": { const r = await genericAdd("HPMistriPayment", { Date: p.Date, MistriID: p.MistriID, MistriName: p.MistriName || "", Amount: p.Amount || 0, Type: p.Type || "Payment", Notes: p.Notes || "", CreatedBy: p.CreatedBy }); await auditLog(p.CreatedBy, "Added HP Mistri Payment", "HomePipes-Mistri", r.id, p.MistriName || ""); return { success: true, id: r.id, rec: r.rec }; }
+      case "deleteHPMistriPayment": await genericDelete("HPMistriPayment", p.PaymentID); return { success: true, message: "Payment deleted." };
+
+      case "hpAddMaterialPurchase": { const r = await genericAdd("HPMaterialPurchase", { Date: p.Date, Material: p.Material, Qty: p.Qty || 0, Rate: p.Rate || 0, Amount: (p.Qty || 0) * (p.Rate || 0), Supplier: p.Supplier || "", Notes: p.Notes || "", CreatedBy: p.CreatedBy }); await auditLog(p.CreatedBy, "Added HP Material Purchase", "HomePipes-Materials", r.id, p.Material || ""); return { success: true, id: r.id, rec: r.rec }; }
+      case "deleteHPMaterialPurchase": await genericDelete("HPMaterialPurchase", p.PurchaseID); return { success: true, message: "Purchase deleted." };
+      case "hpAddMaterialSale": { const r = await genericAdd("HPMaterialSale", { Date: p.Date, Material: p.Material, Qty: p.Qty || 0, Rate: p.Rate || 0, Amount: (p.Qty || 0) * (p.Rate || 0), Buyer: p.Buyer || "", Notes: p.Notes || "", CreatedBy: p.CreatedBy }); await auditLog(p.CreatedBy, "Added HP Material Sale", "HomePipes-Materials", r.id, p.Material || ""); return { success: true, id: r.id, rec: r.rec }; }
+      case "deleteHPMaterialSale": await genericDelete("HPMaterialSale", p.MatSaleID); return { success: true, message: "Sale deleted." };
+
+      case "hpBulkImport": {
+        const kind = p.Kind === "sale" ? "HPSale" : "HPProduction";
+        let n = 0;
+        for (const row of (p.Rows || [])) { await genericAdd(kind, Object.assign({ CreatedBy: p.CreatedBy }, row)); n++; }
+        await auditLog(p.CreatedBy, "Bulk Imported HP " + p.Kind, "HomePipes-Import", "", n + " rows");
+        return { success: true, message: n + " rows imported." };
+      }
+
       default: return { success: false, message: "Unknown action: " + action };
     }
   }

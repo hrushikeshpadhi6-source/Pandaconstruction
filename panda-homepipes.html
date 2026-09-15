@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #f5f4f0; }
+  a { color: #d4af37; }
+  a:hover { color: #e6c65c; }
+  select, input, button, textarea { font-family: 'Manrope', sans-serif; }
+  ::placeholder { color: #8f8c86; }
+  table thead th { position: sticky; top: 0; background: #fff; z-index: 2; }
+  tbody:empty { display: block; }
+  tbody:empty::after { content: "No records for this range."; display: block; padding: 28px; text-align: center; color: #6b6862; font-size: 13px; }
+  @media (max-width: 860px) {
+    [data-sidebar-panel] { position: fixed !important; left: 0 !important; top: 0 !important; height: 100dvh !important; width: 240px !important; z-index: 300; transform: translateX(-100%); transition: transform 0.25s ease; box-shadow: 0 0 30px rgba(0,0,0,0.35); }
+    [data-sidebar-panel][data-open="true"] { transform: translateX(0) !important; }
+    [data-main-content] { padding: 84px 16px 24px !important; }
+    [data-mobile-topbar] { display: flex !important; }
+    [data-card-grid] { grid-template-columns: 1fr 1fr !important; }
+  }
+  [data-mobile-topbar] { display: none; }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="firebase-api.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>@keyframes pandaSpin { to { transform:rotate(360deg); } }</style>
+</helmet>
+
+<sc-if value="{{ viewIs.gate }}" hint-placeholder-val="{{ true }}">
+  <div style="min-height:100vh;background:#f5f4f0;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Manrope',sans-serif;">
+    <div style="width:100%;max-width:380px;background:#fff;border:1px solid #e2e0da;border-radius:14px;padding:40px 32px;text-align:center;">
+      <img src="logo.png" alt="Panda Home Pipes" style="max-width:130px;width:100%;height:auto;margin:0 auto 8px;display:block;" />
+      <div style="color:#6b6862;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">Panda Home Pipes</div>
+      <div style="color:#6b6862;font-size:13px;margin-bottom:20px;">{{ gateMessage }}</div>
+      <a href="index.html" style="display:inline-block;background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Back to Panda Construction</a>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ viewIs.maintenance }}">
+  <div style="min-height:100vh;background:#f5f4f0;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Manrope',sans-serif;">
+    <div style="width:100%;max-width:420px;background:#fff;border:1px solid #e2e0da;border-radius:14px;padding:40px 32px;text-align:center;">
+      <img src="logo.png" alt="Panda Home Pipes" style="max-width:110px;width:100%;height:auto;margin:0 auto 20px;display:block;" />
+      <div style="font-weight:800;font-size:18px;margin-bottom:6px;color:#1c1a16;">Panda Home Pipes</div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px;color:#1c1a16;">Under Maintenance</div>
+      <div style="color:#6b6862;font-size:14px;line-height:1.5;margin-bottom:24px;">{{ maintenanceMessage }}</div>
+      <sc-if value="{{ isAdmin1 }}">
+        <button type="button" onClick="{{ previewAnyway }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;margin-right:8px;">Preview Anyway (Admin)</button>
+      </sc-if>
+      <a href="index.html" style="display:inline-block;background:transparent;border:1px solid #e2e0da;color:#1c1a16;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;">Back to Panda Construction</a>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ viewIs.app }}">
+<div style="display:flex;min-height:100vh;background:#f5f4f0;font-family:'Manrope',sans-serif;color:#1c1a16;">
+  <div data-mobile-topbar style="position:fixed;top:0;left:0;right:0;height:56px;background:#fff;border-bottom:1px solid #e2e0da;align-items:center;padding:0 16px;z-index:200;gap:12px;">
+    <button type="button" onClick="{{ toggleMobileNav }}" style="background:transparent;border:none;font-size:20px;cursor:pointer;">☰</button>
+    <div style="font-weight:800;font-size:14px;">Panda Home Pipes</div>
+  </div>
+  <div data-sidebar-panel data-open="{{ mobileNavOpen }}" style="width:230px;background:#fff;border-right:1px solid #e2e0da;padding:24px 16px;flex-shrink:0;">
+    <img src="logo.png" alt="Panda Home Pipes" style="max-width:90px;width:100%;height:auto;margin:0 auto 4px;display:block;" />
+    <div style="text-align:center;font-weight:800;font-size:13px;margin-bottom:2px;">Panda Home Pipes</div>
+    <div style="text-align:center;color:#6b6862;font-size:11px;margin-bottom:22px;">{{ sessionName }}</div>
+    <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="8">
+      <div onClick="{{ n.onClick }}" style="padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:4px;background:{{ n.bg }};color:{{ n.color }};">{{ n.label }}</div>
+    </sc-for>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eae8e2;">
+      <a href="index.html" style="display:block;text-align:center;color:#6b6862;font-size:12px;text-decoration:none;margin-bottom:8px;">← Panda Construction</a>
+      <button type="button" onClick="{{ logout }}" style="width:100%;background:transparent;border:1px solid #e2e0da;color:#1c1a16;padding:8px;border-radius:6px;cursor:pointer;font-size:12px;">Sign Out</button>
+    </div>
+  </div>
+  <div data-mobile-overlay data-open="{{ mobileNavOpen }}" onClick="{{ closeMobileNav }}" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:250;"></div>
+
+  <div data-main-content style="flex:1;padding:28px 32px;min-width:0;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
+      <div style="font-weight:800;font-size:20px;">{{ pageTitle }}</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input type="date" value="{{ filters.from }}" onChange="{{ onFilterFrom }}" style="border:1px solid #e2e0da;border-radius:6px;padding:7px 10px;font-size:12px;" />
+        <span style="color:#8f8c86;font-size:12px;">to</span>
+        <input type="date" value="{{ filters.to }}" onChange="{{ onFilterTo }}" style="border:1px solid #e2e0da;border-radius:6px;padding:7px 10px;font-size:12px;" />
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <sc-if value="{{ viewName.dashboard }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <button type="button" onClick="{{ onExportDashboard }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Export Excel</button>
+      </div>
+      <div data-card-grid style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px;">
+        <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;">
+          <div style="color:#6b6862;font-size:12px;margin-bottom:6px;">Total Production (range)</div>
+          <div style="font-weight:800;font-size:20px;">{{ dash.totalProdQty }} pcs</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;">
+          <div style="color:#6b6862;font-size:12px;margin-bottom:6px;">Total Sale (range)</div>
+          <div style="font-weight:800;font-size:20px;">₹{{ dash.totalSaleAmt }}</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;">
+          <div style="color:#6b6862;font-size:12px;margin-bottom:6px;">Total Due from Parties</div>
+          <div style="font-weight:800;font-size:20px;color:#c0392b;">₹{{ dash.totalDue }}</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;">
+          <div style="color:#6b6862;font-size:12px;margin-bottom:6px;">Net Profit / Loss (range)</div>
+          <div style="font-weight:800;font-size:20px;color:{{ dash.plColor }};">₹{{ dash.netPL }}</div>
+        </div>
+      </div>
+      <div data-card-grid style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:24px;">
+        <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;">
+          <div style="color:#6b6862;font-size:12px;margin-bottom:6px;">Total Production Cost (range)</div>
+          <div style="font-weight:800;font-size:18px;">₹{{ dash.totalProdCost }}</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;">
+          <div style="color:#6b6862;font-size:12px;margin-bottom:6px;">Cash Book Expenditure (range)</div>
+          <div style="font-weight:800;font-size:18px;">₹{{ dash.totalCashExp }}</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;">
+          <div style="color:#6b6862;font-size:12px;margin-bottom:6px;">Total Expenditure (range)</div>
+          <div style="font-weight:800;font-size:18px;">₹{{ dash.totalExpenditure }}</div>
+        </div>
+      </div>
+
+      <div style="font-weight:700;margin-bottom:10px;">Category-wise Stock</div>
+      <div data-card-grid style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px;margin-bottom:24px;">
+        <sc-for list="{{ dash.stockCards }}" as="c" hint-placeholder-count="7">
+          <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:14px;text-align:center;">
+            <div style="color:#6b6862;font-size:11px;margin-bottom:4px;">{{ c.label }}</div>
+            <div style="font-weight:800;font-size:17px;">{{ c.stock }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="font-weight:700;margin-bottom:10px;">Category-wise Profit / Loss</div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;margin-bottom:24px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Category</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Qty Sold</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Sale Value</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Cost Value</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Profit/Loss</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ dash.catPL }}" as="c" hint-placeholder-count="7">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;">{{ c.label }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">{{ c.qty }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ c.saleVal }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ c.costVal }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;font-weight:700;color:{{ c.plColor }};">₹{{ c.pl }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-weight:700;">Party-wise Outstanding</div>
+        <div style="color:#6b6862;font-size:12px;">All-time balances, not limited by the date filter.</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Party</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Total Billed</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Total Paid</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Outstanding</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ dash.partyOutstanding }}" as="p" hint-placeholder-count="5">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;font-weight:600;">{{ p.party }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ p.total }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;color:#2c7a3f;">₹{{ p.paid }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;font-weight:700;color:{{ p.dueColor }};">₹{{ p.due }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <!-- PRODUCTION -->
+    <sc-if value="{{ viewName.production }}">
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;margin-bottom:18px;">
+        <div style="font-weight:700;margin-bottom:12px;">Add Production Entry</div>
+        <form onSubmit="{{ onAddProduction }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="date" name="Date" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;max-width:200px;" />
+          <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;">
+            <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="7">
+              <div>
+                <label style="display:block;font-size:11px;color:#6b6862;margin-bottom:4px;">{{ cat }}</label>
+                <input type="number" name="{{ cat }}" placeholder="0" style="width:100%;border:1px solid #e2e0da;border-radius:6px;padding:7px 8px;font-size:13px;box-sizing:border-box;" />
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <input type="number" name="ProductionCost" placeholder="Production cost (₹)" style="flex:1;min-width:160px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+            <input type="text" name="Notes" placeholder="Notes (optional)" style="flex:2;min-width:200px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          </div>
+          <button type="submit" style="align-self:flex-start;background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Add Production</button>
+        </form>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:12px;">
+        <button type="button" onClick="{{ onImportProduction }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Import Excel</button>
+        <button type="button" onClick="{{ onExportProduction }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Export Excel</button>
+        <input type="file" data-import-production style="display:none;" accept=".xlsx,.xls,.csv" onChange="{{ onProductionFileChosen }}" />
+      </div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">Date</th>
+            <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="7">
+              <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">{{ cat }}</th>
+            </sc-for>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">Cost</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">Notes</th>
+            <th style="padding:10px;border-bottom:1px solid #e2e0da;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ productionRows }}" as="r" hint-placeholder-count="5">
+              <tr>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;white-space:nowrap;">{{ r.Date }}</td>
+                <sc-for list="{{ r.qtyCells }}" as="q" hint-placeholder-count="7">
+                  <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">{{ q }}</td>
+                </sc-for>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.ProductionCost }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;color:#6b6862;">{{ r.Notes }}</td>
+                <td style="padding:10px;border-bottom:1px solid #eae8e2;text-align:right;"><button type="button" onClick="{{ r.onDelete }}" style="background:transparent;border:none;color:#c0392b;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <!-- SALES -->
+    <sc-if value="{{ viewName.sales }}">
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;margin-bottom:18px;">
+        <div style="font-weight:700;margin-bottom:12px;">Add Sale Entry</div>
+        <form onSubmit="{{ onAddSale }}" style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <input type="date" name="Date" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+            <input type="text" name="PartyName" placeholder="Party name (or Local)" style="flex:1;min-width:160px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+            <input type="text" name="MobileNo" placeholder="Mobile no" style="flex:1;min-width:140px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;">
+            <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="7">
+              <div>
+                <label style="display:block;font-size:11px;color:#6b6862;margin-bottom:4px;">{{ cat }}</label>
+                <input type="number" name="{{ cat }}" placeholder="0" style="width:100%;border:1px solid #e2e0da;border-radius:6px;padding:7px 8px;font-size:13px;box-sizing:border-box;" />
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <input type="number" name="Rate" placeholder="Rate" style="flex:1;min-width:120px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+            <input type="number" name="Freight" placeholder="Freight" style="flex:1;min-width:120px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+            <input type="number" name="Loading" placeholder="Loading" style="flex:1;min-width:120px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+            <input type="number" name="Payment" placeholder="Payment received" style="flex:1;min-width:140px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          </div>
+          <button type="submit" style="align-self:flex-start;background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Add Sale</button>
+        </form>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:12px;">
+        <button type="button" onClick="{{ onImportSale }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Import Excel</button>
+        <button type="button" onClick="{{ onExportSale }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Export Excel</button>
+        <input type="file" data-import-sale style="display:none;" accept=".xlsx,.xls,.csv" onChange="{{ onSaleFileChosen }}" />
+      </div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">Date</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">Party</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">Total Qty</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">Amount</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">Total</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">Payment</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;white-space:nowrap;">Due</th>
+            <th style="padding:10px;border-bottom:1px solid #e2e0da;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ saleRows }}" as="r" hint-placeholder-count="5">
+              <tr>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;">{{ r.PartyName }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">{{ r.totalQty }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.Amount }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.Total }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;color:#2c7a3f;">₹{{ r.Payment }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;color:#c0392b;">₹{{ r.Due }}</td>
+                <td style="padding:10px;border-bottom:1px solid #eae8e2;text-align:right;"><button type="button" onClick="{{ r.onDelete }}" style="background:transparent;border:none;color:#c0392b;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <!-- PARTY -->
+    <sc-if value="{{ viewName.party }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <button type="button" onClick="{{ onExportParty }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Export Excel</button>
+      </div>
+      <div style="font-weight:700;margin-bottom:10px;">Party-wise Outstanding</div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;margin-bottom:24px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Party</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Total Billed</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Total Paid</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Outstanding</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ dash.partyOutstanding }}" as="p" hint-placeholder-count="5">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;font-weight:600;">{{ p.party }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ p.total }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;color:#2c7a3f;">₹{{ p.paid }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;font-weight:700;color:{{ p.dueColor }};">₹{{ p.due }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="font-weight:700;margin-bottom:10px;">Transactions by Party</div>
+      <sc-for list="{{ partyGroups }}" as="g" hint-placeholder-count="3">
+        <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;margin-bottom:16px;">
+          <div style="padding:12px;font-weight:700;font-size:14px;border-bottom:1px solid #e2e0da;">{{ g.party }}</div>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Date</th>
+              <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Qty</th>
+              <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Total</th>
+              <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Payment</th>
+              <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Due</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                <tr>
+                  <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;white-space:nowrap;">{{ r.Date }}</td>
+                  <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">{{ r.totalQty }}</td>
+                  <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.Total }}</td>
+                  <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;color:#2c7a3f;">₹{{ r.Payment }}</td>
+                  <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;color:#c0392b;">₹{{ r.Due }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </sc-for>
+    </sc-if>
+
+    <!-- STOCK -->
+    <sc-if value="{{ viewName.stock }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <button type="button" onClick="{{ onExportStock }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Export Excel</button>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Category</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Total Produced</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Total Sold</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Current Stock</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ stockRows }}" as="r" hint-placeholder-count="7">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;">{{ r.label }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">{{ r.produced }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">{{ r.sold }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;font-weight:700;">{{ r.stock }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <!-- PRICE LIST -->
+    <sc-if value="{{ viewName.prices }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <button type="button" onClick="{{ onExportPrices }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Export Excel</button>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Category</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Cost Price</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Sell Price</th>
+            <th style="padding:12px;border-bottom:1px solid #e2e0da;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ priceRows }}" as="r" hint-placeholder-count="7">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;font-weight:600;">{{ r.label }}</td>
+                <td style="padding:6px 12px;border-bottom:1px solid #eae8e2;text-align:right;"><input type="number" defaultValue="{{ r.costPrice }}" onChange="{{ r.onCostChange }}" style="width:90px;text-align:right;border:1px solid #e2e0da;border-radius:6px;padding:6px 8px;font-size:13px;" /></td>
+                <td style="padding:6px 12px;border-bottom:1px solid #eae8e2;text-align:right;"><input type="number" defaultValue="{{ r.sellPrice }}" onChange="{{ r.onSellChange }}" style="width:90px;text-align:right;border:1px solid #e2e0da;border-radius:6px;padding:6px 8px;font-size:13px;" /></td>
+                <td style="padding:12px;border-bottom:1px solid #eae8e2;text-align:right;"><button type="button" onClick="{{ r.onSave }}" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:12px;">Save</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <!-- RAW MATERIALS -->
+    <sc-if value="{{ viewName.materials }}">
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;margin-bottom:18px;">
+        <div style="font-weight:700;margin-bottom:12px;">Add Purchase</div>
+        <form onSubmit="{{ onAddMaterialPurchase }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+          <input type="date" name="Date" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <select name="Material" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;">
+            <sc-for list="{{ materials }}" as="m" hint-placeholder-count="9">
+              <option value="{{ m }}">{{ m }}</option>
+            </sc-for>
+          </select>
+          <input type="number" name="Qty" placeholder="Qty" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;width:100px;" />
+          <input type="number" name="Rate" placeholder="Rate/unit (₹)" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;width:140px;" />
+          <input type="text" name="Supplier" placeholder="Supplier" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <input type="text" name="Notes" placeholder="Notes" style="flex:1;min-width:140px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <button type="submit" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Add Purchase</button>
+        </form>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;margin-bottom:18px;">
+        <div style="font-weight:700;margin-bottom:4px;">Add Sale</div>
+        <div style="color:#6b6862;font-size:12px;margin-bottom:12px;">For materials you resell — Cement, Emulsion, Bitumin Drums.</div>
+        <form onSubmit="{{ onAddMaterialSale }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+          <input type="date" name="Date" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <select name="Material" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;">
+            <sc-for list="{{ sellableMaterials }}" as="m" hint-placeholder-count="3">
+              <option value="{{ m }}">{{ m }}</option>
+            </sc-for>
+          </select>
+          <input type="number" name="Qty" placeholder="Qty" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;width:100px;" />
+          <input type="number" name="Rate" placeholder="Sell rate/unit (₹)" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;width:150px;" />
+          <input type="text" name="Buyer" placeholder="Buyer" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <button type="submit" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Add Sale</button>
+        </form>
+      </div>
+
+      <div style="font-weight:700;margin-bottom:10px;">Stock &amp; Profit</div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;margin-bottom:24px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Material</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Purchased Qty</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Purchase Cost</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Sold Qty</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Sale Value</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Stock</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Profit</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ materialStockRows }}" as="r" hint-placeholder-count="9">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;font-weight:600;">{{ r.label }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">{{ r.purchasedQty }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.purchaseCost }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">{{ r.soldQty }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.saleValue }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;font-weight:700;">{{ r.stock }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;font-weight:700;color:{{ r.plColor }};">{{ r.profitLabel }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:12px;">
+        <button type="button" onClick="{{ onExportMaterials }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Export Excel</button>
+      </div>
+      <div style="font-weight:700;margin-bottom:10px;">Purchase History</div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;margin-bottom:20px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Date</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Material</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Qty</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Rate</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Amount</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Supplier</th>
+            <th style="padding:10px;border-bottom:1px solid #e2e0da;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ materialPurchaseRows }}" as="r" hint-placeholder-count="5">
+              <tr>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;">{{ r.Material }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">{{ r.Qty }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.Rate }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.Amount }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;color:#6b6862;">{{ r.Supplier }}</td>
+                <td style="padding:10px;border-bottom:1px solid #eae8e2;text-align:right;"><button type="button" onClick="{{ r.onDelete }}" style="background:transparent;border:none;color:#c0392b;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="font-weight:700;margin-bottom:10px;">Sale History</div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Date</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Material</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Qty</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Rate</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Amount</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Buyer</th>
+            <th style="padding:10px;border-bottom:1px solid #e2e0da;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ materialSaleRows }}" as="r" hint-placeholder-count="5">
+              <tr>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;">{{ r.Material }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">{{ r.Qty }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.Rate }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.Amount }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;color:#6b6862;">{{ r.Buyer }}</td>
+                <td style="padding:10px;border-bottom:1px solid #eae8e2;text-align:right;"><button type="button" onClick="{{ r.onDelete }}" style="background:transparent;border:none;color:#c0392b;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <!-- CASH BOOK -->
+    <sc-if value="{{ viewName.cashbook }}">
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;margin-bottom:18px;">
+        <div style="font-weight:700;margin-bottom:12px;">Add Cash Book Entry</div>
+        <form onSubmit="{{ onAddCashbook }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+          <input type="date" name="Date" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <select name="Type" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;">
+            <option value="Cement">Cement</option>
+            <option value="Sand">Sand</option>
+            <option value="Chips">Chips</option>
+            <option value="Rod">Rod</option>
+            <option value="Emulsion">Emulsion</option>
+            <option value="Bitumin Drums">Bitumin Drums</option>
+            <option value="Diesel">Diesel</option>
+            <option value="Land Rent+Electric">Land Rent+Electric</option>
+            <option value="Mistri Fooding">Mistri Fooding</option>
+            <option value="Extra Expense">Extra Expense</option>
+            <option value="Other">Other</option>
+          </select>
+          <input type="number" name="Amount" placeholder="Amount (₹)" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;width:140px;" />
+          <input type="text" name="Description" placeholder="Description" style="flex:1;min-width:200px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <button type="submit" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Add Entry</button>
+        </form>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-weight:700;">Total Expenditure (range): ₹{{ cashbookTotal }}</div>
+        <button type="button" onClick="{{ onExportCashbook }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Export Excel</button>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Date</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Type</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Amount</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Description</th>
+            <th style="padding:10px;border-bottom:1px solid #e2e0da;"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ cashbookRows }}" as="r" hint-placeholder-count="5">
+              <tr>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;">{{ r.Type }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.Amount }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;color:#6b6862;">{{ r.Description }}</td>
+                <td style="padding:10px;border-bottom:1px solid #eae8e2;text-align:right;"><button type="button" onClick="{{ r.onDelete }}" style="background:transparent;border:none;color:#c0392b;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <!-- MISTRI -->
+    <sc-if value="{{ viewName.mistri }}">
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;margin-bottom:18px;">
+        <div style="font-weight:700;margin-bottom:12px;">Add Mistri</div>
+        <form onSubmit="{{ onAddMistri }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+          <input type="text" name="Name" placeholder="Name" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <input type="text" name="ContactNumber" placeholder="Contact number" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <input type="number" name="RatePerInch" placeholder="Rate per inch (₹)" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;width:160px;" />
+          <button type="submit" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Add Mistri</button>
+        </form>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;margin-bottom:24px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Name</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Contact</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Rate/Inch</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Total Inches (range)</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Wage Due</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Paid</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:12px;border-bottom:1px solid #e2e0da;">Balance</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ mistriRows }}" as="r" hint-placeholder-count="3">
+              <tr>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;font-weight:600;">{{ r.Name }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;">{{ r.ContactNumber }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.RatePerInch }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">{{ r.totalInches }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.wageDue }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;color:#2c7a3f;">₹{{ r.paid }}</td>
+                <td style="padding:12px;font-size:13px;border-bottom:1px solid #eae8e2;text-align:right;font-weight:700;color:#c0392b;">₹{{ r.balance }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;margin-bottom:18px;">
+        <div style="font-weight:700;margin-bottom:12px;">Record Payment</div>
+        <form onSubmit="{{ onAddMistriPayment }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+          <input type="date" name="Date" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <select name="MistriID" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;">
+            <sc-for list="{{ mistriOptions }}" as="m" hint-placeholder-count="3">
+              <option value="{{ m.MistriID }}">{{ m.Name }}</option>
+            </sc-for>
+          </select>
+          <input type="number" name="Amount" placeholder="Amount (₹)" required="true" style="border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;width:140px;" />
+          <input type="text" name="Notes" placeholder="Notes" style="flex:1;min-width:160px;border:1px solid #e2e0da;border-radius:6px;padding:8px 10px;font-size:13px;" />
+          <button type="submit" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">Add Payment</button>
+        </form>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <button type="button" onClick="{{ onExportMistri }}" style="background:transparent;border:1px solid #e2e0da;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Export Excel</button>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e0da;border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Date</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Mistri</th>
+            <th style="text-align:right;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Amount</th>
+            <th style="text-align:left;font-size:11px;color:#6b6862;text-transform:uppercase;padding:10px;border-bottom:1px solid #e2e0da;">Notes</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ mistriPaymentRows }}" as="r" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;">{{ r.MistriName }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;text-align:right;">₹{{ r.Amount }}</td>
+                <td style="padding:10px;font-size:12px;border-bottom:1px solid #eae8e2;color:#6b6862;">{{ r.Notes }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <!-- SETTINGS -->
+    <sc-if value="{{ viewName.settings }}">
+      <sc-if value="{{ isAdmin1 }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#fff;border:1px solid #e2e0da;border-radius:12px;padding:18px;max-width:520px;">
+          <div style="font-weight:700;margin-bottom:12px;">Maintenance Mode</div>
+          <div style="color:#6b6862;font-size:13px;margin-bottom:14px;">When ON, all other users see an "Under Maintenance" screen instead of the app.</div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <button type="button" onClick="{{ onToggleHPMaintenance }}" style="{{ maintenanceToggleStyle }}">{{ maintenanceToggleLabel }}</button>
+          </div>
+          <form onSubmit="{{ onSaveHPMaintenanceMessage }}" style="display:flex;gap:10px;flex-wrap:wrap;">
+            <textarea name="Message" placeholder="Message shown to locked-out users" defaultValue="{{ maintenanceMessage }}" style="flex:1;min-width:220px;border:1px solid #e2e0da;border-radius:8px;padding:10px;font-size:13px;min-height:70px;box-sizing:border-box;"></textarea>
+            <button type="submit" style="background:#d4af37;color:#0e0e10;font-weight:700;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;align-self:flex-start;">Save Message</button>
+          </form>
+        </div>
+      </sc-if>
+      <sc-if value="{{ !isAdmin1 }}">
+        <div style="color:#6b6862;font-size:13px;">Only Hrushikesh Padhi can manage Home Pipes settings.</div>
+      </sc-if>
+    </sc-if>
+
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ toast }}">
+  <div style="position:fixed;bottom:24px;right:24px;background:#1c1a16;color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;z-index:9999;">{{ toast }}</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    session: null, ready: false, maintenance: { enabled: true, message: '' },
+    view: 'dashboard', mobileNavOpen: false, toast: null,
+    filters: { from: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10), to: new Date().toISOString().slice(0, 10) },
+    production: [], sales: [], cashbook: [], prices: [], mistri: [], mistriPayments: [],
+    materialPurchases: [], materialSales: [],
+    priceEdits: {}
+  };
+  categories = ["300mm", "450mm", "600mm", "900mm", "1000mm", "GP", "KM Stone", "200M Stone"];
+  inchFactor = { "300mm": 12, "450mm": 18, "600mm": 24, "900mm": 36, "1000mm": 40, "GP": 0, "KM Stone": 0, "200M Stone": 0 };
+  materials = ["Cement", "Rod", "Sand", "Chips", "Binding Wire", "Liquid", "Emulsion", "Bitumin Drums", "Others"];
+  sellableMaterials = ["Emulsion", "Bitumin Drums"];
+
+  componentDidMount() {
+    let sess = null;
+    try { sess = JSON.parse(localStorage.getItem('panda_session')); } catch (e) {}
+    if (!sess) { this.setState({ ready: true }); return; }
+    this.setState({ session: sess });
+    this.loadAll();
+  }
+
+  loadAll() {
+    const self = this;
+    PandaAPI.call('hpGetAllData').then(function (r) {
+      if (!r || !r.success) { self.setState({ ready: true, toast: 'Failed to load data.' }); return; }
+      self.setState({
+        ready: true, production: r.hpProduction || [], sales: r.hpSales || [], cashbook: r.hpCashbook || [],
+        prices: r.hpPrices || [], mistri: r.hpMistri || [], mistriPayments: r.hpMistriPayments || [],
+        materialPurchases: r.hpMaterialPurchases || [], materialSales: r.hpMaterialSales || [],
+        maintenance: r.maintenance || { enabled: true, message: '' }
+      });
+    });
+  }
+
+  reload(key, action) {
+    const self = this;
+    return PandaAPI.call(action).then(function (r) {
+      if (r && r.success && r.data) self.setState(function (s) { const o = {}; o[key] = r.data; return o; });
+    });
+  }
+
+  showToast(msg) { this.setState({ toast: msg }); const self = this; setTimeout(function () { self.setState({ toast: null }); }, 2500); }
+  logout() { localStorage.removeItem('panda_session'); this.setState({ session: null }); }
+  previewAnyway() { this.setState({ previewOverride: true }); }
+  toggleMobileNav() { this.setState(function (s) { return { mobileNavOpen: !s.mobileNavOpen }; }); }
+  closeMobileNav() { this.setState({ mobileNavOpen: false }); }
+  setView(v) { this.setState({ view: v, mobileNavOpen: false }); }
+  onFilterFrom(e) { this.setState(function (s) { return { filters: Object.assign({}, s.filters, { from: e.target.value }) }; }); }
+  onFilterTo(e) { this.setState(function (s) { return { filters: Object.assign({}, s.filters, { to: e.target.value }) }; }); }
+
+  inRange(d) { const f = this.state.filters; return (!f.from || d >= f.from) && (!f.to || d <= f.to); }
+  qtyFromForm(form) { const q = {}; this.categories.forEach(function (c) { q[c] = Number(form.elements[c] && form.elements[c].value) || 0; }); return q; }
+  sumQty(q) { const self = this; return this.categories.reduce(function (a, c) { return a + (Number(q[c]) || 0); }, 0); }
+
+  onAddProduction(e) {
+    e.preventDefault();
+    const f = e.target;
+    const Qty = this.qtyFromForm(f);
+    const payload = { Date: f.elements.Date.value, Qty: Qty, ProductionCost: Number(f.elements.ProductionCost.value) || 0, Notes: f.elements.Notes.value, CreatedBy: this.state.session.name };
+    const self = this;
+    PandaAPI.call('hpAddProduction', payload).then(function (r) {
+      if (r && r.success) { self.setState(function (s) { return { production: s.production.concat([r.rec]) }; }); f.reset(); self.showToast('Production added.'); }
+      else self.showToast((r && r.message) || 'Failed to add.');
+    });
+  }
+  deleteProduction(id) {
+    if (!window.confirm('Delete this production entry?')) return;
+    const self = this;
+    PandaAPI.call('deleteHPProduction', { ProdID: id, CreatedBy: this.state.session.name }).then(function () {
+      self.setState(function (s) { return { production: s.production.filter(function (r) { return r.ProdID !== id; }) }; });
+    });
+  }
+
+  onAddSale(e) {
+    e.preventDefault();
+    const f = e.target;
+    const Qty = this.qtyFromForm(f);
+    const totalQty = this.sumQty(Qty);
+    const Rate = Number(f.elements.Rate.value) || 0;
+    const Freight = Number(f.elements.Freight.value) || 0;
+    const Loading = Number(f.elements.Loading.value) || 0;
+    const Payment = Number(f.elements.Payment.value) || 0;
+    const Amount = totalQty * Rate;
+    const Total = Amount + Freight + Loading;
+    const Due = Total - Payment;
+    const payload = { Date: f.elements.Date.value, PartyName: f.elements.PartyName.value || 'Local', MobileNo: f.elements.MobileNo.value, Qty: Qty, Rate: Rate, Amount: Amount, Freight: Freight, Loading: Loading, Total: Total, Payment: Payment, Due: Due, CreatedBy: this.state.session.name };
+    const self = this;
+    PandaAPI.call('hpAddSale', payload).then(function (r) {
+      if (r && r.success) { self.setState(function (s) { return { sales: s.sales.concat([r.rec]) }; }); f.reset(); self.showToast('Sale added.'); }
+      else self.showToast((r && r.message) || 'Failed to add.');
+    });
+  }
+  deleteSale(id) {
+    if (!window.confirm('Delete this sale entry?')) return;
+    const self = this;
+    PandaAPI.call('deleteHPSale', { SaleID: id, CreatedBy: this.state.session.name }).then(function () {
+      self.setState(function (s) { return { sales: s.sales.filter(function (r) { return r.SaleID !== id; }) }; });
+    });
+  }
+
+  onAddCashbook(e) {
+    e.preventDefault();
+    const f = e.target;
+    const payload = { Date: f.elements.Date.value, Type: f.elements.Type.value, Amount: Number(f.elements.Amount.value) || 0, Description: f.elements.Description.value, CreatedBy: this.state.session.name };
+    const self = this;
+    PandaAPI.call('hpAddCashbook', payload).then(function (r) {
+      if (r && r.success) { self.setState(function (s) { return { cashbook: s.cashbook.concat([r.rec]) }; }); f.reset(); self.showToast('Entry added.'); }
+    });
+  }
+  deleteCashbook(id) {
+    if (!window.confirm('Delete this entry?')) return;
+    const self = this;
+    PandaAPI.call('deleteHPCashbook', { EntryID: id, CreatedBy: this.state.session.name }).then(function () {
+      self.setState(function (s) { return { cashbook: s.cashbook.filter(function (r) { return r.EntryID !== id; }) }; });
+    });
+  }
+
+  onCostPriceChange(cat, e) { this.setState(function (s) { const pe = Object.assign({}, s.priceEdits); pe[cat] = Object.assign({}, pe[cat], { cost: e.target.value }); return { priceEdits: pe }; }); }
+  onSellPriceChange(cat, e) { this.setState(function (s) { const pe = Object.assign({}, s.priceEdits); pe[cat] = Object.assign({}, pe[cat], { sell: e.target.value }); return { priceEdits: pe }; }); }
+  savePrice(cat) {
+    const s = this.state;
+    const existing = s.prices.find(function (p) { return p.Category === cat; }) || {};
+    const edit = s.priceEdits[cat] || {};
+    const CostPrice = edit.cost !== undefined ? Number(edit.cost) : (existing.CostPrice || 0);
+    const SellPrice = edit.sell !== undefined ? Number(edit.sell) : (existing.SellPrice || 0);
+    const self = this;
+    PandaAPI.call('hpSetPrice', { Category: cat, CostPrice: CostPrice, SellPrice: SellPrice, CreatedBy: s.session.name }).then(function (r) {
+      if (r && r.success) {
+        self.setState(function (st) {
+          const others = st.prices.filter(function (p) { return p.Category !== cat; });
+          return { prices: others.concat([{ Category: cat, CostPrice: CostPrice, SellPrice: SellPrice }]) };
+        });
+        self.showToast('Price saved.');
+      }
+    });
+  }
+
+  onAddMistri(e) {
+    e.preventDefault();
+    const f = e.target;
+    const payload = { Name: f.elements.Name.value, ContactNumber: f.elements.ContactNumber.value, RatePerInch: Number(f.elements.RatePerInch.value) || 0, CreatedBy: this.state.session.name };
+    const self = this;
+    PandaAPI.call('hpAddMistri', payload).then(function (r) {
+      if (r && r.success) { self.setState(function (s) { return { mistri: s.mistri.concat([r.rec]) }; }); f.reset(); self.showToast('Mistri added.'); }
+    });
+  }
+  onAddMistriPayment(e) {
+    e.preventDefault();
+    const f = e.target;
+    const mistriId = f.elements.MistriID.value;
+    const m = this.state.mistri.find(function (x) { return x.MistriID === mistriId; });
+    const payload = { Date: f.elements.Date.value, MistriID: mistriId, MistriName: m ? m.Name : '', Amount: Number(f.elements.Amount.value) || 0, Notes: f.elements.Notes.value, CreatedBy: this.state.session.name };
+    const self = this;
+    PandaAPI.call('hpAddMistriPayment', payload).then(function (r) {
+      if (r && r.success) { self.setState(function (s) { return { mistriPayments: s.mistriPayments.concat([r.rec]) }; }); f.reset(); self.showToast('Payment recorded.'); }
+    });
+  }
+
+  onAddMaterialPurchase(e) {
+    e.preventDefault();
+    const f = e.target;
+    const payload = { Date: f.elements.Date.value, Material: f.elements.Material.value, Qty: Number(f.elements.Qty.value) || 0, Rate: Number(f.elements.Rate.value) || 0, Supplier: f.elements.Supplier.value, Notes: f.elements.Notes.value, CreatedBy: this.state.session.name };
+    const self = this;
+    PandaAPI.call('hpAddMaterialPurchase', payload).then(function (r) {
+      if (r && r.success) { self.setState(function (s) { return { materialPurchases: s.materialPurchases.concat([r.rec]) }; }); f.reset(); self.showToast('Purchase added.'); }
+    });
+  }
+  deleteMaterialPurchase(id) {
+    if (!window.confirm('Delete this purchase?')) return;
+    const self = this;
+    PandaAPI.call('deleteHPMaterialPurchase', { PurchaseID: id, CreatedBy: this.state.session.name }).then(function () {
+      self.setState(function (s) { return { materialPurchases: s.materialPurchases.filter(function (r) { return r.PurchaseID !== id; }) }; });
+    });
+  }
+  onAddMaterialSale(e) {
+    e.preventDefault();
+    const f = e.target;
+    const payload = { Date: f.elements.Date.value, Material: f.elements.Material.value, Qty: Number(f.elements.Qty.value) || 0, Rate: Number(f.elements.Rate.value) || 0, Buyer: f.elements.Buyer.value, CreatedBy: this.state.session.name };
+    const self = this;
+    PandaAPI.call('hpAddMaterialSale', payload).then(function (r) {
+      if (r && r.success) { self.setState(function (s) { return { materialSales: s.materialSales.concat([r.rec]) }; }); f.reset(); self.showToast('Sale added.'); }
+    });
+  }
+  deleteMaterialSale(id) {
+    if (!window.confirm('Delete this sale?')) return;
+    const self = this;
+    PandaAPI.call('deleteHPMaterialSale', { MatSaleID: id, CreatedBy: this.state.session.name }).then(function () {
+      self.setState(function (s) { return { materialSales: s.materialSales.filter(function (r) { return r.MatSaleID !== id; }) }; });
+    });
+  }
+  computeMaterialStockRows() {
+    const self = this;
+    return this.materials.map(function (mat) {
+      const purchases = self.state.materialPurchases.filter(function (r) { return r.Material === mat; });
+      const sales = self.state.materialSales.filter(function (r) { return r.Material === mat; });
+      const purchasedQty = purchases.reduce(function (a, r) { return a + (Number(r.Qty) || 0); }, 0);
+      const purchaseCost = purchases.reduce(function (a, r) { return a + (Number(r.Amount) || 0); }, 0);
+      const soldQty = sales.reduce(function (a, r) { return a + (Number(r.Qty) || 0); }, 0);
+      const saleValue = sales.reduce(function (a, r) { return a + (Number(r.Amount) || 0); }, 0);
+      const isSellable = self.sellableMaterials.indexOf(mat) !== -1;
+      const avgCost = purchasedQty ? purchaseCost / purchasedQty : 0;
+      const profit = Math.round(saleValue - soldQty * avgCost);
+      return { label: mat, purchasedQty: purchasedQty, purchaseCost: Math.round(purchaseCost), soldQty: soldQty, saleValue: Math.round(saleValue), stock: purchasedQty - soldQty, profitLabel: isSellable ? '₹' + profit : '—', plColor: profit >= 0 ? '#2c7a3f' : '#c0392b' };
+    });
+  }
+  onExportMaterials() {
+    const rows = this.state.materialPurchases.map(function (r) { return { Type: 'Purchase', Date: r.Date, Material: r.Material, Qty: r.Qty, Rate: r.Rate, Amount: r.Amount, Party: r.Supplier }; })
+      .concat(this.state.materialSales.map(function (r) { return { Type: 'Sale', Date: r.Date, Material: r.Material, Qty: r.Qty, Rate: r.Rate, Amount: r.Amount, Party: r.Buyer }; }));
+    this.exportRows('HomePipes-Materials.xlsx', rows);
+  }
+  onImportProduction() { document.querySelector('[data-import-production]').click(); }
+  onImportSale() { document.querySelector('[data-import-sale]').click(); }
+  parseWorkbook(file, cb) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      cb(XLSX.utils.sheet_to_json(sheet));
+    };
+    reader.readAsArrayBuffer(file);
+  }
+  onProductionFileChosen(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const self = this; const categories = this.categories;
+    this.parseWorkbook(file, function (rows) {
+      const mapped = rows.map(function (row) {
+        const Qty = {}; categories.forEach(function (c) { Qty[c] = Number(row[c]) || 0; });
+        return { Date: String(row.Date || ''), Qty: Qty, ProductionCost: Number(row.ProductionCost || row.Cost) || 0, Notes: row.Notes || '' };
+      });
+      PandaAPI.call('hpBulkImport', { Kind: 'production', Rows: mapped, CreatedBy: self.state.session.name }).then(function (r) {
+        self.showToast((r && r.message) || 'Import complete.'); self.loadAll();
+      });
+    });
+    e.target.value = '';
+  }
+  onSaleFileChosen(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const self = this; const categories = this.categories;
+    this.parseWorkbook(file, function (rows) {
+      const mapped = rows.map(function (row) {
+        const Qty = {}; categories.forEach(function (c) { Qty[c] = Number(row[c]) || 0; });
+        const totalQty = categories.reduce(function (a, c) { return a + Qty[c]; }, 0);
+        const Rate = Number(row.Rate) || 0; const Amount = Number(row.Amount) || totalQty * Rate;
+        const Freight = Number(row.Freight || row.Fair) || 0; const Loading = Number(row.Loading) || 0;
+        const Total = Number(row.Total) || (Amount + Freight + Loading);
+        const Payment = Number(row.Payment) || 0; const Due = Number(row.Due) || (Total - Payment);
+        return { Date: String(row.Date || ''), PartyName: row.PartyName || row['Party Name'] || 'Local', MobileNo: String(row.MobileNo || row['mob no'] || ''), Qty: Qty, Rate: Rate, Amount: Amount, Freight: Freight, Loading: Loading, Total: Total, Payment: Payment, Due: Due };
+      });
+      PandaAPI.call('hpBulkImport', { Kind: 'sale', Rows: mapped, CreatedBy: self.state.session.name }).then(function (r) {
+        self.showToast((r && r.message) || 'Import complete.'); self.loadAll();
+      });
+    });
+    e.target.value = '';
+  }
+
+  exportRows(filename, rows) {
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Data');
+    XLSX.writeFile(wb, filename);
+  }
+  onExportProduction() {
+    const self = this; const categories = this.categories;
+    const rows = this.state.production.filter(function (r) { return self.inRange(r.Date); }).map(function (r) {
+      const row = { Date: r.Date }; categories.forEach(function (c) { row[c] = (r.Qty || {})[c] || 0; }); row.ProductionCost = r.ProductionCost || 0; row.Notes = r.Notes || ''; return row;
+    });
+    this.exportRows('HomePipes-Production.xlsx', rows);
+  }
+  onExportSale() {
+    const self = this; const categories = this.categories;
+    const rows = this.state.sales.filter(function (r) { return self.inRange(r.Date); }).map(function (r) {
+      const row = { Date: r.Date, Party: r.PartyName, Mobile: r.MobileNo }; categories.forEach(function (c) { row[c] = (r.Qty || {})[c] || 0; });
+      row.Rate = r.Rate; row.Amount = r.Amount; row.Freight = r.Freight; row.Loading = r.Loading; row.Total = r.Total; row.Payment = r.Payment; row.Due = r.Due; return row;
+    });
+    this.exportRows('HomePipes-Sales.xlsx', rows);
+  }
+  onExportStock() { this.exportRows('HomePipes-Stock.xlsx', this.computeStockRows()); }
+  onExportCashbook() {
+    const self = this;
+    const rows = this.state.cashbook.filter(function (r) { return self.inRange(r.Date); }).map(function (r) { return { Date: r.Date, Type: r.Type, Amount: r.Amount, Description: r.Description }; });
+    this.exportRows('HomePipes-Cashbook.xlsx', rows);
+  }
+  onExportMistri() {
+    const rows = this.computeMistriRows().map(function (r) { return { Name: r.Name, Contact: r.ContactNumber, RatePerInch: r.RatePerInch, TotalInches: r.totalInches, WageDue: r.wageDue, Paid: r.paid, Balance: r.balance }; });
+    this.exportRows('HomePipes-Mistri.xlsx', rows);
+  }
+  onExportParty() {
+    const rows = [];
+    const partyMap = {};
+    this.state.sales.forEach(function (r) {
+      const key = r.PartyName || 'Local';
+      if (!partyMap[key]) partyMap[key] = { total: 0, paid: 0 };
+      partyMap[key].total += Number(r.Total) || 0;
+      partyMap[key].paid += Number(r.Payment) || 0;
+    });
+    Object.keys(partyMap).sort().forEach(function (party) {
+      rows.push({ Party: party, TotalBilled: Math.round(partyMap[party].total), TotalPaid: Math.round(partyMap[party].paid), Outstanding: Math.round(partyMap[party].total - partyMap[party].paid) });
+    });
+    this.exportRows('HomePipes-Party-Outstanding.xlsx', rows);
+  }
+  onExportPrices() {
+    const self = this;
+    const rows = this.categories.map(function (c) {
+      const p = self.state.prices.find(function (x) { return x.Category === c; }) || { CostPrice: 0, SellPrice: 0 };
+      return { Category: c, CostPrice: p.CostPrice || 0, SellPrice: p.SellPrice || 0 };
+    });
+    this.exportRows('HomePipes-PriceList.xlsx', rows);
+  }
+  onExportDashboard() {
+    const d = this.renderVals().dash;
+    const rows = [{ Metric: 'Total Production Qty', Value: d.totalProdQty }, { Metric: 'Total Sale Amount', Value: d.totalSaleAmt }, { Metric: 'Total Due', Value: d.totalDue }, { Metric: 'Production Cost', Value: d.totalProdCost }, { Metric: 'Cash Book Expenditure', Value: d.totalCashExp }, { Metric: 'Total Expenditure', Value: d.totalExpenditure }, { Metric: 'Net Profit/Loss', Value: d.netPL }];
+    this.exportRows('HomePipes-Dashboard-Summary.xlsx', rows);
+  }
+
+  onToggleHPMaintenance() {
+    const self = this; const next = !this.state.maintenance.enabled;
+    PandaAPI.call('hpSetMaintenance', { Enabled: next, RequestedBy: this.state.session.name }).then(function (r) {
+      if (r && r.success) self.setState(function (s) { return { maintenance: Object.assign({}, s.maintenance, { enabled: next }) }; });
+    });
+  }
+  onSaveHPMaintenanceMessage(e) {
+    e.preventDefault();
+    const msg = e.target.elements.Message.value;
+    const self = this;
+    PandaAPI.call('hpSetMaintenance', { Enabled: this.state.maintenance.enabled, Message: msg, RequestedBy: this.state.session.name }).then(function (r) {
+      if (r && r.success) { self.setState(function (s) { return { maintenance: Object.assign({}, s.maintenance, { message: msg }) }; }); self.showToast('Message saved.'); }
+    });
+  }
+
+  computeStockRows() {
+    const self = this;
+    return this.categories.map(function (c) {
+      const produced = self.state.production.reduce(function (a, r) { return a + ((r.Qty || {})[c] || 0); }, 0);
+      const sold = self.state.sales.reduce(function (a, r) { return a + ((r.Qty || {})[c] || 0); }, 0);
+      return { label: c, produced: produced, sold: sold, stock: produced - sold };
+    });
+  }
+  computeMistriRows() {
+    const self = this;
+    const totalInchesAll = this.categories.reduce(function (a, c) { return a; }, 0);
+    const inchesProduced = this.state.production.reduce(function (a, r) {
+      return a + self.categories.reduce(function (b, c) { return b + ((r.Qty || {})[c] || 0) * (self.inchFactor[c] || 0); }, 0);
+    }, 0);
+    return this.state.mistri.map(function (m) {
+      const totalInches = inchesProduced; // shared production pool across categories
+      const wageDue = Math.round(totalInches * (Number(m.RatePerInch) || 0));
+      const paid = self.state.mistriPayments.filter(function (p) { return p.MistriID === m.MistriID; }).reduce(function (a, p) { return a + (Number(p.Amount) || 0); }, 0);
+      return { MistriID: m.MistriID, Name: m.Name, ContactNumber: m.ContactNumber, RatePerInch: m.RatePerInch, totalInches: totalInches, wageDue: wageDue, paid: paid, balance: wageDue - paid };
+    });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const self = this;
+    const session = s.session;
+    const isAdmin1 = !!(session && session.role === 'Admin 1');
+    const maintenanceOn = !!(s.maintenance && s.maintenance.enabled);
+    const viewIsGate = !session;
+    const viewIsMaintenance = !!session && maintenanceOn && !isAdmin1;
+    const viewIsApp = !!session && (!maintenanceOn || isAdmin1);
+
+    const catLabel = function (c) { return c; };
+    const prodInRange = s.production.filter(function (r) { return self.inRange(r.Date); });
+    const salesInRange = s.sales.filter(function (r) { return self.inRange(r.Date); });
+    const cashbookInRange = s.cashbook.filter(function (r) { return self.inRange(r.Date); });
+
+    const totalProdQty = prodInRange.reduce(function (a, r) { return a + self.sumQty(r.Qty || {}); }, 0);
+    const totalSaleAmt = salesInRange.reduce(function (a, r) { return a + (Number(r.Total) || 0); }, 0);
+    const totalDue = s.sales.reduce(function (a, r) { return a + (Number(r.Due) || 0); }, 0);
+    const totalCashExp = cashbookInRange.reduce(function (a, r) { return a + (Number(r.Amount) || 0); }, 0);
+    const totalProdCost = prodInRange.reduce(function (a, r) { return a + (Number(r.ProductionCost) || 0); }, 0);
+    const materialPurchaseCostAll = this.computeMaterialStockRows().reduce(function (a, r) { return a + (Number(r.purchaseCost) || 0); }, 0);
+    const materialProfitAll = this.computeMaterialStockRows().reduce(function (a, r) { return a + (self.sellableMaterials.indexOf(r.label) !== -1 ? Number(String(r.profitLabel).replace('₹', '')) || 0 : 0); }, 0);
+    const totalExpenditure = totalProdCost + totalCashExp;
+    const netPL = totalSaleAmt - totalExpenditure + materialProfitAll;
+    const partyMap = {};
+    s.sales.forEach(function (r) {
+      const key = r.PartyName || 'Local';
+      if (!partyMap[key]) partyMap[key] = { total: 0, paid: 0 };
+      partyMap[key].total += Number(r.Total) || 0;
+      partyMap[key].paid += Number(r.Payment) || 0;
+    });
+    const partyOutstanding = Object.keys(partyMap).sort().map(function (party) {
+      const total = Math.round(partyMap[party].total), paid = Math.round(partyMap[party].paid), due = total - paid;
+      return { party: party, total: total, paid: paid, due: due, dueColor: due > 0 ? '#c0392b' : '#2c7a3f' };
+    });
+
+    const priceFor = function (cat) { return s.prices.find(function (p) { return p.Category === cat; }) || { CostPrice: 0, SellPrice: 0 }; };
+    const stockRows = this.computeStockRows();
+    const stockCards = stockRows.map(function (r) { return { label: r.label, stock: r.stock }; });
+    const catPL = this.categories.map(function (c) {
+      const qty = salesInRange.reduce(function (a, r) { return a + ((r.Qty || {})[c] || 0); }, 0);
+      const saleVal = salesInRange.reduce(function (a, r) { const rowQty = self.sumQty(r.Qty || {}); const share = rowQty ? ((r.Qty || {})[c] || 0) / rowQty : 0; return a + (Number(r.Total) || 0) * share; }, 0);
+      const cost = priceFor(c).CostPrice || 0;
+      const costVal = qty * cost;
+      const pl = Math.round(saleVal - costVal);
+      return { label: c, qty: qty, saleVal: Math.round(saleVal), costVal: Math.round(costVal), pl: pl, plColor: pl >= 0 ? '#2c7a3f' : '#c0392b' };
+    });
+
+    const navDefs = [
+      ['dashboard', 'Dashboard'], ['production', 'Production'], ['sales', 'Sales'], ['stock', 'Stock'],
+      ['prices', 'Price List'], ['materials', 'Raw Materials'], ['cashbook', 'Cash Book'], ['mistri', 'Mistri'], ['party', 'Party']
+    ].concat(isAdmin1 ? [['settings', 'Settings']] : []);
+    const navItems = navDefs.map(function (n) {
+      const active = s.view === n[0];
+      return { label: n[1], onClick: function () { self.setView(n[0]); }, bg: active ? '#d4af37' : 'transparent', color: active ? '#0e0e10' : '#1c1a16' };
+    });
+
+    const productionRows = prodInRange.slice().sort(function (a, b) { return String(b.Date).localeCompare(String(a.Date)); }).map(function (r) {
+      return Object.assign({}, r, { qtyCells: self.categories.map(function (c) { return (r.Qty || {})[c] || 0; }), onDelete: function () { self.deleteProduction(r.ProdID); } });
+    });
+    const saleRows = salesInRange.slice().sort(function (a, b) { return String(b.Date).localeCompare(String(a.Date)); }).map(function (r) {
+      return Object.assign({}, r, { totalQty: self.sumQty(r.Qty || {}), onDelete: function () { self.deleteSale(r.SaleID); } });
+    });
+    const cashbookRows = cashbookInRange.slice().sort(function (a, b) { return String(b.Date).localeCompare(String(a.Date)); }).map(function (r) {
+      return Object.assign({}, r, { onDelete: function () { self.deleteCashbook(r.EntryID); } });
+    });
+    const priceRows = this.categories.map(function (c) {
+      const p = priceFor(c);
+      return {
+        label: c, costPrice: p.CostPrice || 0, sellPrice: p.SellPrice || 0,
+        onCostChange: function (e) { self.onCostPriceChange(c, e); }, onSellChange: function (e) { self.onSellPriceChange(c, e); },
+        onSave: function () { self.savePrice(c); }
+      };
+    });
+    const mistriRows = this.computeMistriRows();
+    const mistriOptions = s.mistri.map(function (m) { return { MistriID: m.MistriID, Name: m.Name }; });
+    const mistriPaymentRows = s.mistriPayments.slice().sort(function (a, b) { return String(b.Date).localeCompare(String(a.Date)); });
+
+    const pageTitles = { dashboard: 'Dashboard', production: 'Production', sales: 'Sales', stock: 'Stock', prices: 'Price List', materials: 'Raw Materials', cashbook: 'Cash Book', mistri: 'Mistri', party: 'Party', settings: 'Settings' };
+    const partyGroups = Object.keys(partyMap).sort().map(function (party) {
+      const rows = s.sales.filter(function (r) { return (r.PartyName || 'Local') === party; }).slice().sort(function (a, b) { return String(b.Date).localeCompare(String(a.Date)); }).map(function (r) { return Object.assign({}, r, { totalQty: self.sumQty(r.Qty || {}) }); });
+      return { party: party, rows: rows };
+    });
+    const materialStockRows = this.computeMaterialStockRows();
+    const materialPurchaseRows = s.materialPurchases.slice().sort(function (a, b) { return String(b.Date).localeCompare(String(a.Date)); }).map(function (r) { return Object.assign({}, r, { onDelete: function () { self.deleteMaterialPurchase(r.PurchaseID); } }); });
+    const materialSaleRows = s.materialSales.slice().sort(function (a, b) { return String(b.Date).localeCompare(String(a.Date)); }).map(function (r) { return Object.assign({}, r, { onDelete: function () { self.deleteMaterialSale(r.MatSaleID); } }); });
+
+    return {
+      viewIs: { gate: viewIsGate, maintenance: viewIsMaintenance, app: viewIsApp },
+      gateMessage: 'Please sign in through Panda Construction first.',
+      maintenanceMessage: (s.maintenance && s.maintenance.message) || 'Panda Home Pipes is being set up. Please check back soon.',
+      isAdmin1: isAdmin1, previewAnyway: this.previewAnyway.bind(this),
+      sessionName: session ? session.name : '', navItems: navItems,
+      mobileNavOpen: s.mobileNavOpen, toggleMobileNav: this.toggleMobileNav.bind(this), closeMobileNav: this.closeMobileNav.bind(this),
+      logout: this.logout.bind(this), pageTitle: pageTitles[s.view] || '',
+      filters: s.filters, onFilterFrom: this.onFilterFrom.bind(this), onFilterTo: this.onFilterTo.bind(this),
+      viewName: { dashboard: s.view === 'dashboard', production: s.view === 'production', sales: s.view === 'sales', stock: s.view === 'stock', prices: s.view === 'prices', materials: s.view === 'materials', cashbook: s.view === 'cashbook', mistri: s.view === 'mistri', party: s.view === 'party', settings: s.view === 'settings' },
+      partyGroups: partyGroups, onExportParty: this.onExportParty.bind(this), onExportPrices: this.onExportPrices.bind(this), onExportDashboard: this.onExportDashboard.bind(this),
+      materials: this.materials, sellableMaterials: this.sellableMaterials,
+      onAddMaterialPurchase: this.onAddMaterialPurchase.bind(this), onAddMaterialSale: this.onAddMaterialSale.bind(this), onExportMaterials: this.onExportMaterials.bind(this),
+      materialStockRows: materialStockRows, materialPurchaseRows: materialPurchaseRows, materialSaleRows: materialSaleRows,
+      dash: { totalProdQty: totalProdQty, totalSaleAmt: Math.round(totalSaleAmt), totalDue: Math.round(totalDue), netPL: Math.round(netPL), plColor: netPL >= 0 ? '#2c7a3f' : '#c0392b', stockCards: stockCards, catPL: catPL, totalProdCost: Math.round(totalProdCost), totalCashExp: Math.round(totalCashExp), totalExpenditure: Math.round(totalExpenditure), partyOutstanding: partyOutstanding },
+      categories: this.categories,
+      onAddProduction: this.onAddProduction.bind(this), onImportProduction: this.onImportProduction.bind(this), onExportProduction: this.onExportProduction.bind(this), onProductionFileChosen: this.onProductionFileChosen.bind(this),
+      productionRows: productionRows,
+      onAddSale: this.onAddSale.bind(this), onImportSale: this.onImportSale.bind(this), onExportSale: this.onExportSale.bind(this), onSaleFileChosen: this.onSaleFileChosen.bind(this),
+      saleRows: saleRows,
+      onExportStock: this.onExportStock.bind(this), stockRows: stockRows,
+      priceRows: priceRows,
+      onAddCashbook: this.onAddCashbook.bind(this), cashbookTotal: Math.round(totalCashExp), onExportCashbook: this.onExportCashbook.bind(this), cashbookRows: cashbookRows,
+      onAddMistri: this.onAddMistri.bind(this), mistriRows: mistriRows,
+      onAddMistriPayment: this.onAddMistriPayment.bind(this), mistriOptions: mistriOptions, onExportMistri: this.onExportMistri.bind(this), mistriPaymentRows: mistriPaymentRows,
+      onToggleHPMaintenance: this.onToggleHPMaintenance.bind(this),
+      maintenanceToggleLabel: maintenanceOn ? 'Turn Maintenance OFF' : 'Turn Maintenance ON',
+      maintenanceToggleStyle: 'padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;background:' + (maintenanceOn ? '#c0392b' : '#2c7a3f') + ';color:#fff;',
+      onSaveHPMaintenanceMessage: this.onSaveHPMaintenanceMessage.bind(this),
+      toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
