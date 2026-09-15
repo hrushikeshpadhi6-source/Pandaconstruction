@@ -44,6 +44,35 @@
     return snap.docs.map(function (d) { return d.data(); });
   }
 
+  // Parses a BF month label ("August 2026") into a sortable "2026-08" key. Selecting the
+  // "latest" BF row by raw BFDate string was fragile (typos, blank dates, ties) and caused
+  // real mismatches between the BF list and a supplier/staff/labour/mistri's detail page —
+  // month-key is the source of truth for ordering; BFDate only breaks ties.
+  // Parses a BF month label ("August" or "August 2026") into a sortable "2026-08" key.
+  // Regex-based (not Date-string parsing) because "Month Year" strings like "September 2026"
+  // are ambiguous/invalid to the Date constructor and silently returned "" before this fix.
+  function monthKeyOfLabel(label) {
+    const names = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+    const s = String(label || "").trim().toLowerCase();
+    if (!s) return "";
+    const yearMatch = s.match(/\d{4}/);
+    const year = yearMatch ? yearMatch[0] : String(new Date().getFullYear());
+    const idx = names.findIndex(function (m) { return s.indexOf(m) !== -1 || s.indexOf(m.slice(0, 3)) !== -1; });
+    if (idx === -1) return "";
+    return year + "-" + String(idx + 1).padStart(2, "0");
+  }
+  function pickLatestBFRow(rows) {
+    if (!rows || !rows.length) return null;
+    return rows.reduce(function (best, r) {
+      if (!best) return r;
+      const bk = monthKeyOfLabel(best.BFMonth), rk = monthKeyOfLabel(r.BFMonth);
+      if (rk && bk && rk !== bk) return rk > bk ? r : best;
+      const bd = best.BFDate || "", rd = r.BFDate || "";
+      if (rd !== bd) return rd > bd ? r : best;
+      return r;
+    }, null);
+  }
+
   // ---------- collection map: action-family -> {coll, idField, counter, prefix} ----------
   const MAP = {
     Supplier: { coll: "suppliers", idField: "SupplierID", counter: "SupplierID", prefix: "SUP", def: { Status: "Active" } },
@@ -52,6 +81,8 @@
     DieselTransaction: { coll: "dieselTx", idField: "SLNo", counter: "DieselSLNo", prefix: "" },
     DieselPayment: { coll: "dieselPayments", idField: "PaymentID", counter: "DieselPaymentID", prefix: "DPAY", def: { Status: "Active" } },
     Site: { coll: "sites", idField: "SiteID", counter: "SiteID", prefix: "S", def: { Status: "Active" } },
+    Vehicle: { coll: "vehicles", idField: "VehicleID", counter: "VehicleID", prefix: "VEH", def: { Status: "Active" } },
+    VehicleLog: { coll: "vehicleDailyLog", idField: "LogID", counter: "VehicleLogID", prefix: "VLOG" },
     Material: { coll: "materials", idField: "MaterialID", counter: "MaterialID", prefix: "M", def: { Status: "Active" } },
     Staff: { coll: "staff", idField: "StaffID", counter: "StaffID", prefix: "ST", def: { Status: "Active" } },
     StaffSalary: { coll: "staffSalary", idField: "SalaryID", counter: "SalaryID", prefix: "SAL" },
@@ -65,6 +96,9 @@
     LabourEntry: { coll: "labourEntries", idField: "EntryID", counter: "EntryID", prefix: "LE" },
     LabourPayment: { coll: "labourPayments", idField: "PaymentID", counter: "LabourPaymentID", prefix: "LP", def: { Status: "Active" } },
     LabourAdvance: { coll: "labourAdvances", idField: "AdvanceID", counter: "LabourAdvanceID", prefix: "LA", def: { Status: "Active" } },
+    StaffBF: { coll: "staffBF", idField: "BFID", counter: "StaffBFID", prefix: "SBF" },
+    LabourBF: { coll: "labourBF", idField: "BFID", counter: "LabourBFID", prefix: "LBF" },
+    MistriBF: { coll: "mistriBF", idField: "BFID", counter: "MistriBFID", prefix: "MBF" },
     FundTransfer: { coll: "fundTransfers", idField: "TransferID", counter: "TransferID", prefix: "FT", def: { Status: "Active" } },
     SiteAllocation: { coll: "siteAllocations", idField: "AllocationID", counter: "AllocationID", prefix: "SA", def: { Status: "Active" } },
     SiteExpense: { coll: "siteExpenses", idField: "ExpenseID", counter: "ExpenseID", prefix: "SE", def: { Status: "Active" } },
@@ -207,32 +241,102 @@
         return { success: true, message: "Announcement updated.", announcement: await getAnnouncementStatus() };
       }
       case "getCollection": return { success: true, data: await colToArray(p.name) };
+      // One-time, automatic, silent cleanup for the bad BF rows the old (pre-fix) auto-rollover
+      // wrote. Runs itself at most once ever (guarded by a meta flag) \u2014 no button, no admin
+      // action, nothing to click by mistake. Deletes only System-created rows for the month it
+      // ran in; BF display no longer depends on any auto-written row going forward (see below).
+      // Runs every login and removes any System-created BF row for the current month \u2014 cheap
+      // (a handful of small reads) and harmless once nothing matches. No new rows are written
+      // automatically anymore, so after the existing bad rows are gone this becomes a no-op.
+      // One-time-per-row fill: any BF row for August with no BFDate gets dated to the last day
+      // of August, so the "since this date" purchase/due/payment scoping actually has a cutoff
+      // instead of silently counting all history.
+      case "autoSeedPersonBF": {
+        const flagRef3 = db.collection("meta").doc("personBFSeed");
+        const flagDoc3 = await flagRef3.get();
+        if (flagDoc3.exists && flagDoc3.data().done) return { success: true, skipped: true };
+        let seeded = 0;
+        const seedList = [["staff", "staffBF", "StaffBFID", "SBF"], ["labour", "labourBF", "LabourBFID", "LBF"], ["mistri", "mistriBF", "MistriBFID", "MBF"]];
+        for (const [srcColl, bfColl, counter, prefix] of seedList) {
+          const [people, existingBF] = await Promise.all([colToArray(srcColl), colToArray(bfColl)]);
+          const namesWithBF = new Set(existingBF.map(function (r) { return r.Name; }));
+          for (const person of people) {
+            if (namesWithBF.has(person.Name)) continue;
+            const amt = Number(person.BFAmount) || 0;
+            if (!amt) continue;
+            const id = await nextId(counter, prefix, bfColl);
+            await db.collection(bfColl).doc(id).set({ BFID: id, Name: person.Name, BFMonth: "August", BFDate: "2026-08-31", BFAmount: amt, Remarks: "", CreatedBy: "System", CreatedAt: new Date().toISOString() });
+            seeded++;
+          }
+        }
+        await flagRef3.set({ done: true, seeded: seeded, ranAt: new Date().toISOString() }, { merge: true });
+        return { success: true, seeded: seeded };
+      }
+      case "autoFillAugustBFDates": {
+        const flagRef2 = db.collection("meta").doc("augustBFDateFill");
+        const flagDoc2 = await flagRef2.get();
+        if (flagDoc2.exists && flagDoc2.data().done) return { success: true, skipped: true };
+        let filled = 0;
+        for (const coll of ["bf", "dieselBF", "staffBF", "labourBF", "mistriBF"]) {
+          const snap2 = await db.collection(coll).get();
+          for (const doc of snap2.docs) {
+            const d = doc.data();
+            const hasDate = d.BFDate !== undefined && d.BFDate !== null && String(d.BFDate).trim() !== "";
+            if (!hasDate && String(d.BFMonth || "").toLowerCase().indexOf("august") !== -1) { await doc.ref.set({ BFDate: "2026-08-31" }, { merge: true }); filled++; }
+          }
+        }
+        await flagRef2.set({ done: true, filled: filled, ranAt: new Date().toISOString() }, { merge: true });
+        return { success: true, filled: filled };
+      }
+      case "autoCleanupBadRollover": {
+        const now2 = new Date();
+        const monthKey2 = now2.toISOString().slice(0, 7);
+        let removed = 0;
+        for (const coll of ["bf", "dieselBF", "staffBF", "labourBF", "mistriBF"]) {
+          const snap = await db.collection(coll).where("CreatedBy", "==", "System").get();
+          for (const doc of snap.docs) {
+            const d = doc.data();
+            if (d.BFMonth && monthKeyOfLabel(d.BFMonth) === monthKey2) { await doc.ref.delete(); removed++; }
+          }
+        }
+        return { success: true, skipped: false, removed: removed };
+      }
       case "runMonthlyRollover": {
         const now = new Date();
         const monthKey = now.toISOString().slice(0, 7);
         const settingsRef = db.collection("meta").doc("monthlyRollover");
         const existingDoc = await settingsRef.get();
         const lastRunMonth = existingDoc.exists ? existingDoc.data().lastRunMonth : null;
+        // Skips entirely once this month's rollover has run \u2014 this is the expensive action
+        // (reads every supplier/staff/labour/mistri's transactions), so it must stay a once-a-
+        // month cost, not a per-login one, to protect the read quota that started this thread.
         if (lastRunMonth === monthKey) return { success: true, skipped: true, message: "Already rolled over for this month." };
         await settingsRef.set({ lastRunMonth: monthKey, ranAt: now.toISOString() }, { merge: true });
         const monthLabel = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
         const bfDateStr = monthKey + "-01";
-        const latestBF = function (list, name) {
-          const rows = list.filter(function (r) { return r.Supplier === name; });
-          if (!rows.length) return { amt: 0, date: "" };
-          const latest = rows.reduce(function (a, b) { return String(b.BFDate || "") >= String(a.BFDate || "") ? b : a; });
-          return { amt: Number(latest.BFAmount) || 0, date: latest.BFDate || "" };
+        // Picks the entry for a name whose BFMonth is the furthest along (month-key, not raw
+        // BFDate string) \u2014 fixes rollovers/detail pages picking a stale/duplicate BF row.
+        const latestBF = function (list, name, field) {
+          const rows = list.filter(function (r) { return r[field] === name; });
+          const row = pickLatestBFRow(rows);
+          return row ? { amt: Number(row.BFAmount) || 0, date: row.BFDate || "", month: row.BFMonth || "" } : { amt: 0, date: "", month: "" };
         };
-        const [suppliers, transactions, payments, bf, dieselTx, dieselPayments, dieselBF] = await Promise.all(
-          ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF"].map(colToArray)
+        const [suppliers, transactions, payments, bf, dieselTx, dieselPayments, dieselBF,
+          staff, staffSalary, staffPayments, staffBF,
+          labour, labourEntries, labourPayments, labourAdvances, labourBF,
+          mistri, mistriDue, mistriPayments, mistriAdvances, mistriBF] = await Promise.all(
+          ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF",
+            "staff", "staffSalary", "staffPayments", "staffBF",
+            "labour", "labourEntries", "labourPayments", "labourAdvances", "labourBF",
+            "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "mistriBF"].map(colToArray)
         );
         let rolled = 0;
         for (const sup of suppliers) {
           const name = sup.SupplierName;
-          const { amt: bfAmt, date: bfDate } = latestBF(bf, name);
+          const { amt: bfAmt, date: bfDate, month: bfMonth } = latestBF(bf, name, "Supplier");
+          if (monthKeyOfLabel(bfMonth) === monthKey) continue; // already rolled this month
           const purchase = transactions.filter(function (t) { return t.Supplier === name && (!bfDate || t.Date > bfDate); }).reduce(function (a, t) { return a + (Number(t.Value) || 0); }, 0);
           const paid = payments.filter(function (p2) { return p2.Supplier === name && (!bfDate || p2.Date > bfDate); }).reduce(function (a, p2) { return a + (Number(p2.AmountPaid) || 0); }, 0);
-          if (bfDate === bfDateStr) continue; // already rolled this month
           const outstanding = bfAmt + purchase - paid;
           const id = await nextId("BF", "BF", "bf");
           await db.collection("bf").doc(id).set({ BFID: id, Supplier: name, BFMonth: monthLabel, BFDate: bfDateStr, BFAmount: outstanding, Site: "", Remarks: "Auto month-end rollover", CreatedBy: "System", CreatedAt: now.toISOString() });
@@ -240,19 +344,46 @@
         }
         const dieselNames = Array.from(new Set(dieselTx.map(function (t) { return t.Supplier; }).concat(dieselBF.map(function (b) { return b.Supplier; })).filter(Boolean)));
         for (const name of dieselNames) {
-          const { amt: bfAmt, date: bfDate } = latestBF(dieselBF, name);
+          const { amt: bfAmt, date: bfDate, month: bfMonth } = latestBF(dieselBF, name, "Supplier");
+          if (monthKeyOfLabel(bfMonth) === monthKey) continue;
           const cost = dieselTx.filter(function (t) { return t.Supplier === name && (!bfDate || t.Date > bfDate); }).reduce(function (a, t) { return a + (Number(t.Value) || 0); }, 0);
           const paid = dieselPayments.filter(function (p2) { return p2.Supplier === name && (!bfDate || p2.Date > bfDate); }).reduce(function (a, p2) { return a + (Number(p2.AmountPaid) || 0); }, 0);
-          if (bfDate === bfDateStr) continue;
           const outstanding = bfAmt + cost - paid;
           const id = await nextId("DieselBF", "DBF", "dieselBF");
           await db.collection("dieselBF").doc(id).set({ DieselBFID: id, Supplier: name, BFMonth: monthLabel, BFDate: bfDateStr, BFAmount: outstanding, Site: "", Remarks: "Auto month-end rollover", CreatedBy: "System", CreatedAt: now.toISOString() });
           rolled++;
         }
+        // Staff / Labour / Mistri: same monthly-BF pattern as suppliers. If a name has no BF
+        // history yet, its existing single BFAmount field is the opening balance (bfDate ""
+        // means "count all history since forever", matching what the app already showed).
+        const rollPeople = async function (list, dueList, dueField, dueNameField, payList, advList, bfList, bfAddAction, bfColl, bfCounter, bfPrefix) {
+          for (const person of list) {
+            const name = person.Name;
+            const existing = bfList.filter(function (r) { return r.Name === name; });
+            let bfAmt, bfDate, bfMonth;
+            if (existing.length) {
+              const row = pickLatestBFRow(existing);
+              bfAmt = Number(row.BFAmount) || 0; bfDate = row.BFDate || ""; bfMonth = row.BFMonth || "";
+            } else {
+              bfAmt = Number(person.BFAmount) || 0; bfDate = ""; bfMonth = "";
+            }
+            if (monthKeyOfLabel(bfMonth) === monthKey) continue;
+            const due = dueList.filter(function (r) { return r[dueNameField] === name && (!bfDate || (r.Date || r.Month + "-01") > bfDate); }).reduce(function (a, r) { return a + (Number(r[dueField]) || 0); }, 0);
+            const advances = (advList || []).filter(function (r) { return r[dueNameField] === name && (!bfDate || r.Date > bfDate); }).reduce(function (a, r) { return a + (Number(r.Amount) || 0); }, 0);
+            const paid = payList.filter(function (r) { return r[dueNameField] === name && (!bfDate || r.Date > bfDate); }).reduce(function (a, r) { return a + (Number(r.AmountPaid) || 0); }, 0);
+            const outstanding = bfAmt + due + advances - paid;
+            const id = await nextId(bfCounter, bfPrefix, bfColl);
+            await db.collection(bfColl).doc(id).set({ BFID: id, Name: name, BFMonth: monthLabel, BFDate: bfDateStr, BFAmount: outstanding, Remarks: "Auto month-end rollover", CreatedBy: "System", CreatedAt: now.toISOString() });
+            rolled++;
+          }
+        };
+        await rollPeople(staff, staffSalary, "NetSalary", "StaffName", staffPayments, null, staffBF, "addStaffBF", "staffBF", "StaffBFID", "SBF");
+        await rollPeople(labour, labourEntries, "NetAmount", "LabourName", labourPayments, labourAdvances, labourBF, "addLabourBF", "labourBF", "LabourBFID", "LBF");
+        await rollPeople(mistri, mistriDue, "NetDue", "MistriName", mistriPayments, mistriAdvances, mistriBF, "addMistriBF", "mistriBF", "MistriBFID", "MBF");
         return { success: true, skipped: false, rolled: rolled, message: "Monthly rollover complete (" + rolled + " BF entries added)." };
       }
       case "getAllData": {
-        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions"];
+        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions", "staffBF", "labourBF", "mistriBF", "vehicles", "vehicleDailyLog"];
         const arrs = await Promise.all(names.map(colToArray));
         const out = { success: true };
         names.forEach(function (n, i) { out[n] = arrs[i]; });
@@ -301,6 +432,21 @@
       case "updateBF": { const arr = await colToArray("bf"); const rec = arr.find(function (x) { return x.Supplier === p.OrigSupplier && x.BFMonth === p.OrigBFMonth && x.BFDate === p.OrigBFDate; }); if (!rec) return { success: false, message: "BF entry not found." }; const snap = await db.collection("bf").where("Supplier", "==", p.OrigSupplier).where("BFMonth", "==", p.OrigBFMonth).where("BFDate", "==", p.OrigBFDate).get(); if (snap.empty) return { success: false, message: "BF entry not found." }; await snap.docs[0].ref.set({ Supplier: p.Supplier, BFMonth: p.BFMonth, BFDate: p.BFDate, BFAmount: p.BFAmount, Site: p.Site, Remarks: p.Remarks }, { merge: true }); await auditLog(p.CreatedBy, "Updated Supplier BF", "SupplierBF", p.Supplier, "₹" + p.BFAmount); return { success: true, message: "BF balance updated successfully." }; }
       case "deleteBF": { const snap = await db.collection("bf").where("Supplier", "==", p.Supplier).where("BFMonth", "==", p.BFMonth).where("BFDate", "==", p.BFDate).get(); if (snap.empty) return { success: false, message: "BF entry not found." }; await snap.docs[0].ref.delete(); await auditLog(p.CreatedBy, "Deleted BF Entry", "SupplierBF", p.Supplier, ""); return { success: true, message: "BF entry deleted successfully." }; }
 
+      case "getStaffBF": return { success: true, data: await colToArray("staffBF") };
+      case "addStaffBF": { const id = (await nextId("StaffBFID", "SBF")); const rec = { Name: p.Name, BFMonth: p.BFMonth, BFDate: p.BFDate, BFAmount: p.BFAmount, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "", CreatedAt: new Date().toISOString() }; await db.collection("staffBF").doc(id).set(rec); await auditLog(p.CreatedBy, "Added Staff BF", "StaffBF", p.Name, "\u20B9" + p.BFAmount); return { success: true, message: "BF balance saved successfully." }; }
+      case "updateStaffBF": { const snap = await db.collection("staffBF").where("Name", "==", p.OrigName).where("BFMonth", "==", p.OrigBFMonth).where("BFDate", "==", p.OrigBFDate).get(); if (snap.empty) return { success: false, message: "BF entry not found." }; await snap.docs[0].ref.set({ Name: p.Name, BFMonth: p.BFMonth, BFDate: p.BFDate, BFAmount: p.BFAmount, Remarks: p.Remarks }, { merge: true }); await auditLog(p.CreatedBy, "Updated Staff BF", "StaffBF", p.Name, "\u20B9" + p.BFAmount); return { success: true, message: "BF balance updated successfully." }; }
+      case "deleteStaffBF": { const snap = await db.collection("staffBF").where("Name", "==", p.Name).where("BFMonth", "==", p.BFMonth).where("BFDate", "==", p.BFDate).get(); if (snap.empty) return { success: false, message: "BF entry not found." }; await snap.docs[0].ref.delete(); await auditLog(p.CreatedBy, "Deleted BF Entry", "StaffBF", p.Name, ""); return { success: true, message: "BF entry deleted successfully." }; }
+
+      case "getLabourBF": return { success: true, data: await colToArray("labourBF") };
+      case "addLabourBF": { const id = (await nextId("LabourBFID", "LBF")); const rec = { Name: p.Name, BFMonth: p.BFMonth, BFDate: p.BFDate, BFAmount: p.BFAmount, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "", CreatedAt: new Date().toISOString() }; await db.collection("labourBF").doc(id).set(rec); await auditLog(p.CreatedBy, "Added Labour BF", "LabourBF", p.Name, "\u20B9" + p.BFAmount); return { success: true, message: "BF balance saved successfully." }; }
+      case "updateLabourBF": { const snap = await db.collection("labourBF").where("Name", "==", p.OrigName).where("BFMonth", "==", p.OrigBFMonth).where("BFDate", "==", p.OrigBFDate).get(); if (snap.empty) return { success: false, message: "BF entry not found." }; await snap.docs[0].ref.set({ Name: p.Name, BFMonth: p.BFMonth, BFDate: p.BFDate, BFAmount: p.BFAmount, Remarks: p.Remarks }, { merge: true }); await auditLog(p.CreatedBy, "Updated Labour BF", "LabourBF", p.Name, "\u20B9" + p.BFAmount); return { success: true, message: "BF balance updated successfully." }; }
+      case "deleteLabourBF": { const snap = await db.collection("labourBF").where("Name", "==", p.Name).where("BFMonth", "==", p.BFMonth).where("BFDate", "==", p.BFDate).get(); if (snap.empty) return { success: false, message: "BF entry not found." }; await snap.docs[0].ref.delete(); await auditLog(p.CreatedBy, "Deleted BF Entry", "LabourBF", p.Name, ""); return { success: true, message: "BF entry deleted successfully." }; }
+
+      case "getMistriBF": return { success: true, data: await colToArray("mistriBF") };
+      case "addMistriBF": { const id = (await nextId("MistriBFID", "MBF")); const rec = { Name: p.Name, BFMonth: p.BFMonth, BFDate: p.BFDate, BFAmount: p.BFAmount, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "", CreatedAt: new Date().toISOString() }; await db.collection("mistriBF").doc(id).set(rec); await auditLog(p.CreatedBy, "Added Mistri BF", "MistriBF", p.Name, "\u20B9" + p.BFAmount); return { success: true, message: "BF balance saved successfully." }; }
+      case "updateMistriBF": { const snap = await db.collection("mistriBF").where("Name", "==", p.OrigName).where("BFMonth", "==", p.OrigBFMonth).where("BFDate", "==", p.OrigBFDate).get(); if (snap.empty) return { success: false, message: "BF entry not found." }; await snap.docs[0].ref.set({ Name: p.Name, BFMonth: p.BFMonth, BFDate: p.BFDate, BFAmount: p.BFAmount, Remarks: p.Remarks }, { merge: true }); await auditLog(p.CreatedBy, "Updated Mistri BF", "MistriBF", p.Name, "\u20B9" + p.BFAmount); return { success: true, message: "BF balance updated successfully." }; }
+      case "deleteMistriBF": { const snap = await db.collection("mistriBF").where("Name", "==", p.Name).where("BFMonth", "==", p.BFMonth).where("BFDate", "==", p.BFDate).get(); if (snap.empty) return { success: false, message: "BF entry not found." }; await snap.docs[0].ref.delete(); await auditLog(p.CreatedBy, "Deleted BF Entry", "MistriBF", p.Name, ""); return { success: true, message: "BF entry deleted successfully." }; }
+
       case "getDieselTransactions": return { success: true, data: await colToArray("dieselTx") };
       case "addDieselTransaction": { const value = Number(p.DieselQuantity) * Number(p.Rate); const r = await genericAdd("DieselTransaction", { Date: p.Date, ChalanNumber: p.ChalanNumber || "", Time: p.Time || "", Supplier: p.Supplier, VehicleNumber: p.VehicleNumber, DieselQuantity: p.DieselQuantity, Unit: p.Unit || "Litres", Rate: p.Rate, Value: value, Site: p.Site, Driver: p.Driver || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Diesel Transaction", "DieselTransactions", r.id, p.Supplier + " ₹" + value); return { success: true, message: "Diesel transaction saved successfully.", data: { Value: value } }; }
       case "updateDieselTransaction": { const value = Number(p.DieselQuantity) * Number(p.Rate); const ok = await genericUpdate("DieselTransaction", { SLNo: p.SLNo }, { Date: p.Date, ChalanNumber: p.ChalanNumber || "", Time: p.Time || "", Supplier: p.Supplier, VehicleNumber: p.VehicleNumber, DieselQuantity: p.DieselQuantity, Rate: p.Rate, Value: value, Site: p.Site, Driver: p.Driver, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Diesel transaction not found." }; await auditLog(p.CreatedBy, "Updated Diesel Transaction", "DieselTransactions", p.SLNo, p.Supplier + " ₹" + value); return { success: true, message: "Diesel transaction updated successfully." }; }
@@ -320,6 +466,16 @@
       case "addSite": { const r = await genericAdd("Site", { SiteName: p.SiteName }); await auditLog(p.CreatedBy, "Added Site", "Sites", r.id, p.SiteName); return { success: true, message: "Site saved successfully." }; }
       case "updateSite": { const ok = await genericUpdate("Site", p, { SiteName: p.SiteName }); if (!ok) return { success: false, message: "Site not found." }; await auditLog(p.CreatedBy, "Updated Site", "Sites", p.SiteID, p.SiteName); return { success: true, message: "Site updated successfully." }; }
       case "deleteSite": await genericDelete("Site", p.SiteID); await auditLog(p.CreatedBy, "Deleted Site", "Sites", p.SiteID, ""); return { success: true, message: "Site deleted successfully." };
+
+      case "getVehicles": return { success: true, data: await colToArray("vehicles") };
+      case "addVehicle": { const r = await genericAdd("Vehicle", { VehicleNumber: p.VehicleNumber, DriverName: p.DriverName || "", DieselSource: p.DieselSource || "Calculated", Mileage: p.Mileage || 0, Notes: p.Notes || "" }); await auditLog(p.CreatedBy, "Added Vehicle", "Vehicles", r.id, p.VehicleNumber); return { success: true, message: "Vehicle saved successfully." }; }
+      case "updateVehicle": { const ok = await genericUpdate("Vehicle", p, { VehicleNumber: p.VehicleNumber, DriverName: p.DriverName || "", DieselSource: p.DieselSource || "Calculated", Mileage: p.Mileage || 0, Notes: p.Notes || "" }); if (!ok) return { success: false, message: "Vehicle not found." }; await auditLog(p.CreatedBy, "Updated Vehicle", "Vehicles", p.VehicleID, p.VehicleNumber); return { success: true, message: "Vehicle updated successfully." }; }
+      case "deleteVehicle": await genericDelete("Vehicle", p.VehicleID); await auditLog(p.CreatedBy, "Deleted Vehicle", "Vehicles", p.VehicleID, ""); return { success: true, message: "Vehicle deleted successfully." };
+
+      case "getVehicleLogs": return { success: true, data: await colToArray("vehicleDailyLog") };
+      case "addVehicleLog": { const r = await genericAdd("VehicleLog", { Date: p.Date, VehicleNumber: p.VehicleNumber, KmRun: Number(p.KmRun) || 0, DriverFee: Number(p.DriverFee) || 0, OtherExpense: Number(p.OtherExpense) || 0, OilPricePerLitre: Number(p.OilPricePerLitre) || 0, Remarks: p.Remarks || "" }); await auditLog(p.CreatedBy, "Added Vehicle Log", "VehicleLog", r.id, p.VehicleNumber); return { success: true, message: "Vehicle log saved successfully." }; }
+      case "updateVehicleLog": { const ok = await genericUpdate("VehicleLog", p, { Date: p.Date, VehicleNumber: p.VehicleNumber, KmRun: Number(p.KmRun) || 0, DriverFee: Number(p.DriverFee) || 0, OtherExpense: Number(p.OtherExpense) || 0, OilPricePerLitre: Number(p.OilPricePerLitre) || 0, Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Vehicle log not found." }; await auditLog(p.CreatedBy, "Updated Vehicle Log", "VehicleLog", p.LogID, p.VehicleNumber); return { success: true, message: "Vehicle log updated successfully." }; }
+      case "deleteVehicleLog": await genericDelete("VehicleLog", p.LogID); await auditLog(p.CreatedBy, "Deleted Vehicle Log", "VehicleLog", p.LogID, ""); return { success: true, message: "Vehicle log deleted successfully." };
 
       case "getMaterials": return { success: true, data: await colToArray("materials") };
       case "addMaterial": { const r = await genericAdd("Material", { MaterialName: p.MaterialName, DefaultUnit: p.DefaultUnit }); await auditLog(p.CreatedBy, "Added Material", "Materials", r.id, p.MaterialName); return { success: true, message: "Material saved successfully." }; }

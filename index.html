@@ -182,9 +182,12 @@
       <button onClick="{{ navPayments }}" style="{{ navStyle.payments }}">Payments<sc-if value="{{ hasNew.payments }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.payments }}</span></sc-if></button>
       <button onClick="{{ navBF }}" style="{{ navStyle.bf }}">BF Balance</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Diesel Management</div>
+      <button onClick="{{ navDieselSuppliers }}" style="{{ navStyle.dieselSuppliers }}">Diesel Suppliers</button>
       <button onClick="{{ navDieselTx }}" style="{{ navStyle.dieselTx }}">Diesel Transactions<sc-if value="{{ hasNew.dieselTx }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.dieselTx }}</span></sc-if></button>
       <button onClick="{{ navDieselPayments }}" style="{{ navStyle.dieselPayments }}">Diesel Payments<sc-if value="{{ hasNew.dieselPayments }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.dieselPayments }}</span></sc-if></button>
       <button onClick="{{ navDieselBF }}" style="{{ navStyle.dieselBF }}">Diesel BF</button>
+      <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Vehicle Management</div>
+      <button onClick="{{ navVehicles }}" style="{{ navStyle.vehicles }}">Vehicles</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Master Data</div>
       <button onClick="{{ navSites }}" style="{{ navStyle.sites }}">Sites</button>
       <button onClick="{{ navMaterials }}" style="{{ navStyle.materials }}">Materials</button>
@@ -342,7 +345,7 @@
         <button onClick="{{ supplierDetail.onExportPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" data-stat-grid>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">BF Balance</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.bfFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">BF Balance<sc-if value="{{ supplierDetail.bfMonth }}"> ({{ supplierDetail.bfMonth }})</sc-if></div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.bfFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Purchase (Material)</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.materialFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Supplier Vehicle Fare</div><div style="font-size:20px;font-weight:800;">{{ supplierDetail.supplierFareFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Self Vehicle Fare</div><div style="font-size:20px;font-weight:800;color:var(--muted);">{{ supplierDetail.selfFareFmt }}</div></div>
@@ -650,6 +653,164 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ viewIs.dieselSuppliers }}">
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;" data-card-grid>
+        <sc-for list="{{ dieselSupplierCards }}" as="sup" hint-placeholder-count="3">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;">
+            <div style="font-weight:700;font-size:16px;margin-bottom:14px;">{{ sup.name }}</div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Diesel Cost</span><span>{{ sup.costFmt }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Paid</span><span>{{ sup.paidFmt }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:14px;"><span style="color:var(--muted);">Outstanding</span><span style="color:{{ sup.outstandingColor }};font-weight:700;">{{ sup.outstandingFmt }}</span></div>
+            <button onClick="{{ sup.onOpen }}" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text);padding:9px;border-radius:6px;cursor:pointer;font-size:13px;">View Details</button>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.dieselSupplierDetail }}">
+      <button onClick="{{ navDieselSuppliers }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:20px;">← All Diesel Suppliers</button>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" data-stat-grid>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">BF Balance<sc-if value="{{ dieselSupplierDetail.bfMonth }}"> ({{ dieselSupplierDetail.bfMonth }})</sc-if></div><div style="font-size:20px;font-weight:800;">{{ dieselSupplierDetail.bfFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Diesel Cost</div><div style="font-size:20px;font-weight:800;">{{ dieselSupplierDetail.costFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Paid</div><div style="font-size:20px;font-weight:800;">{{ dieselSupplierDetail.paidFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Outstanding</div><div style="font-size:20px;font-weight:800;color:{{ dieselSupplierDetail.outstandingColor }};">{{ dieselSupplierDetail.outstandingFmt }}</div></div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div style="font-weight:700;font-size:13px;">BF History</div><button onClick="{{ dieselSupplierDetail.onAddBF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">+ Add BF</button></div>
+        <sc-if value="{{ dieselSupplierDetail.bfRows.length }}" hint-placeholder-val="{{ false }}">
+          <table style="width:100%;border-collapse:collapse;"><tbody>
+            <sc-for list="{{ dieselSupplierDetail.bfRows }}" as="r" hint-placeholder-count="2">
+              <tr><td style="padding:6px 0;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.BFMonth }}</td><td style="padding:6px 0;font-size:13px;color:var(--muted2);border-bottom:1px solid var(--border-soft);">{{ r.BFDate }}</td><td style="padding:6px 0;font-size:13px;text-align:right;color:var(--gold);font-weight:600;border-bottom:1px solid var(--border-soft);">{{ r.BFAmountFmt }}</td><td style="padding:6px 0;text-align:right;border-bottom:1px solid var(--border-soft);white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-right:8px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:none;color:#e2574c;cursor:pointer;font-size:12px;">Delete</button></td></tr>
+            </sc-for>
+          </tbody></table>
+        </sc-if>
+        <sc-if value="{{ !dieselSupplierDetail.bfRows.length }}" hint-placeholder-val="{{ true }}">
+          <div style="font-size:12px;color:var(--muted2);">No BF history yet.</div>
+        </sc-if>
+      </div>
+
+      <div style="font-weight:700;font-size:14px;margin-bottom:10px;">Transactions</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;margin-bottom:24px;">
+        <table style="width:100%;border-collapse:collapse;min-width:600px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Vehicle</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Qty</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Rate</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Value</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ dieselSupplierDetail.rows }}" as="r" hint-placeholder-count="3">
+              <tr>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.VehicleNumber }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.DieselQuantity }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.RateFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:var(--gold);font-weight:600;">{{ r.ValueFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="font-weight:700;font-size:14px;margin-bottom:10px;">Payments</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:500px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Date</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Amount Paid</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Method</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ dieselSupplierDetail.payRows }}" as="r" hint-placeholder-count="2">
+              <tr>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:var(--gold);font-weight:600;">{{ r.AmountPaidFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.PaymentMethod }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.vehicles }}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;"><button onClick="{{ openVehicleModal }}" style="background:var(--gold);color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Add Vehicle</button></div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;" data-card-grid>
+        <sc-for list="{{ vehicleCards }}" as="v" hint-placeholder-count="3">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;">
+            <div style="font-weight:700;font-size:16px;margin-bottom:4px;">{{ v.VehicleNumber }}</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">{{ v.DriverName }}</div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Income</span><span>{{ v.incomeFmt }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Diesel Cost</span><span>{{ v.dieselCostFmt }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Driver Fee</span><span>{{ v.driverFeeFmt }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Mileage</span><span>{{ v.mileageFmt }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:14px;"><span style="color:var(--muted);">Net Profit / Loss</span><span style="color:{{ v.profitColor }};font-weight:700;">{{ v.profitFmt }}</span></div>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ v.onOpen }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:9px;border-radius:6px;cursor:pointer;font-size:13px;">View Details</button>
+              <button onClick="{{ v.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:9px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Edit</button>
+              <button onClick="{{ v.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:9px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Delete</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.vehicleDetail }}">
+      <button onClick="{{ navVehicles }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:20px;">← All Vehicles</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-weight:700;font-size:18px;">{{ vehicleDetail.VehicleNumber }} <span style="font-size:13px;color:var(--muted);font-weight:400;">{{ vehicleDetail.DriverName }}</span></div>
+        <button onClick="{{ vehicleDetail.onExportExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;" data-stat-grid>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Income</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.incomeFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Diesel Cost</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.dieselCostFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Driver Fee</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.driverFeeFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Other Expense</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.otherExpenseFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total KM Run</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.kmRunFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Mileage</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.mileageFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Net Profit / Loss</div><div style="font-size:20px;font-weight:800;color:{{ vehicleDetail.profitColor }};">{{ vehicleDetail.profitFmt }}</div></div>
+      </div>
+      <div style="color:var(--muted2);font-size:12px;margin-bottom:20px;">Income = fare earned using this vehicle instead of a supplier's. Net P/L per day = Income − Diesel Cost − Driver Fee − Other Expense.</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-weight:700;font-size:14px;">Daily Log</div>
+        <button onClick="{{ vehicleDetail.onAddLog }}" style="background:var(--gold);color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Add Daily Log</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:700px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Date</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Income</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Diesel Cost</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Driver Fee</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">KM Run</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Net P/L</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Note</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ vehicleDetail.dailyRows }}" as="r" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.incomeFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.dieselCostFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.driverFeeFmt }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.kmRun }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;font-weight:700;color:{{ r.netColor }};">{{ r.netFmt }}</td>
+                <td style="padding:12px;font-size:11px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted2);">{{ r.idleNote }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">{{ r.editLabel }}</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
     <sc-if value="{{ viewIs.dieselTx }}">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px;" data-stat-grid>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Quantity</div><div style="font-size:20px;font-weight:800;">{{ totalDieselQty }} L</div></div>
@@ -927,10 +1088,24 @@
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">This Month (Attendance)</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.monthEarnedFmt }}</div><div style="font-size:11px;color:var(--muted2);margin-top:4px;">{{ staffDetail.presentDaysThisMonthFmt }} days present{{ staffDetail.monthAlreadySlippedNote }}</div></div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Net Due</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.totalDueFmt }}</div></div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">BF Balance</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.bfFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">BF Balance<sc-if value="{{ staffDetail.bfMonth }}"> ({{ staffDetail.bfMonth }})</sc-if></div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.bfFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Net Due</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:#b8860b;">{{ staffDetail.totalDueFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Paid</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.totalPaidFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Outstanding</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:{{ staffDetail.outstandingColor }};">{{ staffDetail.outstandingFmt }}</div></div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div style="font-weight:700;font-size:13px;">BF History</div><button onClick="{{ staffDetail.onAddBF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">+ Add BF</button></div>
+        <sc-if value="{{ staffDetail.bfRows.length }}" hint-placeholder-val="{{ false }}">
+          <table style="width:100%;border-collapse:collapse;"><tbody>
+            <sc-for list="{{ staffDetail.bfRows }}" as="r" hint-placeholder-count="2">
+              <tr><td style="padding:6px 0;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.BFMonth }}</td><td style="padding:6px 0;font-size:13px;color:var(--muted2);border-bottom:1px solid var(--border-soft);">{{ r.BFDate }}</td><td style="padding:6px 0;font-size:13px;text-align:right;color:var(--gold);font-weight:600;border-bottom:1px solid var(--border-soft);">{{ r.BFAmountFmt }}</td><td style="padding:6px 0;text-align:right;border-bottom:1px solid var(--border-soft);white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-right:8px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:none;color:#e2574c;cursor:pointer;font-size:12px;">Delete</button></td></tr>
+            </sc-for>
+          </tbody></table>
+        </sc-if>
+        <sc-if value="{{ !staffDetail.bfRows.length }}" hint-placeholder-val="{{ true }}">
+          <div style="font-size:12px;color:var(--muted2);">No BF history yet — using the legacy BF/Advance field.</div>
+        </sc-if>
       </div>
 
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
@@ -1067,10 +1242,24 @@
         <div style="color:var(--muted);font-size:13px;margin-top:4px;">{{ mistriDetail.ContactNumber }}</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Net Due</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ mistriDetail.totalDueFmt }}</div></div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">BF Balance</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ mistriDetail.bfFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">BF Balance<sc-if value="{{ mistriDetail.bfMonth }}"> ({{ mistriDetail.bfMonth }})</sc-if></div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ mistriDetail.bfFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Net Due</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:#b8860b;">{{ mistriDetail.totalDueFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Paid</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ mistriDetail.totalPaidFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Outstanding</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:{{ mistriDetail.outstandingColor }};">{{ mistriDetail.outstandingFmt }}</div></div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div style="font-weight:700;font-size:13px;">BF History</div><button onClick="{{ mistriDetail.onAddBF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">+ Add BF</button></div>
+        <sc-if value="{{ mistriDetail.bfRows.length }}" hint-placeholder-val="{{ false }}">
+          <table style="width:100%;border-collapse:collapse;"><tbody>
+            <sc-for list="{{ mistriDetail.bfRows }}" as="r" hint-placeholder-count="2">
+              <tr><td style="padding:6px 0;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.BFMonth }}</td><td style="padding:6px 0;font-size:13px;color:var(--muted2);border-bottom:1px solid var(--border-soft);">{{ r.BFDate }}</td><td style="padding:6px 0;font-size:13px;text-align:right;color:var(--gold);font-weight:600;border-bottom:1px solid var(--border-soft);">{{ r.BFAmountFmt }}</td><td style="padding:6px 0;text-align:right;border-bottom:1px solid var(--border-soft);white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-right:8px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:none;color:#e2574c;cursor:pointer;font-size:12px;">Delete</button></td></tr>
+            </sc-for>
+          </tbody></table>
+        </sc-if>
+        <sc-if value="{{ !mistriDetail.bfRows.length }}" hint-placeholder-val="{{ true }}">
+          <div style="font-size:12px;color:var(--muted2);">No BF history yet — using the legacy BF/Advance field.</div>
+        </sc-if>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -1217,10 +1406,24 @@
         <div style="color:var(--muted);font-size:13px;margin-top:4px;">{{ labourDetail.ContactNumber }}</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Net Due</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ labourDetail.totalDueFmt }}</div></div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">BF Balance</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ labourDetail.bfFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">BF Balance<sc-if value="{{ labourDetail.bfMonth }}"> ({{ labourDetail.bfMonth }})</sc-if></div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ labourDetail.bfFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Net Due</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:#b8860b;">{{ labourDetail.totalDueFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Total Paid</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ labourDetail.totalPaidFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">Outstanding</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:{{ labourDetail.outstandingColor }};">{{ labourDetail.outstandingFmt }}</div></div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div style="font-weight:700;font-size:13px;">BF History</div><button onClick="{{ labourDetail.onAddBF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">+ Add BF</button></div>
+        <sc-if value="{{ labourDetail.bfRows.length }}" hint-placeholder-val="{{ false }}">
+          <table style="width:100%;border-collapse:collapse;"><tbody>
+            <sc-for list="{{ labourDetail.bfRows }}" as="r" hint-placeholder-count="2">
+              <tr><td style="padding:6px 0;font-size:13px;border-bottom:1px solid var(--border-soft);">{{ r.BFMonth }}</td><td style="padding:6px 0;font-size:13px;color:var(--muted2);border-bottom:1px solid var(--border-soft);">{{ r.BFDate }}</td><td style="padding:6px 0;font-size:13px;text-align:right;color:var(--gold);font-weight:600;border-bottom:1px solid var(--border-soft);">{{ r.BFAmountFmt }}</td><td style="padding:6px 0;text-align:right;border-bottom:1px solid var(--border-soft);white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-right:8px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:none;color:#e2574c;cursor:pointer;font-size:12px;">Delete</button></td></tr>
+            </sc-for>
+          </tbody></table>
+        </sc-if>
+        <sc-if value="{{ !labourDetail.bfRows.length }}" hint-placeholder-val="{{ true }}">
+          <div style="font-size:12px;color:var(--muted2);">No BF history yet — using the legacy BF/Advance field.</div>
+        </sc-if>
       </div>
 
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
@@ -2383,6 +2586,63 @@
         </form>
       </sc-if>
 
+      <sc-if value="{{ personBFModalOpen }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:6px;">{{ modalTitle }}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">{{ personBFName }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitPersonBF }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" name="BFMonth" placeholder="BF Month (e.g. August 2026)" required="true" defaultValue="{{ personBFDefaults.BFMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="date" name="BFDate" required="true" defaultValue="{{ personBFDefaults.BFDate }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
+          <input type="number" step="any" name="BFAmount" placeholder="BF Amount (₹)" required="true" defaultValue="{{ personBFDefaults.BFAmount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ personBFDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:var(--gold);color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.vehicle }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:6px;">{{ modalTitle }}</div>
+        <sc-if value="{{ vehicleDefaults.VehicleNumber }}"><div style="font-size:12px;color:var(--muted);margin-bottom:16px;">{{ vehicleDefaults.VehicleNumber }}</div></sc-if>
+        <form key="{{ formKey }}" onSubmit="{{ submitVehicle }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" name="VehicleNumber" placeholder="Vehicle Number" required="true" defaultValue="{{ vehicleDefaults.VehicleNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="DriverName" placeholder="Driver Name" defaultValue="{{ vehicleDefaults.DriverName }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <select name="DieselSource" defaultValue="{{ vehicleDefaults.DieselSource }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;">
+            <option value="Calculated">Calculate diesel cost (KM ÷ Mileage × Oil Price)</option>
+            <option value="Ledger">Take diesel cost from Diesel Transactions</option>
+          </select>
+          <input type="number" step="any" name="Mileage" placeholder="Mileage (km/L) — used only when calculating diesel cost" defaultValue="{{ vehicleDefaults.Mileage }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <textarea name="Notes" placeholder="Notes (optional)" defaultValue="{{ vehicleDefaults.Notes }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:var(--gold);color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.vehicleLog }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:6px;">{{ modalTitle }}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">{{ vehicleDetail.VehicleNumber }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitVehicleLog }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="date" name="Date" required="true" defaultValue="{{ vehicleLogDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
+          <input type="number" step="any" name="KmRun" placeholder="KM Run" defaultValue="{{ vehicleLogDefaults.KmRun }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="number" step="any" name="DriverFee" placeholder="Driver Fee (₹)" defaultValue="{{ vehicleLogDefaults.DriverFee }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <sc-if value="{{ !vehicleDetail.usesLedger }}" hint-placeholder-val="{{ true }}">
+            <input type="number" step="any" name="OilPricePerLitre" placeholder="Oil Price per Litre (₹, today's rate)" defaultValue="{{ vehicleLogDefaults.OilPricePerLitre }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          </sc-if>
+          <sc-if value="{{ vehicleDetail.usesLedger }}" hint-placeholder-val="{{ false }}">
+            <input type="hidden" name="OilPricePerLitre" value="0" />
+            <div style="font-size:12px;color:var(--muted2);">Diesel cost for this vehicle comes from Diesel Transactions, not entered here.</div>
+          </sc-if>
+          <input type="number" step="any" name="OtherExpense" placeholder="Other Expense (₹, optional)" defaultValue="{{ vehicleLogDefaults.OtherExpense }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ vehicleLogDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:var(--gold);color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
       <sc-if value="{{ modalIs.dieselTx }}">
         <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
         <form key="{{ formKey }}" onSubmit="{{ submitDieselTx }}" style="display:flex;flex-direction:column;gap:12px;">
@@ -2787,8 +3047,8 @@ class Component extends DCLogic {
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [],
-    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], otherPayments: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
-    selectedSupplier: null, selectedMistri: null, selectedLabour: null, selectedSite: null, modal: null, editRecord: null,
+    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], staffBF: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], mistriBF: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], labourBF: [], vehicles: [], vehicleDailyLog: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], otherPayments: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
+    selectedSupplier: null, selectedMistri: null, selectedLabour: null, selectedSite: null, selectedDieselSupplier: null, selectedVehicle: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, siteDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
     fundTransferFilter: { from: '', to: '', party: '' }, userBalanceFilter: { from: '', to: '', name: '' }, userBalanceExportScope: 'site', userRowFilter: {}, fundTransferShowAll: false,
@@ -2811,11 +3071,25 @@ class Component extends DCLogic {
     if (sess) { this.setState({ session: sess, view: 'dashboard' }); this.loadAll(); this.loadBilling(); this.runMonthlyRolloverCheck(); }
     else this.setState({ loading: false });
   }
+  // One-time cleanup only — no more automatic monthly BF rows are ever written. BF Balance
+  // stays exactly what you entered (e.g. August) until you manually add the next one; Outstanding
+  // is always computed live as that BF + this month's purchases/fare/dues minus payments, so
+  // nothing about the stored BF value changes on its own.
+  // Auto-fills missing August BF dates, cleans up any stray bad rows, then runs the (now-fixed)
+  // monthly rollover so next month's BF snapshot is created automatically from this month's
+  // outstanding \u2014 same rule for suppliers, diesel, staff, labour, and mistri.
   runMonthlyRolloverCheck() {
-    PandaAPI.call('runMonthlyRollover', {}).then(function (r) {
-      if (r && r.success && !r.skipped && r.rolled > 0) this.showToast(r.message);
-      if (r && r.success && !r.skipped) this.loadAll();
-    }.bind(this)).catch(function () {});
+    const self = this;
+    PandaAPI.call('autoSeedPersonBF', {}).catch(function () { return null; }).then(function (r) {
+      if (r && r.seeded > 0) self.loadAll();
+      return PandaAPI.call('autoFillAugustBFDates', {}).catch(function () { return null; });
+    }).then(function () {
+      return PandaAPI.call('autoCleanupBadRollover', {}).catch(function () { return null; });
+    }).then(function () {
+      PandaAPI.call('runMonthlyRollover', {}).then(function (r) {
+        if (r && r.success && !r.skipped && r.rolled > 0) { self.showToast(r.message); self.loadAll(); }
+      }).catch(function () {});
+    });
   }
   loadBilling() {
     const self = this;
@@ -2839,11 +3113,12 @@ class Component extends DCLogic {
       Suppliers: s.suppliers, Transactions: s.transactions, Payments: s.payments, BF: s.bf,
       DieselTransactions: s.dieselTx, DieselPayments: s.dieselPayments, DieselBF: s.dieselBF,
       Sites: s.sites, Materials: s.materials, Users: s.users,
-      Staff: s.staff, StaffSalary: s.staffSalary, StaffPayments: s.staffPayments, StaffAttendance: s.staffAttendance,
-      Mistri: s.mistri, MistriDue: s.mistriDue, MistriPayments: s.mistriPayments, MistriAdvances: s.mistriAdvances,
-      Labour: s.labour, LabourEntries: s.labourEntries, LabourPayments: s.labourPayments, LabourAdvances: s.labourAdvances,
+      Staff: s.staff, StaffSalary: s.staffSalary, StaffPayments: s.staffPayments, StaffAttendance: s.staffAttendance, StaffBF: s.staffBF,
+      Mistri: s.mistri, MistriDue: s.mistriDue, MistriPayments: s.mistriPayments, MistriAdvances: s.mistriAdvances, MistriBF: s.mistriBF,
+      Labour: s.labour, LabourEntries: s.labourEntries, LabourPayments: s.labourPayments, LabourAdvances: s.labourAdvances, LabourBF: s.labourBF,
       FundTransfers: s.fundTransfers, SiteAllocations: s.siteAllocations, SiteExpenses: s.siteExpenses, OtherPayments: s.otherPayments,
-      TaskCompletions: s.taskCompletions
+      TaskCompletions: s.taskCompletions,
+      Vehicles: s.vehicles, VehicleDailyLog: s.vehicleDailyLog
     };
     Object.keys(collections).forEach(function (name) {
       const rows = collections[name] || [];
@@ -2871,10 +3146,11 @@ class Component extends DCLogic {
         suppliers: r.suppliers || [], transactions: r.transactions || [], payments: r.payments || [], bf: r.bf || [],
         dieselTx: r.dieselTx || [], dieselPayments: r.dieselPayments || [], dieselBF: r.dieselBF || [],
         sites: r.sites || [], materials: r.materials || [], users: r.users || [], auditLog: r.auditLog || [],
-        staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [],
-        mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [],
-        labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [],
+        staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [], staffBF: r.staffBF || [],
+        mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [], mistriBF: r.mistriBF || [],
+        labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [], labourBF: r.labourBF || [],
         fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
+        vehicles: r.vehicles || [], vehicleDailyLog: r.vehicleDailyLog || [],
         maintenance: r.maintenance || { enabled: false, message: '' },
         announcement: r.announcement || { enabled: false, message: '' },
         loading: false
@@ -2892,8 +3168,10 @@ class Component extends DCLogic {
     const map = {
       Transaction: 'transactions', Payment: 'payments', BF: 'bf', DieselTransaction: 'dieselTx', DieselPayment: 'dieselPayments', DieselBF: 'dieselBF',
       Supplier: 'suppliers', Site: 'sites', Material: 'materials', Staff: 'staff', StaffSalary: 'staffSalary', StaffPayment: 'staffPayments', StaffAttendance: 'staffAttendance',
-      Mistri: 'mistri', MistriDue: 'mistriDue', MistriPayment: 'mistriPayments', MistriAdvance: 'mistriAdvances',
-      Labour: 'labour', LabourEntry: 'labourEntries', LabourPayment: 'labourPayments', LabourAdvance: 'labourAdvances',
+      Mistri: 'mistri', MistriDue: 'mistriDue', MistriPayment: 'mistriPayments', MistriAdvance: 'mistriAdvances', MistriBF: 'mistriBF',
+      Labour: 'labour', LabourEntry: 'labourEntries', LabourPayment: 'labourPayments', LabourAdvance: 'labourAdvances', LabourBF: 'labourBF',
+      StaffBF: 'staffBF',
+      Vehicle: 'vehicles', VehicleLog: 'vehicleDailyLog',
       FundTransfer: 'fundTransfers', SiteAllocation: 'siteAllocations', SiteExpense: 'siteExpenses', OtherPayment: 'otherPayments', TaskCompletion: 'taskCompletions', User: 'users'
     };
     const entity = action.replace(/^(add|update|delete)/, '');
@@ -2912,10 +3190,11 @@ class Component extends DCLogic {
         suppliers: r.suppliers || [], transactions: r.transactions || [], payments: r.payments || [], bf: r.bf || [],
         dieselTx: r.dieselTx || [], dieselPayments: r.dieselPayments || [], dieselBF: r.dieselBF || [],
         sites: r.sites || [], materials: r.materials || [], users: r.users || [],
-        staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [],
-        mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [],
-        labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [],
-        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || []
+        staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [], staffBF: r.staffBF || [],
+        mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [], mistriBF: r.mistriBF || [],
+        labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [], labourBF: r.labourBF || [],
+        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
+        vehicles: r.vehicles || [], vehicleDailyLog: r.vehicleDailyLog || []
       });
     });
   }
@@ -3340,6 +3619,8 @@ class Component extends DCLogic {
   toggleMobileNav() { this.setState(function (s) { return { mobileNavOpen: !s.mobileNavOpen }; }); }
   closeMobileNav() { this.setState({ mobileNavOpen: false }); }
   openSupplier(name) { this.setState({ view: 'supplierDetail', selectedSupplier: name, mobileNavOpen: false }); }
+  openDieselSupplier(name) { this.setState({ view: 'dieselSupplierDetail', selectedDieselSupplier: name, mobileNavOpen: false }); }
+  openVehicle(vn) { this.setState({ view: 'vehicleDetail', selectedVehicle: vn, mobileNavOpen: false }); }
   openStaffDetail(name) { this.setState({ view: 'staffDetail', selectedStaff: name, modal: null, mobileNavOpen: false }); }
   openMistriDetail(name) { this.setState({ view: 'mistriDetail', selectedMistri: name, modal: null, mobileNavOpen: false }); }
   openSiteDetail(name) { this.setState({ view: 'siteDetail', selectedSite: name, modal: null, mobileNavOpen: false }); }
@@ -3639,6 +3920,56 @@ class Component extends DCLogic {
     const payload = { Supplier: f.Supplier.value, BFMonth: f.BFMonth.value, BFDate: f.BFDate.value, BFAmount: f.BFAmount.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.OrigSupplier = ed.Supplier; payload.OrigBFMonth = ed.BFMonth; payload.OrigBFDate = ed.BFDate; this.submitGeneric('updateBF', payload, 'BF balance updated successfully.'); }
     else this.submitGeneric('addBF', payload, 'BF balance saved successfully.');
+  }
+  // Shared BF-history submit for Staff/Labour/Mistri — `kind` is 'staffBF'|'labourBF'|'mistriBF',
+  // `name` is the entity name the modal was opened for (BF history is keyed by Name).
+  submitPersonBF(kind, name, e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.BFMonth.value || !f.BFAmount.value) { this.showToast('Please fill all required fields.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Name: name, BFMonth: f.BFMonth.value, BFDate: f.BFDate.value, BFAmount: f.BFAmount.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const addAction = kind === 'staffBF' ? 'addStaffBF' : (kind === 'labourBF' ? 'addLabourBF' : 'addMistriBF');
+    const updAction = kind === 'staffBF' ? 'updateStaffBF' : (kind === 'labourBF' ? 'updateLabourBF' : 'updateMistriBF');
+    if (ed) { payload.OrigName = ed.Name; payload.OrigBFMonth = ed.BFMonth; payload.OrigBFDate = ed.BFDate; this.submitGeneric(updAction, payload, 'BF balance updated successfully.'); }
+    else this.submitGeneric(addAction, payload, 'BF balance saved successfully.');
+  }
+  deletePersonBF(kind, deleteAction, r) {
+    if (!window.confirm('Delete this BF entry?')) return;
+    const self = this;
+    PandaAPI.call(deleteAction, { Name: r.Name, BFMonth: r.BFMonth, BFDate: r.BFDate, CreatedBy: this.currentUserName() }).then(function (res) { self.showToast(res.message); if (res.success) self.refreshEntity(deleteAction.replace('delete', 'add')); });
+  }
+  exportVehicleExcel(vn) {
+    const d = this._lastVehicleDetail; if (!d) return;
+    if (!window.XLSX) { this.showToast('Excel library still loading — try again in a moment.'); return; }
+    const wb = XLSX.utils.book_new();
+    const summaryAoa = [['PANDA CONSTRUCTION'], ['Vehicle Statement — ' + d.name], [],
+      ['Total Income', d.fin.income], ['Diesel Cost', d.fin.dieselCost], ['Driver Fee', d.fin.driverFee], ['Other Expense', d.fin.otherExpense], ['Total KM Run', d.fin.kmRun], ['Mileage (km/L)', Number(d.fin.mileage.toFixed(1))], ['Net Profit / Loss', d.fin.profit]];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryAoa), 'Summary');
+    const dailyAoa = [['Date', 'Income', 'Diesel Cost', 'Driver Fee', 'KM Run', 'Net P/L', 'Note']];
+    d.dailyRows.forEach(function (r) { dailyAoa.push([r.Date, r.incomeFmt, r.dieselCostFmt, r.driverFeeFmt, r.kmRun, r.netFmt, r.idleNote]); });
+    const wsDaily = XLSX.utils.aoa_to_sheet(dailyAoa);
+    wsDaily['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 10 }, { wch: 14 }, { wch: 26 }];
+    XLSX.utils.book_append_sheet(wb, wsDaily, 'Daily');
+    XLSX.writeFile(wb, 'Vehicle-' + vn.replace(/[^a-zA-Z0-9]/g, '') + '.xlsx');
+  }
+  submitVehicle(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.VehicleNumber.value.trim()) { this.showToast('Vehicle number is required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { VehicleNumber: f.VehicleNumber.value.trim(), DriverName: f.DriverName.value, DieselSource: f.DieselSource.value, Mileage: f.Mileage.value || 0, Notes: f.Notes.value, CreatedBy: this.currentUserName() };
+    if (ed && ed.VehicleID) { payload.VehicleID = ed.VehicleID; this.submitGeneric('updateVehicle', payload, 'Vehicle updated successfully.'); }
+    else this.submitGeneric('addVehicle', payload, 'Vehicle saved successfully.');
+  }
+  submitVehicleLog(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value) { this.showToast('Date is required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, VehicleNumber: this.state.selectedVehicle, KmRun: f.KmRun.value || 0, DriverFee: f.DriverFee.value || 0, OtherExpense: f.OtherExpense.value || 0, OilPricePerLitre: f.OilPricePerLitre.value || 0, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.LogID = ed.LogID; this.submitGeneric('updateVehicleLog', payload, 'Daily log updated successfully.'); }
+    else this.submitGeneric('addVehicleLog', payload, 'Daily log saved successfully.');
   }
   submitDieselTx(e) {
     e.preventDefault();
@@ -4307,22 +4638,57 @@ class Component extends DCLogic {
   }
 
   fmt(n) { n = Number(n) || 0; return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 }); }
+  // Parses a BF month label ("August 2026") into a sortable "2026-08" key so the "latest" BF
+  // entry is chosen by which month it actually is, not a fragile/typo-prone BFDate string.
+  monthKeyOfLabel(label) {
+    const names = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+    const s = String(label || '').trim().toLowerCase();
+    if (!s) return '';
+    const yearMatch = s.match(/\d{4}/);
+    const year = yearMatch ? yearMatch[0] : String(new Date().getFullYear());
+    const idx = names.findIndex(function (m) { return s.indexOf(m) !== -1 || s.indexOf(m.slice(0, 3)) !== -1; });
+    if (idx === -1) return '';
+    return year + '-' + String(idx + 1).padStart(2, '0');
+  }
+  pickLatestBFRow(rows) {
+    const self = this;
+    if (!rows || !rows.length) return null;
+    return rows.reduce(function (best, r) {
+      if (!best) return r;
+      const bk = self.monthKeyOfLabel(best.BFMonth), rk = self.monthKeyOfLabel(r.BFMonth);
+      if (rk && bk && rk !== bk) return rk > bk ? r : best;
+      const bd = best.BFDate || '', rd = r.BFDate || '';
+      if (rd !== bd) return rd > bd ? r : best;
+      return r;
+    }, null);
+  }
   latestBFFor(list, name) {
     const rows = (list || []).filter(function (r) { return r.Supplier === name; });
-    if (!rows.length) return 0;
-    const latest = rows.reduce(function (a, b) { return String(b.BFDate || '') >= String(a.BFDate || '') ? b : a; });
-    return Number(latest.BFAmount) || 0;
+    const row = this.pickLatestBFRow(rows);
+    return row ? (Number(row.BFAmount) || 0) : 0;
   }
   latestBFDateFor(list, name) {
     const rows = (list || []).filter(function (r) { return r.Supplier === name; });
-    if (!rows.length) return '';
-    const latest = rows.reduce(function (a, b) { return String(b.BFDate || '') >= String(a.BFDate || '') ? b : a; });
-    return latest.BFDate || '';
+    const row = this.pickLatestBFRow(rows);
+    return row ? (row.BFDate || '') : '';
+  }
+  latestBFMonthFor(list, name) {
+    const rows = (list || []).filter(function (r) { return r.Supplier === name; });
+    const row = this.pickLatestBFRow(rows);
+    return row ? (row.BFMonth || '') : '';
   }
   sumLatestBF(list) {
     const self = this;
     const names = Array.from(new Set((list || []).map(function (r) { return r.Supplier; })));
     return names.reduce(function (sum, name) { return sum + self.latestBFFor(list, name); }, 0);
+  }
+  // Same idea for Staff/Labour/Mistri BF history, keyed by Name instead of Supplier. Falls
+  // back to the entity's single legacy BFAmount field when no monthly history exists yet.
+  personLatestBF(bfList, name, legacyAmt) {
+    const rows = (bfList || []).filter(function (r) { return r.Name === name; });
+    const row = this.pickLatestBFRow(rows);
+    if (row) return { amt: Number(row.BFAmount) || 0, date: row.BFDate || '', month: row.BFMonth || '' };
+    return { amt: Number(legacyAmt) || 0, date: '', month: '' };
   }
   fmtPdf(n) { n = Number(n) || 0; return 'Rs. ' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 }); }
   sum(list, field) { return (list || []).reduce(function (a, r) { return a + (Number(r[field]) || 0); }, 0); }
@@ -4359,31 +4725,34 @@ class Component extends DCLogic {
   // (dashboard total, staff list, staff detail, Reports > Staff Due) so they never disagree.
   staffFinancials(st, s, attendanceDeduped, curMonthKey, hasSlipThisMonth) {
     const self = this;
-    const due = this.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name; }), 'NetSalary');
-    const paid = this.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name; }), 'AmountPaid');
-    const bfAmt = Number(st.BFAmount) || 0;
+    const bf = this.personLatestBF(s.staffBF, st.Name, st.BFAmount);
+    const due = this.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name && (!bf.date || (r.Month + '-01') > bf.date); }), 'NetSalary');
+    const paid = this.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name && (!bf.date || r.Date > bf.date); }), 'AmountPaid');
+    const bfAmt = bf.amt;
     const presentThisMonth = this.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKey; }).map(function (r) { return { v: self.dayValue(r.Status) }; }), 'v');
     const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
     const outstanding = bfAmt + due + monthEarned - paid;
-    return { bfAmt: bfAmt, due: due, paid: paid, monthEarned: monthEarned, presentThisMonth: presentThisMonth, outstanding: outstanding };
+    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, paid: paid, monthEarned: monthEarned, presentThisMonth: presentThisMonth, outstanding: outstanding };
   }
   // Same idea for Mistri: BF + all due entries (across every site they've worked) minus payments.
   mistriFinancials(m, s) {
-    const due = this.sum(s.mistriDue.filter(function (r) { return r.MistriName === m.Name; }), 'NetDue');
-    const advances = this.sum(s.mistriAdvances.filter(function (r) { return r.MistriName === m.Name; }), 'Amount');
-    const paid = this.sum(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name; }), 'AmountPaid');
-    const bfAmt = Number(m.BFAmount) || 0;
+    const bf = this.personLatestBF(s.mistriBF, m.Name, m.BFAmount);
+    const due = this.sum(s.mistriDue.filter(function (r) { return r.MistriName === m.Name && (!bf.date || (r.Month + '-01') > bf.date); }), 'NetDue');
+    const advances = this.sum(s.mistriAdvances.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }), 'Amount');
+    const paid = this.sum(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }), 'AmountPaid');
+    const bfAmt = bf.amt;
     const outstanding = bfAmt + due + advances - paid;
-    return { bfAmt: bfAmt, due: due, advances: advances, paid: paid, outstanding: outstanding };
+    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, advances: advances, paid: paid, outstanding: outstanding };
   }
   // Same idea for Labour: BF + all entries (daily or contract, across every site) + advances minus payments.
   labourFinancials(l, s) {
-    const due = this.sum(s.labourEntries.filter(function (r) { return r.LabourName === l.Name; }), 'NetAmount');
-    const advances = this.sum(s.labourAdvances.filter(function (r) { return r.LabourName === l.Name; }), 'Amount');
-    const paid = this.sum(s.labourPayments.filter(function (r) { return r.LabourName === l.Name; }), 'AmountPaid');
-    const bfAmt = Number(l.BFAmount) || 0;
+    const bf = this.personLatestBF(s.labourBF, l.Name, l.BFAmount);
+    const due = this.sum(s.labourEntries.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }), 'NetAmount');
+    const advances = this.sum(s.labourAdvances.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }), 'Amount');
+    const paid = this.sum(s.labourPayments.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }), 'AmountPaid');
+    const bfAmt = bf.amt;
     const outstanding = bfAmt + due + advances - paid;
-    return { bfAmt: bfAmt, due: due, advances: advances, paid: paid, outstanding: outstanding };
+    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, advances: advances, paid: paid, outstanding: outstanding };
   }
   // Single source of truth for "how much has this site spent from Site Expenditure" — used by
   // both the Funds page Site Balances cards and the Reports Site tab, so they never disagree.
@@ -4641,6 +5010,115 @@ class Component extends DCLogic {
       const paid = self.sum(dieselPayF.filter(function (p) { return p.Supplier === name; }), 'AmountPaid');
       return { label: name, value: bfAmt + cost - paid };
     }).filter(function (r) { return r.value !== 0; }).sort(function (a, b) { return b.value - a.value; });
+    const dieselSupplierNames = Array.from(new Set(s.dieselTx.map(function (t) { return t.Supplier; }).concat(s.dieselBF.map(function (b) { return b.Supplier; })).concat(s.dieselPayments.map(function (p) { return p.Supplier; })))).filter(Boolean);
+    const dieselSupplierCards = dieselSupplierNames.map(function (name) {
+      const dbfDate = self.latestBFDateFor(s.dieselBF, name);
+      const dbfAmt = self.latestBFFor(s.dieselBF, name);
+      const dcost = self.sum(s.dieselTx.filter(function (t) { return t.Supplier === name && (!dbfDate || t.Date > dbfDate); }), 'Value');
+      const dpaid = self.sum(s.dieselPayments.filter(function (p) { return p.Supplier === name && (!dbfDate || p.Date > dbfDate); }), 'AmountPaid');
+      const doutstanding = dbfAmt + dcost - dpaid;
+      return { name: name, costFmt: fmt(dcost), paidFmt: fmt(dpaid), outstandingFmt: fmt(doutstanding), outstandingColor: self.oc(doutstanding), onOpen: function () { self.openDieselSupplier(name); } };
+    });
+    let dieselSupplierDetail = { name: '', bfFmt: fmt(0), bfMonth: '', costFmt: fmt(0), paidFmt: fmt(0), outstandingFmt: fmt(0), outstandingColor: 'var(--muted)', rows: [], payRows: [], bfRows: [], onAddBF: function () {} };
+    if (s.selectedDieselSupplier) {
+      const dname = s.selectedDieselSupplier;
+      const dbfDate2 = self.latestBFDateFor(s.dieselBF, dname);
+      const dbfAmt2 = self.latestBFFor(s.dieselBF, dname);
+      const dbfMonth2 = self.latestBFMonthFor(s.dieselBF, dname);
+      const dcost2 = self.sum(s.dieselTx.filter(function (t) { return t.Supplier === dname && (!dbfDate2 || t.Date > dbfDate2); }), 'Value');
+      const dpaid2 = self.sum(s.dieselPayments.filter(function (p) { return p.Supplier === dname && (!dbfDate2 || p.Date > dbfDate2); }), 'AmountPaid');
+      const doutstanding2 = dbfAmt2 + dcost2 - dpaid2;
+      dieselSupplierDetail = {
+        name: dname, bfFmt: fmt(dbfAmt2), bfMonth: dbfMonth2, costFmt: fmt(dcost2), paidFmt: fmt(dpaid2), outstandingFmt: fmt(doutstanding2), outstandingColor: self.oc(doutstanding2),
+        rows: s.dieselTx.filter(function (r) { return r.Supplier === dname; }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { ValueFmt: fmt(r.Value), RateFmt: fmt(r.Rate), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }),
+        payRows: s.dieselPayments.filter(function (r) { return r.Supplier === dname; }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
+        bfRows: s.dieselBF.filter(function (r) { return r.Supplier === dname; }).slice().sort(function (a, b) { return (b.BFDate || '').localeCompare(a.BFDate || ''); }).map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
+        onAddBF: function () { self.openModal('dieselBF', null); }
+      };
+    }
+    // Vehicle Management: income = "Self" fare-type supplier transactions on that vehicle
+    // (the fare would otherwise have gone to the supplier's vehicle, so it's our income when
+    // we use our own truck); diesel cost comes straight from existing Diesel Transactions;
+    // driver fee / KM run / other expense come from the new daily log. No duplicate entry.
+    // Vehicle Management: income = "Self" fare-type supplier transactions on that vehicle
+    // (the fare would otherwise have gone to the supplier's vehicle, so it's our income when
+    // we use our own truck); diesel cost comes straight from existing Diesel Transactions;
+    // driver fee / KM run / other expense come from the new daily log. No duplicate entry.
+    // Matched by the last 4 digits of the plate (not exact string) since operators type the
+    // same vehicle number with inconsistent spacing across entries.
+    // Vehicle Management: income = "Self" fare-type supplier transactions on that vehicle
+    // (the fare would otherwise have gone to the supplier's vehicle, so it's our income when
+    // we use our own truck). Diesel cost is either pulled from the existing Diesel Transactions
+    // ledger (when the vehicle IS tracked there, e.g. fuel bought and logged separately) or
+    // calculated as KM Run / Mileage \u00d7 Oil Price per Litre (when it isn't) \u2014 set per vehicle
+    // via DieselSource so each truck uses whichever matches how it's actually tracked.
+    // Matched by the last 4 digits of the plate (not exact string) since operators type the
+    // same vehicle number with inconsistent spacing across entries.
+    const vehicleKey = function (vn) { const digits = String(vn || '').replace(/\D/g, ''); return digits.length >= 4 ? digits.slice(-4) : digits; };
+    const vehicleIncomeRows = s.transactions.filter(function (t) { return t.FareType === 'Self' && t.VehicleNumber; });
+    const vKeyToCanonical = {};
+    s.vehicles.concat(vehicleIncomeRows).concat(s.dieselTx).concat(s.vehicleDailyLog).forEach(function (r) { const vn0 = r.VehicleNumber; if (!vn0) return; const k = vehicleKey(vn0); if (!vKeyToCanonical[k] || s.vehicles.indexOf(r) !== -1) vKeyToCanonical[k] = vn0; });
+    const vehicleNames = Object.keys(vKeyToCanonical).filter(function (k) { return k; }).map(function (k) { return vKeyToCanonical[k]; });
+    const vehicleMasterFor = function (vn) { return s.vehicles.find(function (v) { return vehicleKey(v.VehicleNumber) === vehicleKey(vn); }); };
+    const vehicleFinancials = function (vn) {
+      const key = vehicleKey(vn);
+      const veh = vehicleMasterFor(vn) || {};
+      const usesLedger = veh.DieselSource === 'Ledger';
+      const mileageRating = Number(veh.Mileage) || 0;
+      const income = self.sum(vehicleIncomeRows.filter(function (t) { return vehicleKey(t.VehicleNumber) === key; }).map(function (t) { return { v: t.FareAmount != null ? Number(t.FareAmount) : (Number(t.Quantity) || 0) * (Number(t.Fare) || 0) }; }), 'v');
+      const logs = s.vehicleDailyLog.filter(function (l) { return vehicleKey(l.VehicleNumber) === key; });
+      const driverFee = self.sum(logs, 'DriverFee');
+      const otherExpense = self.sum(logs, 'OtherExpense');
+      const kmRun = self.sum(logs, 'KmRun');
+      let dieselCost, mileageFmt;
+      if (usesLedger) {
+        dieselCost = self.sum(s.dieselTx.filter(function (t) { return vehicleKey(t.VehicleNumber) === key; }), 'Value');
+        const dieselQty = self.sum(s.dieselTx.filter(function (t) { return vehicleKey(t.VehicleNumber) === key; }), 'DieselQuantity');
+        mileageFmt = dieselQty > 0 ? (kmRun / dieselQty).toFixed(1) + ' km/L' : '—';
+      } else {
+        dieselCost = logs.reduce(function (a, l) { return a + (mileageRating > 0 ? ((Number(l.KmRun) || 0) / mileageRating) * (Number(l.OilPricePerLitre) || 0) : 0); }, 0);
+        mileageFmt = mileageRating ? mileageRating.toFixed(1) + ' km/L' : '—';
+      }
+      const profit = income - dieselCost - driverFee - otherExpense;
+      return { income: income, dieselCost: dieselCost, driverFee: driverFee, otherExpense: otherExpense, kmRun: kmRun, mileageFmt: mileageFmt, profit: profit, usesLedger: usesLedger, mileageRating: mileageRating };
+    };
+    const vehicleCards = vehicleNames.map(function (vn) {
+      const veh = vehicleMasterFor(vn) || { VehicleNumber: vn };
+      const fin = vehicleFinancials(vn);
+      return {
+        VehicleNumber: vn, DriverName: veh.DriverName || '', incomeFmt: fmt(fin.income), dieselCostFmt: fmt(fin.dieselCost), driverFeeFmt: fmt(fin.driverFee),
+        mileageFmt: fin.mileageFmt, profitFmt: fmt(fin.profit), profitColor: fin.profit >= 0 ? '#2ea043' : '#e2574c',
+        onOpen: function () { self.openVehicle(vn); }, onEdit: function () { self.openModal('vehicle', veh); }, onDelete: function () { self.deleteRecord('deleteVehicle', { VehicleID: veh.VehicleID }, 'vehicles'); }
+      };
+    });
+    let vehicleDetail = { VehicleNumber: '', DriverName: '', incomeFmt: fmt(0), dieselCostFmt: fmt(0), driverFeeFmt: fmt(0), otherExpenseFmt: fmt(0), kmRunFmt: '0', mileageFmt: '—', profitFmt: fmt(0), profitColor: 'var(--muted)', usesLedger: false, dailyRows: [], onAddLog: function () {} };
+    if (s.selectedVehicle) {
+      const vn = s.selectedVehicle;
+      const vkey = vehicleKey(vn);
+      const veh = vehicleMasterFor(vn) || {};
+      const fin = vehicleFinancials(vn);
+      const dateSet = Array.from(new Set(vehicleIncomeRows.filter(function (t) { return vehicleKey(t.VehicleNumber) === vkey; }).map(function (t) { return t.Date; }).concat(s.dieselTx.filter(function (t) { return vehicleKey(t.VehicleNumber) === vkey; }).map(function (t) { return t.Date; })).concat(s.vehicleDailyLog.filter(function (l) { return vehicleKey(l.VehicleNumber) === vkey; }).map(function (l) { return l.Date; })))).filter(Boolean).sort().reverse();
+      const dailyRows = dateSet.map(function (d) {
+        const dayIncome = self.sum(vehicleIncomeRows.filter(function (t) { return vehicleKey(t.VehicleNumber) === vkey && t.Date === d; }).map(function (t) { return { v: t.FareAmount != null ? Number(t.FareAmount) : (Number(t.Quantity) || 0) * (Number(t.Fare) || 0) }; }), 'v');
+        const dayLog = s.vehicleDailyLog.find(function (l) { return vehicleKey(l.VehicleNumber) === vkey && l.Date === d; });
+        const dayDriverFee = dayLog ? (Number(dayLog.DriverFee) || 0) : 0;
+        const dayOther = dayLog ? (Number(dayLog.OtherExpense) || 0) : 0;
+        const dayKm = dayLog ? (Number(dayLog.KmRun) || 0) : 0;
+        const dayDiesel = fin.usesLedger
+          ? self.sum(s.dieselTx.filter(function (t) { return vehicleKey(t.VehicleNumber) === vkey && t.Date === d; }), 'Value')
+          : (fin.mileageRating > 0 && dayLog ? (dayKm / fin.mileageRating) * (Number(dayLog.OilPricePerLitre) || 0) : 0);
+        const dayNet = dayIncome - dayDiesel - dayDriverFee - dayOther;
+        return { Date: d, incomeFmt: fmt(dayIncome), dieselCostFmt: fmt(dayDiesel), driverFeeFmt: fmt(dayDriverFee), kmRun: dayKm, netFmt: fmt(dayNet), netColor: dayNet >= 0 ? '#2ea043' : '#e2574c', idleNote: (!dayIncome && (dayDriverFee || dayOther)) ? 'Idle — driver expense only' : '', log: dayLog, editLabel: dayLog ? 'Edit' : 'Add Log', onEdit: dayLog ? function () { self.openModal('vehicleLog', dayLog); } : function () { self.openModal('vehicleLog', { Date: d }); }, onDelete: dayLog ? function () { self.deleteRecord('deleteVehicleLog', { LogID: dayLog.LogID }, 'vehicleDailyLog'); } : null };
+      });
+      vehicleDetail = {
+        VehicleNumber: vn, DriverName: veh.DriverName || '',
+        incomeFmt: fmt(fin.income), dieselCostFmt: fmt(fin.dieselCost), driverFeeFmt: fmt(fin.driverFee), otherExpenseFmt: fmt(fin.otherExpense),
+        kmRunFmt: String(fin.kmRun), mileageFmt: fin.mileageFmt, profitFmt: fmt(fin.profit), profitColor: fin.profit >= 0 ? '#2ea043' : '#e2574c', usesLedger: fin.usesLedger,
+        dailyRows: dailyRows, onAddLog: function () { self.openModal('vehicleLog', null); },
+        onExportExcel: function () { self.exportVehicleExcel(vn); }
+      };
+      this._lastVehicleDetail = { name: vn, dailyRows: dailyRows, fin: fin };
+    }
     const currentMonthBreakdown = [
       { label: 'Supplier Purchases', value: self.sum(s.transactions.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') },
       { label: 'Diesel Purchases', value: self.sum(s.dieselTx.filter(function (t) { return String(t.Date || '').slice(0, 7) === curMonth; }), 'Value') },
@@ -4677,6 +5155,7 @@ class Component extends DCLogic {
       const name = s.selectedSupplier;
       const dfl = s.detailFilters;
       const bfDate = self.latestBFDateFor(s.bf, name);
+      const bfMonth = self.latestBFMonthFor(s.bf, name);
       const filteredTx = s.transactions.filter(function (t) { return t.Supplier === name && self.inRange(t.Date, dfl.from, dfl.to) && (!dfl.site || t.Site === dfl.site) && (!dfl.material || t.Material === dfl.material) && (!dfl.vehicle || String(t.VehicleNumber || '').toLowerCase().indexOf(dfl.vehicle.toLowerCase()) !== -1); });
       const allTx = s.transactions.filter(function (t) { return t.Supplier === name && (!bfDate || t.Date > bfDate); });
       const pay = s.payments.filter(function (p) { return p.Supplier === name && (!bfDate || p.Date > bfDate); });
@@ -4693,7 +5172,7 @@ class Component extends DCLogic {
       const supplierFareTotal = allTx.filter(function (r) { return !isSelfFare(r); }).reduce(function (a, r) { return a + fareAmtOf(r); }, 0);
       const fareTypeLabel = function (r) { return isSelfFare(r) ? 'Self' : 'Supplier'; };
       supplierDetail = {
-        name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding), outstandingColor: this.oc(outstanding),
+        name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding), outstandingColor: this.oc(outstanding), bfMonth: bfMonth,
         materialFmt: fmt(materialTotal), supplierFareFmt: fmt(supplierFareTotal), selfFareFmt: fmt(selfFareTotal), totalFmt: fmt(materialTotal + supplierFareTotal),
         materialN: materialTotal, supplierFareN: supplierFareTotal, selfFareN: selfFareTotal,
         rows: filteredTx.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), FareTypeLabel: fareTypeLabel(r), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
@@ -4828,7 +5307,7 @@ class Component extends DCLogic {
       staffDetail = {
         Name: stRow.Name || stName, Role: stRow.Role || '', ContactNumber: stRow.ContactNumber || '',
         basisLabel: stRow.SalaryBasis === 'Daily' ? ('Daily — ' + fmt(stRow.DailyRate) + '/day') : ('Monthly — ' + fmt(stRow.MonthlyAmount) + '/month'),
-        bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding),
+        bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), bfMonth: fin.bfMonth,
         rateHint: 'Configured rate: ' + (stRow.SalaryBasis === 'Daily' ? fmt(stRow.DailyRate) + '/day' : fmt(stRow.MonthlyAmount) + '/month'),
         presentDaysThisMonthFmt: String(presentDaysThisMonth), monthAlreadySlippedNote: hasSlipThisMonth(stName) ? ' — already in this month\u2019s slip' : '', attendanceDateResolved: attendanceDateResolved, todayAttendanceStatus: todayAtt ? todayAtt.Status : 'Not marked',
         onMarkPresentToday: function () { self.markAttendance(stName, attendanceDateResolved, 'Present'); },
@@ -4838,6 +5317,8 @@ class Component extends DCLogic {
         attendanceRows: attRowsAll.slice().sort(function (a, b) { return a.Date < b.Date ? 1 : -1; }).slice(0, 31).map(function (r) {
           return Object.assign({}, r, { onMarkPresent: function () { self.markAttendance(stName, r.Date, 'Present'); }, onMarkAbsent: function () { self.markAttendance(stName, r.Date, 'Absent'); } });
         }),
+        bfRows: (s.staffBF || []).filter(function (r) { return r.Name === stName; }).slice().sort(function (a, b) { return (b.BFDate || '').localeCompare(a.BFDate || ''); }).map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('staffBF', r); }, onDelete: function () { self.deletePersonBF('staffBF', 'deleteStaffBF', r); } }); }),
+        onAddBF: function () { self.openModal('staffBF', null); },
         exportStaffDetailExcel: this.exportStaffDetailExcel.bind(this), exportStaffDetailPDF: this.exportStaffDetailPDF.bind(this),
         detailFilterFrom: (s.staffDetailFilter || {}).from || '', detailFilterTo: (s.staffDetailFilter || {}).to || '',
         onDetailFilterFrom: this.setGenericFilter('staffDetailFilter', 'from'), onDetailFilterTo: this.setGenericFilter('staffDetailFilter', 'to')
@@ -4865,7 +5346,9 @@ class Component extends DCLogic {
       const fin = self.mistriFinancials(miRow, s);
       mistriDetail = {
         Name: miRow.Name || miName, ContactNumber: miRow.ContactNumber || '',
-        bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding),
+        bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), bfMonth: fin.bfMonth,
+        bfRows: (s.mistriBF || []).filter(function (r) { return r.Name === miName; }).slice().sort(function (a, b) { return (b.BFDate || '').localeCompare(a.BFDate || ''); }).map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('mistriBF', r); }, onDelete: function () { self.deletePersonBF('mistriBF', 'deleteMistriBF', r); } }); }),
+        onAddBF: function () { self.openModal('mistriBF', null); },
         dueRows: s.mistriDue.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { NetDueFmt: fmt(r.NetDue), onEdit: function () { self.openModal('mistriDue', r); }, onDelete: function () { self.deleteMistriDue(r); } }); }),
         paymentRows: s.mistriPayments.filter(function (r) { return r.MistriName === miName && self.inRange(r.Date, s.mistriDetailFilter.from, s.mistriDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('mistriPayment', r); }, onDelete: function () { self.deleteMistriPayment(r); } }); }),
         advanceRows: s.mistriAdvances.filter(function (r) { return r.MistriName === miName && self.inRange(r.Date, s.mistriDetailFilter.from, s.mistriDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isAdvance: true })); }, onDelete: function () { self.deleteMistriAdvance(r); } }); })
@@ -4880,7 +5363,9 @@ class Component extends DCLogic {
       const finL = self.labourFinancials(lbRow, s);
       labourDetail = {
         Name: lbRow.Name || lbName, ContactNumber: lbRow.ContactNumber || '',
-        bfFmt: fmt(finL.bfAmt), totalDueFmt: fmt(finL.due), totalPaidFmt: fmt(finL.paid), outstandingFmt: fmt(finL.outstanding), outstandingColor: self.oc(finL.outstanding),
+        bfFmt: fmt(finL.bfAmt), totalDueFmt: fmt(finL.due), totalPaidFmt: fmt(finL.paid), outstandingFmt: fmt(finL.outstanding), outstandingColor: self.oc(finL.outstanding), bfMonth: finL.bfMonth,
+        bfRows: (s.labourBF || []).filter(function (r) { return r.Name === lbName; }).slice().sort(function (a, b) { return (b.BFDate || '').localeCompare(a.BFDate || ''); }).map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('labourBF', r); }, onDelete: function () { self.deletePersonBF('labourBF', 'deleteLabourBF', r); } }); }),
+        onAddBF: function () { self.openModal('labourBF', null); },
         entryRows: s.labourEntries.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { const extra = (Number(r.AdditionalAmount) || 0) + (Number(r.Fare) || 0); return Object.assign({}, r, { NetAmountFmt: fmt(r.NetAmount), HowManyLabourFmt: r.HowManyLabour ? String(r.HowManyLabour) : '—', DailyPriceFmt: r.DailyPrice ? fmt(r.DailyPrice) : '—', ExtraFmt: extra ? fmt(extra) : '—', onEdit: function () { self.openLabourEntryModal(r); }, onDelete: function () { self.deleteLabourEntry(r); } }); }),
         paymentRows: s.labourPayments.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('labourPayment', r); }, onDelete: function () { self.deleteLabourPayment(r); } }); }),
         advanceRows: s.labourAdvances.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isLabourAdvance: true })); }, onDelete: function () { self.deleteLabourAdvance(r); } }); })
@@ -4989,12 +5474,13 @@ class Component extends DCLogic {
     const viewIs = {
       login: s.view === 'login', dashboard: s.view === 'dashboard', suppliers: s.view === 'suppliers', supplierDetail: s.view === 'supplierDetail',
       transactions: s.view === 'transactions', payments: s.view === 'payments', bf: s.view === 'bf',
-      dieselTx: s.view === 'dieselTx', dieselPayments: s.view === 'dieselPayments', dieselBF: s.view === 'dieselBF',
+      dieselTx: s.view === 'dieselTx', dieselPayments: s.view === 'dieselPayments', dieselBF: s.view === 'dieselBF', dieselSuppliers: s.view === 'dieselSuppliers', dieselSupplierDetail: s.view === 'dieselSupplierDetail',
+      vehicles: s.view === 'vehicles', vehicleDetail: s.view === 'vehicleDetail',
       sites: s.view === 'sites', materials: s.view === 'materials', reports: s.view === 'reports', settings: s.view === 'settings',
       tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', labour: s.view === 'labour', labourDetail: s.view === 'labourDetail', funds: s.view === 'funds', attendance: s.view === 'attendance', siteDetail: s.view === 'siteDetail'
     };
     const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel', staffDue: s.reportTab === 'staffDue', labour: s.reportTab === 'labour' };
-    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment', labour: s.modal === 'labour', labourEntry: s.modal === 'labourEntry', labourPayment: s.modal === 'labourPayment', otherPayment: s.modal === 'otherPayment' };
+    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment', labour: s.modal === 'labour', labourEntry: s.modal === 'labourEntry', labourPayment: s.modal === 'labourPayment', otherPayment: s.modal === 'otherPayment', staffBF: s.modal === 'staffBF', labourBF: s.modal === 'labourBF', mistriBF: s.modal === 'mistriBF', vehicle: s.modal === 'vehicle', vehicleLog: s.modal === 'vehicleLog' };
     const editRecordRaw = s.editRecord || {};
     const myName = s.session ? s.session.name : '';
     const isHrushikesh = !!(s.session && s.session.name === 'Hrushikesh Padhi');
@@ -5166,10 +5652,15 @@ class Component extends DCLogic {
     const formKey = s.modal + ':' + (editRecordRaw.SLNo || editRecordRaw.PaymentID || editRecordRaw.SupplierID || editRecordRaw.SiteID || editRecordRaw.MaterialID || editRecordRaw.StaffID || editRecordRaw.SalaryID || editRecordRaw.MistriID || editRecordRaw.DueID || editRecordRaw.LabourID || editRecordRaw.EntryID || editRecordRaw.AdvanceID || editRecordRaw.Name || (editRecordRaw.Supplier ? editRecordRaw.Supplier + '|' + editRecordRaw.BFDate : 'new'));
     const txDefaults = { Date: editRecordRaw.Date || todayStr, Time: editRecordRaw.Time || '', Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Fare: editRecordRaw.Fare != null ? editRecordRaw.Fare : 0, FareType: editRecordRaw.FareType || 'Supplier', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const payDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
-    const bfDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const bfDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '2026-08-31', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const personBFName = s.modal === 'staffBF' ? s.selectedStaff : (s.modal === 'labourBF' ? s.selectedLabour : s.selectedMistri);
+    const personBFDefaults = { BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '2026-08-31', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Remarks: editRecordRaw.Remarks || '' };
+    const submitPersonBF = this.submitPersonBF.bind(this, s.modal, personBFName);
+    const vehicleDefaults = { VehicleNumber: editRecordRaw.VehicleNumber || '', DriverName: editRecordRaw.DriverName || '', DieselSource: editRecordRaw.DieselSource || 'Calculated', Mileage: editRecordRaw.Mileage != null ? editRecordRaw.Mileage : '', Notes: editRecordRaw.Notes || '' };
+    const vehicleLogDefaults = { Date: editRecordRaw.Date || todayStr, KmRun: editRecordRaw.KmRun != null ? editRecordRaw.KmRun : '', DriverFee: editRecordRaw.DriverFee != null ? editRecordRaw.DriverFee : '', OtherExpense: editRecordRaw.OtherExpense != null ? editRecordRaw.OtherExpense : '', OilPricePerLitre: editRecordRaw.OilPricePerLitre != null ? editRecordRaw.OilPricePerLitre : '', Remarks: editRecordRaw.Remarks || '' };
     const dieselTxDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', ChalanNumber: editRecordRaw.ChalanNumber || '', Time: editRecordRaw.Time || '', DieselQuantity: editRecordRaw.DieselQuantity != null ? editRecordRaw.DieselQuantity : '', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Driver: editRecordRaw.Driver || '', Remarks: editRecordRaw.Remarks || '' };
     const dieselPayDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
-    const dieselBFDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const dieselBFDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '2026-08-31', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const supplierDefaults = { SupplierName: editRecordRaw.SupplierName || '', ContactPerson: editRecordRaw.ContactPerson || '', ContactNumber: editRecordRaw.ContactNumber || '', MaterialType: editRecordRaw.MaterialType || '' };
     const siteDefaults = { SiteName: editRecordRaw.SiteName || '' };
     const materialDefaults = { MaterialName: editRecordRaw.MaterialName || '', DefaultUnit: editRecordRaw.DefaultUnit || 'TON' };
@@ -5189,11 +5680,11 @@ class Component extends DCLogic {
     const showLabourPicker = !s.selectedLabour;
     const labourOptions = s.labour.map(function (l) { return l.Name; });
     const staffRateReadOnly = false;
-    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment', labour: isEditing ? 'Edit Labour' : 'Add Labour', labourEntry: isEditing ? 'Edit Labour Entry' : 'Add Labour Entry', labourPayment: isEditing ? 'Edit Labour Payment' : 'Add Labour Payment', otherPayment: isEditing ? 'Edit Payment' : 'Send Payment' };
+    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment', labour: isEditing ? 'Edit Labour' : 'Add Labour', labourEntry: isEditing ? 'Edit Labour Entry' : 'Add Labour Entry', labourPayment: isEditing ? 'Edit Labour Payment' : 'Add Labour Payment', otherPayment: isEditing ? 'Edit Payment' : 'Send Payment', staffBF: isEditing ? 'Edit Staff BF Balance' : 'Add Staff BF Balance', labourBF: isEditing ? 'Edit Labour BF Balance' : 'Add Labour BF Balance', mistriBF: isEditing ? 'Edit Mistri BF Balance' : 'Add Mistri BF Balance', vehicle: isEditing ? 'Edit Vehicle' : 'Add Vehicle', vehicleLog: isEditing ? 'Edit Daily Log' : 'Add Daily Log' };
     const modalTitle = modalTitleMap[s.modal] || '';
 
     const navBtn = function (active) { return 'display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;margin-bottom:2px;box-sizing:border-box;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';border-left:3px solid ' + (active ? 'var(--gold)' : 'transparent') + ';'; };
-    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselTx: navBtn(viewIs.dieselTx), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), labour: navBtn(viewIs.labour || viewIs.labourDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
+    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselSuppliers: navBtn(viewIs.dieselSuppliers || viewIs.dieselSupplierDetail), dieselTx: navBtn(viewIs.dieselTx), vehicles: navBtn(viewIs.vehicles || viewIs.vehicleDetail), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), labour: navBtn(viewIs.labour || viewIs.labourDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
     const tabBtn = function (active) { return 'padding:9px 16px;border-radius:20px;border:1px solid ' + (active ? 'var(--gold)' : 'var(--border)') + ';cursor:pointer;font-size:13px;font-weight:600;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';'; };
     const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel), staffDue: tabBtn(reportTabIs.staffDue), labour: tabBtn(reportTabIs.labour) };
 
@@ -5209,7 +5700,7 @@ class Component extends DCLogic {
       theme: s.theme, themeToggleLabel: s.theme === 'light' ? 'Dark Mode' : 'Light Mode', toggleTheme: this.toggleTheme.bind(this),
       handleLogin: this.handleLogin.bind(this), logout: this.logout.bind(this),
       navDashboard: function () { self.setView('dashboard'); }, navSuppliers: function () { self.setView('suppliers'); }, navTransactions: function () { self.setView('transactions'); },
-      navPayments: function () { self.setView('payments'); }, navBF: function () { self.setView('bf'); }, navDieselTx: function () { self.setView('dieselTx'); },
+      navPayments: function () { self.setView('payments'); }, navBF: function () { self.setView('bf'); }, navDieselSuppliers: function () { self.setView('dieselSuppliers'); }, navDieselTx: function () { self.setView('dieselTx'); }, navVehicles: function () { self.setView('vehicles'); },
       navDieselPayments: function () { self.setView('dieselPayments'); }, navDieselBF: function () { self.setView('dieselBF'); }, navSites: function () { self.setView('sites'); },
       navMaterials: function () { self.setView('materials'); }, navReports: function () { self.setView('reports'); }, navSettings: function () { self.setView('settings'); },
       navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navMistri: function () { self.setView('mistri'); }, navFunds: function () { self.setView('funds'); }, navAttendance: function () { self.setView('attendance'); },
@@ -5263,16 +5754,18 @@ class Component extends DCLogic {
       txRows: txF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), FareTypeLabel: r.FareType === 'Self' ? 'Self' : 'Supplier', ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
       payRows: payF.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
       bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
+      dieselSupplierCards: dieselSupplierCards, dieselSupplierDetail: dieselSupplierDetail,
+      vehicleCards: vehicleCards, vehicleDetail: vehicleDetail, openVehicleModal: function () { self.openModal('vehicle'); },
       dieselTxRows: dieselTxF.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }), exportDieselTxExcel: this.exportDieselTxExcel.bind(this), exportDieselTxPDF: this.exportDieselTxPDF.bind(this),
       dieselPayRows: dieselPayF.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
       dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
-      formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
+      formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, personBFDefaults: personBFDefaults, personBFName: personBFName, personBFModalOpen: (modalIs.staffBF || modalIs.labourBF || modalIs.mistriBF), vehicleDefaults: vehicleDefaults, vehicleLogDefaults: vehicleLogDefaults, submitVehicle: this.submitVehicle.bind(this), submitVehicleLog: this.submitVehicleLog.bind(this), dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
       totalDieselQty: totalDieselQty, avgDieselRate: avgDieselRate, currentMonthDiesel: currentMonthDiesel,
       openTransactionModal: function () { self.openModal('transaction'); }, openPaymentModal: function () { self.openModal('payment'); }, openBFModal: function () { self.openModal('bf'); },
       openDieselTxModal: function () { self.openModal('dieselTx'); }, openDieselPaymentModal: function () { self.openModal('dieselPayment'); }, openDieselBFModal: function () { self.openModal('dieselBF'); },
       openSiteModal: function () { self.openModal('site'); }, openMaterialModal: function () { self.openModal('material'); },
       closeModal: this.closeModal.bind(this), stopClickPropagation: function (e) { e.stopPropagation(); },
-      submitTransaction: this.submitTransaction.bind(this), submitPayment: this.submitPayment.bind(this), submitBF: this.submitBF.bind(this),
+      submitTransaction: this.submitTransaction.bind(this), submitPayment: this.submitPayment.bind(this), submitBF: this.submitBF.bind(this), submitPersonBF: submitPersonBF,
       submitDieselTx: this.submitDieselTx.bind(this), submitDieselPayment: this.submitDieselPayment.bind(this), submitDieselBF: this.submitDieselBF.bind(this),
       submitSupplier: this.submitSupplier.bind(this), submitSite: this.submitSite.bind(this), submitMaterial: this.submitMaterial.bind(this),
       siteRows: siteRows, materialAnalysis: materialAnalysis, exportSitesExcel: this.exportSitesExcel.bind(this), exportSitesPDF: this.exportSitesPDF.bind(this),
