@@ -4725,7 +4725,7 @@ class Component extends DCLogic {
     const isAdmin1 = !!(s.session && s.session.role === 'Admin 1');
     const showAppPicker = !!(s.session && !s.appPicked);
     const showMaintenanceLock = !!(s.session && s.maintenance && s.maintenance.enabled && s.session.role !== 'Admin 1');
-    const appAccessible = !showMaintenanceLock;
+    const appAccessible = !showAppPicker && !showMaintenanceLock;
     const fmtLastLogin = function (v) { if (!v) return '—'; const d = new Date(v); return isNaN(d.getTime()) ? String(v) : d.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
     const usersWithContact = s.users.map(function (u) { return Object.assign({}, u, { LastLoginFmt: fmtLastLogin(u.LastRefresh || u.LastLogin), onEditContact: function () { self.openModal('userContact', u); }, moneyOn: u.Role === 'Owner' || u.MoneyEnabled !== false, moneyLabel: (u.Role === 'Owner' || u.MoneyEnabled !== false) ? 'Enabled' : 'Disabled', onToggleMoney: function () { self.toggleMoneyPermission(u); } }); });
 
