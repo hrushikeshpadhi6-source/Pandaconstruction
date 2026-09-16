@@ -120,6 +120,7 @@
     FundTransfer: { coll: "fundTransfers", idField: "TransferID", counter: "TransferID", prefix: "FT", def: { Status: "Active" } },
     SiteAllocation: { coll: "siteAllocations", idField: "AllocationID", counter: "AllocationID", prefix: "SA", def: { Status: "Active" } },
     SiteExpense: { coll: "siteExpenses", idField: "ExpenseID", counter: "ExpenseID", prefix: "SE", def: { Status: "Active" } },
+    SiteTransfer: { coll: "siteTransfers", idField: "TransferID", counter: "SiteTransferID", prefix: "STX", def: { Status: "Active" } },
     OtherPayment: { coll: "otherPayments", idField: "PaymentID", counter: "OtherPaymentID", prefix: "OTH", def: { Status: "Active" } },
     CementReceived: { coll: "cementReceived", idField: "ReceiptID", counter: "CementReceivedID", prefix: "CR", def: { Status: "Active" } },
     CementUsed: { coll: "cementUsed", idField: "UsageID", counter: "CementUsedID", prefix: "CU", def: { Status: "Active" } },
@@ -457,8 +458,8 @@
         return { success: true, skipped: false, rolled: rolled, message: "Monthly rollover complete (" + rolled + " BF entries added)." };
       }
       case "getAllData": {
-        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions", "staffBF", "labourBF", "mistriBF", "vehicles", "vehicleDailyLog", "cementReceived", "cementUsed"];
-        const dateFilteredNames = ["transactions", "payments", "dieselTx", "dieselPayments", "siteExpenses", "staffPayments", "mistriPayments", "mistriAdvances", "labourPayments", "labourAdvances", "otherPayments", "fundTransfers", "siteAllocations", "vehicleDailyLog", "cementReceived", "cementUsed", "staffAttendance", "labourEntries"];
+        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "siteTransfers", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions", "staffBF", "labourBF", "mistriBF", "vehicles", "vehicleDailyLog", "cementReceived", "cementUsed"];
+        const dateFilteredNames = ["transactions", "payments", "dieselTx", "dieselPayments", "siteExpenses", "siteTransfers", "staffPayments", "mistriPayments", "mistriAdvances", "labourPayments", "labourAdvances", "otherPayments", "fundTransfers", "siteAllocations", "vehicleDailyLog", "cementReceived", "cementUsed", "staffAttendance", "labourEntries"];
         const cutoff = await computeLoadCutoff();
         const arrs = await Promise.all(names.map(function (n) { return dateFilteredNames.indexOf(n) !== -1 ? colToArraySince(n, cutoff) : colToArray(n); }));
         const out = { success: true };
@@ -639,7 +640,12 @@
       case "getSiteExpenses": return { success: true, data: await colToArray("siteExpenses") };
       case "addSiteExpense": { const r = await genericAdd("SiteExpense", { Date: p.Date, Site: p.Site, Amount: p.Amount, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Site Expense", "SiteExpenses", r.id, p.Site + " Rs." + p.Amount); return { success: true, message: "Site expenditure saved successfully." }; }
       case "updateSiteExpense": { const ok = await genericUpdate("SiteExpense", p, { Date: p.Date, Site: p.Site, Amount: p.Amount, Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Site expense not found." }; await auditLog(p.CreatedBy, "Updated Site Expense", "SiteExpenses", p.ExpenseID, p.Site + " Rs." + p.Amount); return { success: true, message: "Site expenditure updated successfully." }; }
-      case "deleteSiteExpense": await genericDelete("SiteExpense", p.ExpenseID); await auditLog(p.CreatedBy, "Deleted Site Expense", "SiteExpenses", p.ExpenseID, ""); return { success: true, message: "Deleted." };
+      case "deleteSiteExpense": await genericDelete("SiteExpense", p.ExpenseID); await auditLog(p.CreatedBy, "Deleted Site Expense", "SiteExpenses", p.ExpenseID, ""); return { success: true, message: "Site expense deleted successfully." };
+
+      case "getSiteTransfers": return { success: true, data: await colToArray("siteTransfers") };
+      case "addSiteTransfer": { if (p.FromSite === p.ToSite) return { success: false, message: "Pick two different sites." }; const r = await genericAdd("SiteTransfer", { Date: p.Date, FromSite: p.FromSite, ToSite: p.ToSite, Amount: p.Amount, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Site Transfer", "SiteTransfers", r.id, p.FromSite + " -> " + p.ToSite + " (" + p.Amount + ")"); return { success: true, message: "Balance transferred successfully.", id: r.id }; }
+      case "updateSiteTransfer": { if (p.FromSite === p.ToSite) return { success: false, message: "Pick two different sites." }; const ok = await genericUpdate("SiteTransfer", p, { Date: p.Date, FromSite: p.FromSite, ToSite: p.ToSite, Amount: p.Amount, Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Site transfer not found." }; await auditLog(p.CreatedBy, "Updated Site Transfer", "SiteTransfers", p.TransferID, ""); return { success: true, message: "Site transfer updated successfully." }; }
+      case "deleteSiteTransfer": await genericDelete("SiteTransfer", p.TransferID); await auditLog(p.CreatedBy, "Deleted Site Transfer", "SiteTransfers", p.TransferID, ""); return { success: true, message: "Site transfer deleted successfully." };
 
       case "getCementReceived": return { success: true, data: await colToArray("cementReceived") };
       case "addCementReceived": { const r = await genericAdd("CementReceived", { Date: p.Date, Site: p.Site, Bags: p.Bags, Amount: p.Amount || 0, PaymentMethod: p.PaymentMethod || "Cash", Party: p.Party || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Cement Received", "CementReceived", r.id, p.Bags + " bags for " + p.Site); return { success: true, id: r.id, message: "Cement received logged." }; }
