@@ -43,6 +43,24 @@
     const snap = await db.collection(name).get();
     return snap.docs.map(function (d) { return d.data(); });
   }
+  async function colToArraySince(name, sinceDate) {
+    if (!sinceDate) return colToArray(name);
+    const snap = await db.collection(name).where("Date", ">=", sinceDate).get();
+    return snap.docs.map(function (d) { return d.data(); });
+  }
+  // The earliest BF date across all BF ledgers is the oldest date any balance calc still needs
+  // (everything downstream already filters transactions to "date > bfDate"). Anything before that
+  // is dead weight on every load — fetched on demand instead, via getDateRange, when a report
+  // filter asks for it. Returns null (no cutoff, full load) until at least one BF row exists.
+  async function computeLoadCutoff() {
+    const bfColls = ["bf", "dieselBF", "staffBF", "labourBF", "mistriBF"];
+    const arrs = await Promise.all(bfColls.map(colToArray));
+    let minDate = null;
+    arrs.forEach(function (arr) {
+      arr.forEach(function (r) { if (r.BFDate && (!minDate || r.BFDate < minDate)) minDate = r.BFDate; });
+    });
+    return minDate;
+  }
 
   // Parses a BF month label ("August 2026") into a sortable "2026-08" key. Selecting the
   // "latest" BF row by raw BFDate string was fragile (typos, blank dates, ties) and caused
@@ -440,7 +458,9 @@
       }
       case "getAllData": {
         const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions", "staffBF", "labourBF", "mistriBF", "vehicles", "vehicleDailyLog", "cementReceived", "cementUsed"];
-        const arrs = await Promise.all(names.map(colToArray));
+        const dateFilteredNames = ["transactions", "payments", "dieselTx", "dieselPayments", "siteExpenses", "staffPayments", "mistriPayments", "mistriAdvances", "labourPayments", "labourAdvances", "otherPayments", "fundTransfers", "siteAllocations", "vehicleDailyLog", "cementReceived", "cementUsed", "staffAttendance", "labourEntries"];
+        const cutoff = await computeLoadCutoff();
+        const arrs = await Promise.all(names.map(function (n) { return dateFilteredNames.indexOf(n) !== -1 ? colToArraySince(n, cutoff) : colToArray(n); }));
         const out = { success: true };
         names.forEach(function (n, i) { out[n] = arrs[i]; });
         if (p.user) {
@@ -458,6 +478,15 @@
         return out;
       }
       case "getUsers": return { success: true, data: await colToArray("users") };
+      case "getDateRange": {
+        const rangeNames = Array.isArray(p.names) ? p.names : [];
+        const arrs = await Promise.all(rangeNames.map(function (n) {
+          return db.collection(n).where("Date", ">=", p.from).where("Date", "<=", p.to).get().then(function (snap) { return snap.docs.map(function (d) { return d.data(); }); });
+        }));
+        const out = { success: true, data: {} };
+        rangeNames.forEach(function (n, i) { out.data[n] = arrs[i]; });
+        return out;
+      }
       case "getAuditLog": { const s = await db.collection("auditLog").orderBy("Timestamp", "desc").get(); return { success: true, data: s.docs.map(function (d) { return d.data(); }) }; }
       case "updateUserContact": {
         const users = await colToArray("users");
