@@ -1104,8 +1104,8 @@
             <th style="text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Date</th>
             <th style="text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Type</th>
             <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Bags</th>
-            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Amount</th>
-            <th style="text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Party / Remarks</th>
+            <th style="text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Remarks</th>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;"></th>
           </tr></thead>
           <tbody>
             <sc-for list="{{ cementSiteDetail.txns }}" as="tx" hint-placeholder-count="4">
@@ -1113,8 +1113,8 @@
                 <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ tx.Date }}</td>
                 <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:{{ tx.typeColor }};font-weight:600;">{{ tx.Type }}</td>
                 <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ tx.Bags }}</td>
-                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ tx.AmountFmt }}</td>
                 <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);color:var(--muted);white-space:nowrap;">{{ tx.Detail }}</td>
+                <td style="padding:10px 12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ tx.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:5px 9px;border-radius:6px;cursor:pointer;font-size:11px;margin-right:6px;">Edit</button><button onClick="{{ tx.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:11px;">Delete</button></td>
               </tr>
             </sc-for>
           </tbody>
@@ -3216,9 +3216,9 @@ class Component extends DCLogic {
     staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], staffBF: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], mistriBF: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], labourBF: [], vehicles: [], vehicleDailyLog: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], otherPayments: [], cementReceived: [], cementUsed: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
     selectedSupplier: null, selectedMistri: null, selectedLabour: null, selectedSite: null, selectedDieselSupplier: null, selectedVehicle: null, selectedCementSite: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
-    detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: defaultLast7(), labourDetailFilter: defaultLast7(), siteDetailFilter: defaultLast7(), vehicleDetailFilter: defaultLast7(), staffDetailFilter: defaultLast7(), staffPaymentsFilter: defaultLast7(), siteWalletFilter: defaultLast7(), expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
+    detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, siteDetailFilter: { from: '', to: '' }, vehicleDetailFilter: defaultLast7(), staffDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
     fundTransferFilter: Object.assign(defaultLast7(), { party: '' }), userBalanceFilter: { from: '', to: '', name: '' }, userBalanceExportScope: 'site', userRowFilter: {}, fundTransferShowAll: false,
-    cementFilter: defaultLast7(), cementSiteDetailFilter: defaultLast7(),
+    cementFilter: { from: '', to: '' }, cementSiteDetailFilter: { from: '', to: '' },
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
     reportTab: 'supplier', showPassword: false, theme: 'light', maintenance: { enabled: false, message: '' }, announcement: { enabled: false, message: '' }
   };
@@ -5312,9 +5312,9 @@ class Component extends DCLogic {
       maintCycleYear: maintCycleYear, canMarkPaid: canMarkPaid,
       onMarkInvoicePaid: this.markInvoicePaid.bind(this), onMarkMaintPaid: function () { self.markMaintenancePaid(maintCycleYear); }
     };
-    if (!s.mistriDetailFilter) s.mistriDetailFilter = defaultLast7();
-    if (!s.labourDetailFilter) s.labourDetailFilter = defaultLast7();
-    if (!s.staffDetailFilter) s.staffDetailFilter = defaultLast7();
+    if (!s.mistriDetailFilter) s.mistriDetailFilter = { from: '', to: '' };
+    if (!s.labourDetailFilter) s.labourDetailFilter = { from: '', to: '' };
+    if (!s.staffDetailFilter) s.staffDetailFilter = { from: '', to: '' };
     if (!s.activityTrackerFilter) { const t = new Date().toISOString().slice(0, 10); s.activityTrackerFilter = { from: t, to: t }; }
     const atf = s.activityTrackerFilter;
     const activityCounts = {
@@ -5628,8 +5628,8 @@ class Component extends DCLogic {
       const useRows = s.cementUsed.filter(function (c) { return c.Site === ccsName && self.inRange(c.Date, csdf.from, csdf.to); });
       const recBags = self.sum(recRows, 'Bags'), useBags = self.sum(useRows, 'Bags');
       const cTxns = [];
-      recRows.forEach(function (r) { cTxns.push({ Date: r.Date, Type: 'Received', typeColor: '#2e9e5b', Bags: Number(r.Bags) || 0, AmountFmt: r.Amount ? fmt(r.Amount) : '—', Detail: r.Party || r.Remarks || '' }); });
-      useRows.forEach(function (r) { cTxns.push({ Date: r.Date, Type: 'Used', typeColor: '#e2574c', Bags: Number(r.Bags) || 0, AmountFmt: '—', Detail: r.Remarks || '' }); });
+      recRows.forEach(function (r) { cTxns.push({ Date: r.Date, Type: 'Received', typeColor: '#2e9e5b', Bags: Number(r.Bags) || 0, Detail: r.Remarks || '', onEdit: function () { self.openModal('cementReceived', r); }, onDelete: function () { self.deleteRecord('deleteCementReceived', { ReceiptID: r.ReceiptID }, ''); } }); });
+      useRows.forEach(function (r) { cTxns.push({ Date: r.Date, Type: 'Used', typeColor: '#e2574c', Bags: Number(r.Bags) || 0, Detail: r.Remarks || '', onEdit: function () { self.openModal('cementUsed', r); }, onDelete: function () { self.deleteRecord('deleteCementUsed', { UsageID: r.UsageID }, ''); } }); });
       cTxns.sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); });
       cementSiteDetail = { name: ccsName, receivedBags: recBags, usedBags: useBags, stockBags: recBags - useBags, txns: cTxns };
       this._lastCementSiteDetail = cementSiteDetail;
@@ -5762,7 +5762,7 @@ class Component extends DCLogic {
         detailFilterFrom: (s.staffDetailFilter || {}).from || '', detailFilterTo: (s.staffDetailFilter || {}).to || '',
         onDetailFilterFrom: this.setGenericFilter('staffDetailFilter', 'from'), onDetailFilterTo: this.setGenericFilter('staffDetailFilter', 'to')
       };
-      const sdf2 = s.staffDetailFilter || defaultLast7();
+      const sdf2 = s.staffDetailFilter || { from: '', to: '' };
       const attInRange = attRowsAll.filter(function (r) { return self.inRange(r.Date, sdf2.from, sdf2.to); });
       const payInRange = payRows2.filter(function (r) { return self.inRange(r.Date, sdf2.from, sdf2.to); });
       this._lastStaffDetail = {
@@ -6032,8 +6032,8 @@ class Component extends DCLogic {
       s.labourEntries.filter(function (r) { return r.Site === siteName && self.inRange(r.Date, sdf.from, sdf.to); }).forEach(function (r) { const extra = (Number(r.AdditionalAmount) || 0) + (Number(r.Fare) || 0); dTxns.push({ Date: r.Date, Category: 'Labour Work Log', Detail: r.LabourName, Remarks: r.Remarks || '', AmountN: 0, isReceived: false, workLog: true, HowManyLabourFmt: r.HowManyLabour ? String(r.HowManyLabour) : '—', DailyPriceFmt: r.DailyPrice ? fmt(r.DailyPrice) : '—', ExtraFmt: extra ? fmt(extra) : '—' }); });
       s.payments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, sdf.from, sdf.to); }).forEach(function (p) { dTxns.push({ Date: p.Date, Category: 'To Supplier', Detail: p.Supplier, Remarks: p.Remarks || '', AmountN: Number(p.AmountPaid) || 0, isReceived: false, onEdit: function () { self.openModal('payment', p); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: p.PaymentID }, ''); } }); });
       s.dieselPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, sdf.from, sdf.to); }).forEach(function (p) { dTxns.push({ Date: p.Date, Category: 'To Diesel', Detail: p.Supplier, Remarks: p.Remarks || '', AmountN: Number(p.AmountPaid) || 0, isReceived: false, onEdit: function () { self.openModal('dieselPayment', p); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: p.PaymentID }, ''); } }); });
-      (s.siteTransfers || []).filter(function (t) { return t.ToSite === siteName && self.inRange(t.Date, sdf.from, sdf.to); }).forEach(function (t) { const amt = Number(t.Amount) || 0; dTxns.push({ Date: t.Date, Category: amt >= 0 ? 'Transferred In (Credit)' : 'Transferred In (Due)', Detail: 'from ' + t.FromSite, Remarks: t.Remarks || '', AmountN: Math.abs(amt), isReceived: amt >= 0, transferAdj: amt }); });
-      (s.siteTransfers || []).filter(function (t) { return t.FromSite === siteName && self.inRange(t.Date, sdf.from, sdf.to); }).forEach(function (t) { const amt = Number(t.Amount) || 0; const effect = -amt; dTxns.push({ Date: t.Date, Category: amt >= 0 ? 'Transferred Out (Credit)' : 'Transferred Out (Due)', Detail: 'to ' + t.ToSite, Remarks: t.Remarks || '', AmountN: Math.abs(effect), isReceived: effect >= 0, transferAdj: effect }); });
+      (s.siteTransfers || []).filter(function (t) { return t.ToSite === siteName && self.inRange(t.Date, sdf.from, sdf.to); }).forEach(function (t) { const amt = Number(t.Amount) || 0; dTxns.push({ Date: t.Date, Category: amt >= 0 ? 'Transferred In (Credit)' : 'Transferred In (Due)', Detail: 'from ' + t.FromSite, Remarks: t.Remarks || '', AmountN: Math.abs(amt), isReceived: amt >= 0, transferAdj: amt, onEdit: function () { self.openModal('siteTransfer', t); }, onDelete: function () { self.deleteRecord('deleteSiteTransfer', { TransferID: t.TransferID }, ''); } }); });
+      (s.siteTransfers || []).filter(function (t) { return t.FromSite === siteName && self.inRange(t.Date, sdf.from, sdf.to); }).forEach(function (t) { const amt = Number(t.Amount) || 0; const effect = -amt; dTxns.push({ Date: t.Date, Category: amt >= 0 ? 'Transferred Out (Credit)' : 'Transferred Out (Due)', Detail: 'to ' + t.ToSite, Remarks: t.Remarks || '', AmountN: Math.abs(effect), isReceived: effect >= 0, transferAdj: effect, onEdit: function () { self.openModal('siteTransfer', t); }, onDelete: function () { self.deleteRecord('deleteSiteTransfer', { TransferID: t.TransferID }, ''); } }); });
       dTxns.sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); });
       dTxns.forEach(function (tx, i) { tx.Sl = i + 1; if (tx.workLog) { tx.receivedFmt = '—'; tx.sentFmt = '—'; } else { tx.receivedFmt = tx.isReceived ? fmt(tx.AmountN) : ''; tx.sentFmt = tx.isReceived ? '' : fmt(tx.AmountN); } if (!tx.HowManyLabourFmt) tx.HowManyLabourFmt = '—'; if (!tx.DailyPriceFmt) tx.DailyPriceFmt = '—'; });
       const byDate = {};
