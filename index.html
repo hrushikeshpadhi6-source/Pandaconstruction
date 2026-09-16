@@ -748,11 +748,16 @@
           <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;">
             <div style="font-weight:700;font-size:16px;margin-bottom:4px;">{{ v.VehicleNumber }}</div>
             <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">{{ v.DriverName }}</div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Income</span><span>{{ v.incomeFmt }}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Diesel Cost</span><span>{{ v.dieselCostFmt }}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Driver Fee</span><span>{{ v.driverFeeFmt }}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Mileage</span><span>{{ v.mileageFmt }}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:14px;"><span style="color:var(--muted);">Net Profit / Loss</span><span style="color:{{ v.profitColor }};font-weight:700;">{{ v.profitFmt }}</span></div>
+            <sc-if value="{{ v.isOwnerCar }}">
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:14px;"><span style="color:var(--muted);">Diesel Cost</span><span style="font-weight:700;">{{ v.dieselCostFmt }}</span></div>
+            </sc-if>
+            <sc-if value="{{ !v.isOwnerCar }}">
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Income</span><span>{{ v.incomeFmt }}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Diesel Cost</span><span>{{ v.dieselCostFmt }}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Driver Fee</span><span>{{ v.driverFeeFmt }}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Mileage</span><span>{{ v.mileageFmt }}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:14px;"><span style="color:var(--muted);">Net Profit / Loss</span><span style="color:{{ v.profitColor }};font-weight:700;">{{ v.profitFmt }}</span></div>
+            </sc-if>
             <div style="display:flex;gap:8px;">
               <button onClick="{{ v.onOpen }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:9px;border-radius:6px;cursor:pointer;font-size:13px;">View Details</button>
               <button onClick="{{ v.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:9px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Edit</button>
@@ -770,6 +775,10 @@
         <button onClick="{{ vehicleDetail.onExportExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;" data-stat-grid>
+        <sc-if value="{{ vehicleDetail.isOwnerCar }}">
+          <div style="background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Diesel Cost</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.dieselCostFmt }}</div></div>
+        </sc-if>
+        <sc-if value="{{ !vehicleDetail.isOwnerCar }}">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Income</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.incomeFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Diesel Cost</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.dieselCostFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Driver Fee</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.driverFeeFmt }}</div></div>
@@ -777,6 +786,7 @@
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total KM Run</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.kmRunFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Mileage</div><div style="font-size:20px;font-weight:800;">{{ vehicleDetail.mileageFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Net Profit / Loss</div><div style="font-size:20px;font-weight:800;color:{{ vehicleDetail.profitColor }};">{{ vehicleDetail.profitFmt }}</div></div>
+        </sc-if>
       </div>
       <div style="color:var(--muted2);font-size:12px;margin-bottom:20px;">Income = fare earned using this vehicle instead of a supplier's. Net P/L per day = Income − Diesel Cost − Driver Fee − Other Expense.</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -805,7 +815,7 @@
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.kmRun }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;font-weight:700;color:{{ r.netColor }};">{{ r.netFmt }}</td>
                 <td style="padding:12px;font-size:11px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:var(--muted2);">{{ r.idleNote }}</td>
-                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">{{ r.editLabel }}</button></td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;"><div style="display:flex;gap:6px;justify-content:flex-end;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">{{ r.editLabel }}</button><sc-if value="{{ r.onDelete }}"><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></sc-if></div></td>
               </tr>
             </sc-for>
           </tbody>
@@ -2680,14 +2690,12 @@
         <form key="{{ formKey }}" onSubmit="{{ submitVehicle }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="text" name="VehicleNumber" placeholder="Vehicle Number" required="true" defaultValue="{{ vehicleDefaults.VehicleNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="text" name="DriverName" placeholder="Driver Name" defaultValue="{{ vehicleDefaults.DriverName }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <select name="VehicleType" defaultValue="{{ vehicleDefaults.VehicleType }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;">
-            <option value="Truck">Truck</option>
-            <option value="JCB">JCB</option>
-            <option value="Tractor">Tractor</option>
-          </select>
-          <input type="number" step="any" name="Mileage" placeholder="Mileage (km/L) — Truck only, used when no Diesel Transactions logged" defaultValue="{{ vehicleDefaults.Mileage }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="VehicleType" placeholder="Vehicle Type (Truck, JCB, Tractor, or type your own)" list="vehicleTypeList" defaultValue="{{ vehicleDefaults.VehicleType }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="vehicleTypeList"><option value="Truck"></option><option value="JCB"></option><option value="Tractor"></option></datalist>
+          <input type="number" step="any" name="Mileage" placeholder="Mileage (km/L) — Truck only" defaultValue="{{ vehicleDefaults.Mileage }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="number" step="any" name="HourlyRate" placeholder="Hourly Rate (₹) — JCB only" defaultValue="{{ vehicleDefaults.HourlyRate }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="number" step="any" name="MonthlyRent" placeholder="Monthly Rent (₹) — Tractor only" defaultValue="{{ vehicleDefaults.MonthlyRent }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="number" step="any" name="DailyDriverFee" placeholder="Driver Fee per Day (₹) — charged every day, work or not" defaultValue="{{ vehicleDefaults.DailyDriverFee }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <textarea name="Notes" placeholder="Notes (optional)" defaultValue="{{ vehicleDefaults.Notes }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -2703,16 +2711,9 @@
           <input type="date" name="Date" required="true" defaultValue="{{ vehicleLogDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <input type="number" step="any" name="KmRun" placeholder="KM Run — Truck" defaultValue="{{ vehicleLogDefaults.KmRun }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="number" step="any" name="HoursRun" placeholder="Hours Run — JCB" defaultValue="{{ vehicleLogDefaults.HoursRun }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <input type="number" step="any" name="DriverFee" placeholder="Driver Fee / Salary (₹)" defaultValue="{{ vehicleLogDefaults.DriverFee }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="number" step="any" name="Fooding" placeholder="Fooding (₹, optional)" defaultValue="{{ vehicleLogDefaults.Fooding }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <sc-if value="{{ vehicleDetail.isTruck }}" hint-placeholder-val="{{ true }}">
-            <sc-if value="{{ !vehicleDetail.usesLedger }}" hint-placeholder-val="{{ true }}">
-              <input type="number" step="any" name="OilPricePerLitre" placeholder="Oil Price per Litre (₹, today's rate)" defaultValue="{{ vehicleLogDefaults.OilPricePerLitre }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-            </sc-if>
-            <sc-if value="{{ vehicleDetail.usesLedger }}" hint-placeholder-val="{{ false }}">
-              <input type="hidden" name="OilPricePerLitre" value="0" />
-              <div style="font-size:12px;color:var(--muted2);">Diesel cost for this vehicle comes from Diesel Transactions, not entered here.</div>
-            </sc-if>
+            <input type="number" step="any" name="OilPricePerLitre" placeholder="Oil Price per Litre (₹, today's rate)" defaultValue="{{ vehicleLogDefaults.OilPricePerLitre }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           </sc-if>
           <sc-if value="{{ !vehicleDetail.isTruck }}" hint-placeholder-val="{{ false }}">
             <input type="hidden" name="OilPricePerLitre" value="0" />
@@ -4141,7 +4142,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.VehicleNumber.value.trim()) { this.showToast('Vehicle number is required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { VehicleNumber: f.VehicleNumber.value.trim(), DriverName: f.DriverName.value, VehicleType: f.VehicleType.value, Mileage: f.Mileage.value || 0, HourlyRate: f.HourlyRate.value || 0, MonthlyRent: f.MonthlyRent.value || 0, Notes: f.Notes.value, CreatedBy: this.currentUserName() };
+    const payload = { VehicleNumber: f.VehicleNumber.value.trim(), DriverName: f.DriverName.value, VehicleType: f.VehicleType.value, Mileage: f.Mileage.value || 0, HourlyRate: f.HourlyRate.value || 0, MonthlyRent: f.MonthlyRent.value || 0, DailyDriverFee: f.DailyDriverFee.value || 0, Notes: f.Notes.value, CreatedBy: this.currentUserName() };
     if (ed && ed.VehicleID) { payload.VehicleID = ed.VehicleID; this.submitGeneric('updateVehicle', payload, 'Vehicle updated successfully.'); }
     else this.submitGeneric('addVehicle', payload, 'Vehicle saved successfully.');
   }
@@ -4150,7 +4151,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value) { this.showToast('Date is required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, VehicleNumber: this.state.selectedVehicle, KmRun: f.KmRun.value || 0, HoursRun: f.HoursRun.value || 0, DriverFee: f.DriverFee.value || 0, Fooding: f.Fooding.value || 0, OtherExpense: f.OtherExpense.value || 0, OilPricePerLitre: f.OilPricePerLitre.value || 0, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, VehicleNumber: this.state.selectedVehicle, KmRun: f.KmRun.value || 0, HoursRun: f.HoursRun.value || 0, Fooding: f.Fooding.value || 0, OtherExpense: f.OtherExpense.value || 0, OilPricePerLitre: f.OilPricePerLitre.value || 0, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.LogID = ed.LogID; this.submitGeneric('updateVehicleLog', payload, 'Daily log updated successfully.'); }
     else this.submitGeneric('addVehicleLog', payload, 'Daily log saved successfully.');
   }
@@ -5237,35 +5238,22 @@ class Component extends DCLogic {
         onAddBF: function () { self.openModal('dieselBF', null); }
       };
     }
-    // Vehicle Management: income = "Self" fare-type supplier transactions on that vehicle
-    // (the fare would otherwise have gone to the supplier's vehicle, so it's our income when
-    // we use our own truck); diesel cost comes straight from existing Diesel Transactions;
-    // driver fee / KM run / other expense come from the new daily log. No duplicate entry.
-    // Vehicle Management: income = "Self" fare-type supplier transactions on that vehicle
-    // (the fare would otherwise have gone to the supplier's vehicle, so it's our income when
-    // we use our own truck); diesel cost comes straight from existing Diesel Transactions;
-    // driver fee / KM run / other expense come from the new daily log. No duplicate entry.
-    // Matched by the last 4 digits of the plate (not exact string) since operators type the
-    // same vehicle number with inconsistent spacing across entries.
-    // Vehicle Management: income = "Self" fare-type supplier transactions on that vehicle
-    // (the fare would otherwise have gone to the supplier's vehicle, so it's our income when
-    // we use our own truck). Diesel cost is either pulled from the existing Diesel Transactions
-    // ledger (when the vehicle IS tracked there, e.g. fuel bought and logged separately) or
-    // calculated as KM Run / Mileage \u00d7 Oil Price per Litre (when it isn't) \u2014 set per vehicle
-    // via DieselSource so each truck uses whichever matches how it's actually tracked.
-    // Matched by the last 4 digits of the plate (not exact string) since operators type the
-    // same vehicle number with inconsistent spacing across entries.
     // Vehicle Management. Three vehicle types, three income models:
     // Truck: income = "Self" fare-type supplier transactions (using our own truck instead of a
-    //   supplier's, so that fare is our income); diesel cost auto-detects per vehicle \u2014 if any
-    //   Diesel Transactions exist for it, use that real cost, otherwise calculate from
-    //   KM Run \u00f7 Mileage \u00d7 Oil Price per Litre entered on the daily log.
+    //   supplier's, so that fare is our income); diesel cost is always calculated as
+    //   KM Run \u00f7 Mileage \u00d7 Oil Price per Litre entered on the daily log \u2014 never pulled
+    //   from the Diesel Transactions ledger, so the two stay independent.
     // JCB: income = Hours Run \u00d7 Hourly Rate (both from the daily log / vehicle rate).
     // Tractor: income = fixed Monthly Rent set on the vehicle.
     // All types then deduct Driver Fee + Fooding + Other Expense from that day's income.
     // Matched by the last 4 digits of the plate (not exact string) since operators type the
     // same vehicle number with inconsistent spacing across entries.
     const vehicleKey = function (vn) { const digits = String(vn || '').replace(/\D/g, ''); return digits.length >= 4 ? digits.slice(-4) : digits; };
+    const dateRangeArr = function (startStr, endStr) {
+      const out = []; let d = new Date(startStr + 'T00:00:00'); const end = new Date(endStr + 'T00:00:00');
+      while (d <= end) { out.push(d.toISOString().slice(0, 10)); d.setDate(d.getDate() + 1); }
+      return out;
+    };
     const vehicleIncomeRows = s.transactions.filter(function (t) { return t.FareType === 'Self' && t.VehicleNumber; });
     const vKeyToCanonical = {};
     s.vehicles.concat(vehicleIncomeRows).concat(s.dieselTx).concat(s.vehicleDailyLog).forEach(function (r) { const vn0 = r.VehicleNumber; if (!vn0) return; const k = vehicleKey(vn0); if (!vKeyToCanonical[k] || s.vehicles.indexOf(r) !== -1) vKeyToCanonical[k] = vn0; });
@@ -5276,10 +5264,17 @@ class Component extends DCLogic {
       const veh = vehicleMasterFor(vn) || {};
       const type = veh.VehicleType || 'Truck';
       const mileageRating = Number(veh.Mileage) || 0;
-      const dieselTxForVehicle = s.dieselTx.filter(function (t) { return vehicleKey(t.VehicleNumber) === key; });
-      const usesLedger = dieselTxForVehicle.length > 0;
+      const isOwnerCar = key === '7353';
       const logs = s.vehicleDailyLog.filter(function (l) { return vehicleKey(l.VehicleNumber) === key; });
-      const driverFee = self.sum(logs, 'DriverFee');
+      const allDatesForVeh = vehicleIncomeRows.filter(function (t) { return vehicleKey(t.VehicleNumber) === key; }).map(function (t) { return t.Date; }).concat(s.dieselTx.filter(function (t) { return vehicleKey(t.VehicleNumber) === key; }).map(function (t) { return t.Date; })).concat(logs.map(function (l) { return l.Date; })).filter(Boolean);
+      const earliestDate = allDatesForVeh.length ? allDatesForVeh.slice().sort()[0] : null;
+      if (isOwnerCar) {
+        const ownerDiesel = self.sum(s.dieselTx.filter(function (t) { return vehicleKey(t.VehicleNumber) === key; }), 'Value');
+        return { type: type, income: 0, dieselCost: ownerDiesel, driverFee: 0, fooding: 0, otherExpense: 0, kmRun: self.sum(logs, 'KmRun'), hoursRun: 0, mileageFmt: '—', profit: 0, mileageRating: mileageRating, hourlyRate: 0, isOwnerCar: true, dailyFee: 0, earliestDate: earliestDate };
+      }
+      const dailyFee = Number(veh.DailyDriverFee) || 0;
+      const activeDays = earliestDate ? dateRangeArr(earliestDate, todayStr).length : 0;
+      const driverFee = dailyFee * activeDays;
       const fooding = self.sum(logs, 'Fooding');
       const otherExpense = self.sum(logs, 'OtherExpense');
       const kmRun = self.sum(logs, 'KmRun');
@@ -5293,59 +5288,52 @@ class Component extends DCLogic {
         dieselCost = 0; mileageFmt = '—';
       } else {
         income = self.sum(vehicleIncomeRows.filter(function (t) { return vehicleKey(t.VehicleNumber) === key; }).map(function (t) { return { v: t.FareAmount != null ? Number(t.FareAmount) : (Number(t.Quantity) || 0) * (Number(t.Fare) || 0) }; }), 'v');
-        if (usesLedger) {
-          dieselCost = self.sum(dieselTxForVehicle, 'Value');
-          const dieselQty = self.sum(dieselTxForVehicle, 'DieselQuantity');
-          mileageFmt = dieselQty > 0 ? (kmRun / dieselQty).toFixed(1) + ' km/L' : '—';
-        } else {
-          dieselCost = logs.reduce(function (a, l) { return a + (mileageRating > 0 ? ((Number(l.KmRun) || 0) / mileageRating) * (Number(l.OilPricePerLitre) || 0) : 0); }, 0);
-          mileageFmt = mileageRating ? mileageRating.toFixed(1) + ' km/L' : '—';
-        }
+        dieselCost = logs.reduce(function (a, l) { return a + (mileageRating > 0 ? ((Number(l.KmRun) || 0) / mileageRating) * (Number(l.OilPricePerLitre) || 0) : 0); }, 0);
+        mileageFmt = mileageRating ? mileageRating.toFixed(1) + ' km/L' : '—';
       }
       const profit = income - dieselCost - driverFee - fooding - otherExpense;
-      return { type: type, income: income, dieselCost: dieselCost, driverFee: driverFee, fooding: fooding, otherExpense: otherExpense, kmRun: kmRun, hoursRun: hoursRun, mileageFmt: mileageFmt, profit: profit, usesLedger: usesLedger, mileageRating: mileageRating, hourlyRate: Number(veh.HourlyRate) || 0 };
+      return { type: type, income: income, dieselCost: dieselCost, driverFee: driverFee, fooding: fooding, otherExpense: otherExpense, kmRun: kmRun, hoursRun: hoursRun, mileageFmt: mileageFmt, profit: profit, mileageRating: mileageRating, hourlyRate: Number(veh.HourlyRate) || 0, dailyFee: dailyFee, earliestDate: earliestDate };
     };
     const vehicleCards = vehicleNames.map(function (vn) {
       const veh = vehicleMasterFor(vn) || { VehicleNumber: vn };
       const fin = vehicleFinancials(vn);
       return {
         VehicleNumber: vn, DriverName: veh.DriverName || '', VehicleType: veh.VehicleType || 'Truck', incomeFmt: fmt(fin.income), dieselCostFmt: fmt(fin.dieselCost), driverFeeFmt: fmt(fin.driverFee),
-        mileageFmt: fin.mileageFmt, profitFmt: fmt(fin.profit), profitColor: fin.profit >= 0 ? '#2ea043' : '#e2574c',
+        mileageFmt: fin.mileageFmt, profitFmt: fmt(fin.profit), profitColor: fin.profit >= 0 ? '#2ea043' : '#e2574c', isOwnerCar: !!fin.isOwnerCar,
         onOpen: function () { self.openVehicle(vn); }, onEdit: function () { self.openModal('vehicle', veh); }, onDelete: function () { self.deleteRecord('deleteVehicle', { VehicleID: veh.VehicleID }, 'vehicles'); }
       };
     });
-    let vehicleDetail = { VehicleNumber: '', DriverName: '', VehicleType: 'Truck', incomeFmt: fmt(0), dieselCostFmt: fmt(0), driverFeeFmt: fmt(0), foodingFmt: fmt(0), otherExpenseFmt: fmt(0), kmRunFmt: '0', hoursRunFmt: '0', mileageFmt: '—', profitFmt: fmt(0), profitColor: 'var(--muted)', usesLedger: false, isTruck: true, isJCB: false, isTractor: false, dailyRows: [], onAddLog: function () {} };
+    let vehicleDetail = { VehicleNumber: '', DriverName: '', VehicleType: 'Truck', incomeFmt: fmt(0), dieselCostFmt: fmt(0), driverFeeFmt: fmt(0), foodingFmt: fmt(0), otherExpenseFmt: fmt(0), kmRunFmt: '0', hoursRunFmt: '0', mileageFmt: '—', profitFmt: fmt(0), profitColor: 'var(--muted)', isTruck: true, isJCB: false, isTractor: false, dailyRows: [], onAddLog: function () {} };
     if (s.selectedVehicle) {
       const vn = s.selectedVehicle;
       const vkey = vehicleKey(vn);
       const veh = vehicleMasterFor(vn) || {};
       const type = veh.VehicleType || 'Truck';
       const fin = vehicleFinancials(vn);
-      const dateSet = Array.from(new Set(vehicleIncomeRows.filter(function (t) { return vehicleKey(t.VehicleNumber) === vkey; }).map(function (t) { return t.Date; }).concat(s.dieselTx.filter(function (t) { return vehicleKey(t.VehicleNumber) === vkey; }).map(function (t) { return t.Date; })).concat(s.vehicleDailyLog.filter(function (l) { return vehicleKey(l.VehicleNumber) === vkey; }).map(function (l) { return l.Date; })))).filter(Boolean).sort().reverse();
+      const dateSet = fin.earliestDate ? dateRangeArr(fin.earliestDate, todayStr).slice().reverse() : [];
       const dailyRows = dateSet.map(function (d) {
         const dayLog = s.vehicleDailyLog.find(function (l) { return vehicleKey(l.VehicleNumber) === vkey && l.Date === d; });
-        const dayDriverFee = dayLog ? (Number(dayLog.DriverFee) || 0) : 0;
+        const dayDriverFee = fin.isOwnerCar ? 0 : fin.dailyFee;
         const dayFooding = dayLog ? (Number(dayLog.Fooding) || 0) : 0;
         const dayOther = dayLog ? (Number(dayLog.OtherExpense) || 0) : 0;
         const dayKm = dayLog ? (Number(dayLog.KmRun) || 0) : 0;
         const dayHours = dayLog ? (Number(dayLog.HoursRun) || 0) : 0;
         let dayIncome, dayDiesel;
-        if (type === 'JCB') { dayIncome = dayHours * fin.hourlyRate; dayDiesel = 0; }
+        if (fin.isOwnerCar) { dayIncome = 0; dayDiesel = self.sum(s.dieselTx.filter(function (t) { return vehicleKey(t.VehicleNumber) === vkey && t.Date === d; }), 'Value'); }
+        else if (type === 'JCB') { dayIncome = dayHours * fin.hourlyRate; dayDiesel = 0; }
         else if (type === 'Tractor') { dayIncome = 0; dayDiesel = 0; }
         else {
           dayIncome = self.sum(vehicleIncomeRows.filter(function (t) { return vehicleKey(t.VehicleNumber) === vkey && t.Date === d; }).map(function (t) { return { v: t.FareAmount != null ? Number(t.FareAmount) : (Number(t.Quantity) || 0) * (Number(t.Fare) || 0) }; }), 'v');
-          dayDiesel = fin.usesLedger
-            ? self.sum(s.dieselTx.filter(function (t) { return vehicleKey(t.VehicleNumber) === vkey && t.Date === d; }), 'Value')
-            : (fin.mileageRating > 0 && dayLog ? (dayKm / fin.mileageRating) * (Number(dayLog.OilPricePerLitre) || 0) : 0);
+          dayDiesel = fin.mileageRating > 0 && dayLog ? (dayKm / fin.mileageRating) * (Number(dayLog.OilPricePerLitre) || 0) : 0;
         }
         const dayNet = dayIncome - dayDiesel - dayDriverFee - dayFooding - dayOther;
-        return { Date: d, incomeFmt: type === 'Tractor' ? '—' : fmt(dayIncome), dieselCostFmt: fmt(dayDiesel), driverFeeFmt: fmt(dayDriverFee), kmRun: dayKm, hoursRun: dayHours, netFmt: fmt(dayNet), netColor: dayNet >= 0 ? '#2ea043' : '#e2574c', idleNote: (!dayIncome && (dayDriverFee || dayOther)) ? 'Idle — driver expense only' : '', log: dayLog, editLabel: dayLog ? 'Edit' : 'Add Log', onEdit: dayLog ? function () { self.openModal('vehicleLog', dayLog); } : function () { self.openModal('vehicleLog', { Date: d }); }, onDelete: dayLog ? function () { self.deleteRecord('deleteVehicleLog', { LogID: dayLog.LogID }, 'vehicleDailyLog'); } : null };
+        return { Date: d, incomeFmt: type === 'Tractor' ? '—' : fmt(dayIncome), dieselCostFmt: fmt(dayDiesel), driverFeeFmt: fmt(dayDriverFee), kmRun: dayKm, hoursRun: dayHours, netFmt: fmt(dayNet), netColor: dayNet >= 0 ? '#2ea043' : '#e2574c', idleNote: !dayLog ? 'No work — driver fee only' : ((!dayIncome && (dayDriverFee || dayOther)) ? 'Idle — driver expense only' : ''), log: dayLog, editLabel: dayLog ? 'Edit' : 'Add Log', onEdit: dayLog ? function () { self.openModal('vehicleLog', dayLog); } : function () { self.openModal('vehicleLog', { Date: d }); }, onDelete: dayLog ? function () { self.deleteRecord('deleteVehicleLog', { LogID: dayLog.LogID }, 'vehicleDailyLog'); } : null };
       });
       vehicleDetail = {
         VehicleNumber: vn, DriverName: veh.DriverName || '', VehicleType: type,
         incomeFmt: fmt(fin.income), dieselCostFmt: fmt(fin.dieselCost), driverFeeFmt: fmt(fin.driverFee), foodingFmt: fmt(fin.fooding), otherExpenseFmt: fmt(fin.otherExpense),
-        kmRunFmt: String(fin.kmRun), hoursRunFmt: String(fin.hoursRun), mileageFmt: fin.mileageFmt, profitFmt: fmt(fin.profit), profitColor: fin.profit >= 0 ? '#2ea043' : '#e2574c', usesLedger: fin.usesLedger,
-        isTruck: type === 'Truck', isJCB: type === 'JCB', isTractor: type === 'Tractor',
+        kmRunFmt: String(fin.kmRun), hoursRunFmt: String(fin.hoursRun), mileageFmt: fin.mileageFmt, profitFmt: fmt(fin.profit), profitColor: fin.profit >= 0 ? '#2ea043' : '#e2574c',
+        isTruck: type === 'Truck', isJCB: type === 'JCB', isTractor: type === 'Tractor', isOwnerCar: !!fin.isOwnerCar,
         dailyRows: dailyRows, onAddLog: function () { self.openModal('vehicleLog', null); },
         onExportExcel: function () { self.exportVehicleExcel(vn); }
       };
@@ -5919,8 +5907,8 @@ class Component extends DCLogic {
     const personBFName = s.modal === 'staffBF' ? s.selectedStaff : (s.modal === 'labourBF' ? s.selectedLabour : s.selectedMistri);
     const personBFDefaults = { BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '2026-08-31', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Remarks: editRecordRaw.Remarks || '' };
     const submitPersonBF = this.submitPersonBF.bind(this, s.modal, personBFName);
-    const vehicleDefaults = { VehicleNumber: editRecordRaw.VehicleNumber || '', DriverName: editRecordRaw.DriverName || '', VehicleType: editRecordRaw.VehicleType || 'Truck', Mileage: editRecordRaw.Mileage != null ? editRecordRaw.Mileage : '', HourlyRate: editRecordRaw.HourlyRate != null ? editRecordRaw.HourlyRate : '', MonthlyRent: editRecordRaw.MonthlyRent != null ? editRecordRaw.MonthlyRent : '', Notes: editRecordRaw.Notes || '' };
-    const vehicleLogDefaults = { Date: editRecordRaw.Date || todayStr, KmRun: editRecordRaw.KmRun != null ? editRecordRaw.KmRun : '', HoursRun: editRecordRaw.HoursRun != null ? editRecordRaw.HoursRun : '', DriverFee: editRecordRaw.DriverFee != null ? editRecordRaw.DriverFee : '', Fooding: editRecordRaw.Fooding != null ? editRecordRaw.Fooding : '', OtherExpense: editRecordRaw.OtherExpense != null ? editRecordRaw.OtherExpense : '', OilPricePerLitre: editRecordRaw.OilPricePerLitre != null ? editRecordRaw.OilPricePerLitre : '', Remarks: editRecordRaw.Remarks || '' };
+    const vehicleDefaults = { VehicleNumber: editRecordRaw.VehicleNumber || '', DriverName: editRecordRaw.DriverName || '', VehicleType: editRecordRaw.VehicleType || 'Truck', Mileage: editRecordRaw.Mileage != null ? editRecordRaw.Mileage : '', HourlyRate: editRecordRaw.HourlyRate != null ? editRecordRaw.HourlyRate : '', MonthlyRent: editRecordRaw.MonthlyRent != null ? editRecordRaw.MonthlyRent : '', DailyDriverFee: editRecordRaw.DailyDriverFee != null ? editRecordRaw.DailyDriverFee : '', Notes: editRecordRaw.Notes || '' };
+    const vehicleLogDefaults = { Date: editRecordRaw.Date || todayStr, KmRun: editRecordRaw.KmRun != null ? editRecordRaw.KmRun : '', HoursRun: editRecordRaw.HoursRun != null ? editRecordRaw.HoursRun : '', Fooding: editRecordRaw.Fooding != null ? editRecordRaw.Fooding : '', OtherExpense: editRecordRaw.OtherExpense != null ? editRecordRaw.OtherExpense : '', OilPricePerLitre: editRecordRaw.OilPricePerLitre != null ? editRecordRaw.OilPricePerLitre : '', Remarks: editRecordRaw.Remarks || '' };
     const dieselTxDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', ChalanNumber: editRecordRaw.ChalanNumber || '', Time: editRecordRaw.Time || '', DieselQuantity: editRecordRaw.DieselQuantity != null ? editRecordRaw.DieselQuantity : '', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Driver: editRecordRaw.Driver || '', Remarks: editRecordRaw.Remarks || '' };
     const dieselPayDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
     const dieselBFDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '2026-08-31', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
