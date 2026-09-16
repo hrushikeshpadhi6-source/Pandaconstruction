@@ -103,6 +103,8 @@
     SiteAllocation: { coll: "siteAllocations", idField: "AllocationID", counter: "AllocationID", prefix: "SA", def: { Status: "Active" } },
     SiteExpense: { coll: "siteExpenses", idField: "ExpenseID", counter: "ExpenseID", prefix: "SE", def: { Status: "Active" } },
     OtherPayment: { coll: "otherPayments", idField: "PaymentID", counter: "OtherPaymentID", prefix: "OTH", def: { Status: "Active" } },
+    CementReceived: { coll: "cementReceived", idField: "ReceiptID", counter: "CementReceivedID", prefix: "CR", def: { Status: "Active" } },
+    CementUsed: { coll: "cementUsed", idField: "UsageID", counter: "CementUsedID", prefix: "CU", def: { Status: "Active" } },
     User: { coll: "users", idField: "UserID", counter: "UserID", prefix: "USR", def: { Status: "Pending", Role: "Pending" } },
     HPProduction: { coll: "hpProduction", idField: "ProdID", counter: "HPProdID", prefix: "HPP" },
     HPSale: { coll: "hpSales", idField: "SaleID", counter: "HPSaleID", prefix: "HPS" },
@@ -437,7 +439,7 @@
         return { success: true, skipped: false, rolled: rolled, message: "Monthly rollover complete (" + rolled + " BF entries added)." };
       }
       case "getAllData": {
-        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions", "staffBF", "labourBF", "mistriBF", "vehicles", "vehicleDailyLog"];
+        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions", "staffBF", "labourBF", "mistriBF", "vehicles", "vehicleDailyLog", "cementReceived", "cementUsed"];
         const arrs = await Promise.all(names.map(colToArray));
         const out = { success: true };
         names.forEach(function (n, i) { out[n] = arrs[i]; });
@@ -608,7 +610,17 @@
       case "getSiteExpenses": return { success: true, data: await colToArray("siteExpenses") };
       case "addSiteExpense": { const r = await genericAdd("SiteExpense", { Date: p.Date, Site: p.Site, Amount: p.Amount, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Site Expense", "SiteExpenses", r.id, p.Site + " Rs." + p.Amount); return { success: true, message: "Site expenditure saved successfully." }; }
       case "updateSiteExpense": { const ok = await genericUpdate("SiteExpense", p, { Date: p.Date, Site: p.Site, Amount: p.Amount, Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Site expense not found." }; await auditLog(p.CreatedBy, "Updated Site Expense", "SiteExpenses", p.ExpenseID, p.Site + " Rs." + p.Amount); return { success: true, message: "Site expenditure updated successfully." }; }
-      case "deleteSiteExpense": await genericDelete("SiteExpense", p.ExpenseID); await auditLog(p.CreatedBy, "Deleted Site Expense", "SiteExpenses", p.ExpenseID, ""); return { success: true, message: "Site expenditure deleted successfully." };
+      case "deleteSiteExpense": await genericDelete("SiteExpense", p.ExpenseID); await auditLog(p.CreatedBy, "Deleted Site Expense", "SiteExpenses", p.ExpenseID, ""); return { success: true, message: "Deleted." };
+
+      case "getCementReceived": return { success: true, data: await colToArray("cementReceived") };
+      case "addCementReceived": { const r = await genericAdd("CementReceived", { Date: p.Date, Site: p.Site, Bags: p.Bags, Amount: p.Amount || 0, PaymentMethod: p.PaymentMethod || "Cash", Party: p.Party || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Cement Received", "CementReceived", r.id, p.Bags + " bags for " + p.Site); return { success: true, id: r.id, message: "Cement received logged." }; }
+      case "updateCementReceived": { const ok = await genericUpdate("CementReceived", p, { Date: p.Date, Site: p.Site, Bags: p.Bags, Amount: p.Amount || 0, PaymentMethod: p.PaymentMethod || "Cash", Party: p.Party || "", Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Not found." }; await auditLog(p.CreatedBy, "Updated Cement Received", "CementReceived", p.ReceiptID, ""); return { success: true, message: "Updated." }; }
+      case "deleteCementReceived": await genericDelete("CementReceived", p.ReceiptID); await auditLog(p.CreatedBy, "Deleted Cement Received", "CementReceived", p.ReceiptID, ""); return { success: true, message: "Deleted." };
+
+      case "getCementUsed": return { success: true, data: await colToArray("cementUsed") };
+      case "addCementUsed": { const r = await genericAdd("CementUsed", { Date: p.Date, Site: p.Site, Bags: p.Bags, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Cement Used", "CementUsed", r.id, p.Bags + " bags at " + p.Site); return { success: true, id: r.id, message: "Cement usage logged." }; }
+      case "updateCementUsed": { const ok = await genericUpdate("CementUsed", p, { Date: p.Date, Site: p.Site, Bags: p.Bags, Remarks: p.Remarks || "" }); if (!ok) return { success: false, message: "Not found." }; await auditLog(p.CreatedBy, "Updated Cement Used", "CementUsed", p.UsageID, ""); return { success: true, message: "Updated." }; }
+      case "deleteCementUsed": await genericDelete("CementUsed", p.UsageID); await auditLog(p.CreatedBy, "Deleted Cement Used", "CementUsed", p.UsageID, ""); return { success: true, message: "Deleted." };
 
       case "getOtherPayments": return { success: true, data: await colToArray("otherPayments") };
 

@@ -191,6 +191,7 @@
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Master Data</div>
       <button onClick="{{ navSites }}" style="{{ navStyle.sites }}">Sites</button>
       <button onClick="{{ navMaterials }}" style="{{ navStyle.materials }}">Materials</button>
+      <button onClick="{{ navCement }}" style="{{ navStyle.cement }}">Cement</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Staff & Payroll</div>
       <button onClick="{{ navStaff }}" style="{{ navStyle.staff }}">Staff</button>
       <button onClick="{{ navStaffPayments }}" style="{{ navStyle.staffPayments }}">Staff Payments<sc-if value="{{ hasNew.staffPayments }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.staffPayments }}</span></sc-if></button>
@@ -287,6 +288,7 @@
         <div onClick="{{ onOpenDieselOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Diesel Outstanding</div><div style="font-size:22px;font-weight:800;color:{{ totalDieselOutstandingColor }};">{{ totalDieselOutstanding }}</div></div>
         <div onClick="{{ onOpenCurrentMonth }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Current Month Expenditure</div><div style="font-size:22px;font-weight:800;">{{ currentMonthExpenditure }}</div></div>
         <div onClick="{{ onOpenStaffOutstanding }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Staff Outstanding</div><div style="font-size:22px;font-weight:800;color:{{ totalStaffOutstandingColor }};">{{ totalStaffOutstanding }}</div></div>
+        <div onClick="{{ navCement }}" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Cement Stock</div><div style="font-size:22px;font-weight:800;">{{ totalCementStock }} bags</div></div>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;">
@@ -950,10 +952,11 @@
               <div style="font-weight:700;font-size:16px;">{{ r.SiteName }}</div>
               <div><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;margin-right:4px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;">Delete</button></div>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
-              <div><div style="font-size:11px;color:var(--muted);">Purchase</div><div style="font-size:14px;font-weight:700;">{{ r.purchaseFmt }}</div></div>
-              <div><div style="font-size:11px;color:var(--muted);">Paid</div><div style="font-size:14px;font-weight:700;">{{ r.paidFmt }}</div></div>
-              <div><div style="font-size:11px;color:var(--muted);">Outstanding</div><div style="font-size:14px;font-weight:700;color:{{ r.outstandingColor }};">{{ r.outstandingFmt }}</div></div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;">
+              <div><div style="font-size:11px;color:var(--muted);">Received</div><div style="font-size:14px;font-weight:700;">{{ r.receivedFmt }}</div></div>
+              <div><div style="font-size:11px;color:var(--muted);">Expenditure</div><div style="font-size:14px;font-weight:700;">{{ r.expendFmt }}</div></div>
+              <div><div style="font-size:11px;color:var(--muted);">Balance</div><div style="font-size:14px;font-weight:700;color:{{ r.balanceColor }};">{{ r.balanceFmt }}</div></div>
+              <div><div style="font-size:11px;color:var(--muted);">Cement Stock</div><div style="font-size:14px;font-weight:700;">{{ r.cementStock }} bags</div></div>
             </div>
             <div style="display:flex;gap:8px;">
               <button onClick="{{ r.onLogExpense }}" style="flex:1;background:var(--gold);color:#0e0e10;font-weight:700;padding:8px 10px;border-radius:6px;border:none;cursor:pointer;font-size:12px;">+ Log Expenditure</button>
@@ -985,6 +988,104 @@
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.avgRate }}</td>
                 <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:var(--gold);font-weight:600;">{{ r.value }}</td>
                 <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onEdit }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">Edit</button><button onClick="{{ r.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.cement }}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <div style="color:var(--muted);font-size:13px;">Cement stock by site</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onClick="{{ exportCementExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
+          <button onClick="{{ exportCementPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button>
+          <button onClick="{{ openCementUsedModal }}" style="background:transparent;border:1px solid var(--gold);color:var(--gold);padding:10px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;">+ Log Cement Used</button>
+          <button onClick="{{ openCementReceivedModal }}" style="background:var(--gold);color:#0e0e10;font-weight:700;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">+ Log Cement Received</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ cementFilter.from }}" onChange="{{ onCementFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ cementFilter.to }}" onChange="{{ onCementTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onCementMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Pick a month</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Received</div><div style="font-size:20px;font-weight:800;color:#2e9e5b;">{{ cementTotals.receivedBags }} bags</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Used</div><div style="font-size:20px;font-weight:800;color:#e2574c;">{{ cementTotals.usedBags }} bags</div></div>
+        <div style="background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Stock</div><div style="font-size:20px;font-weight:800;">{{ cementTotals.stockBags }} bags</div></div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Site</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Received (bags)</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Used (bags)</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Stock (bags)</th>
+            <th style="padding:12px;border-bottom:1px solid var(--border);"></th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ cementRows }}" as="r" hint-placeholder-count="4">
+              <tr onClick="{{ r.onOpen }}" style="cursor:pointer;">
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;font-weight:600;">{{ r.SiteName }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#2e9e5b;font-weight:600;">{{ r.receivedBags }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#e2574c;font-weight:600;">{{ r.usedBags }}</td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;font-weight:700;">{{ r.stockBags }}</td>
+                <td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;white-space:nowrap;"><button onClick="{{ r.onLogReceived }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:6px;">+ Received</button><button onClick="{{ r.onLogUsed }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">+ Used</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ viewIs.cementSiteDetail }}">
+      <button onClick="{{ navCement }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:20px;">← All Sites</button>
+      <div style="font-weight:800;font-size:20px;margin-bottom:16px;">{{ cementSiteDetail.name }} — Cement</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Received</div><div style="font-size:20px;font-weight:800;color:#2e9e5b;">{{ cementSiteDetail.receivedBags }} bags</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Used</div><div style="font-size:20px;font-weight:800;color:#e2574c;">{{ cementSiteDetail.usedBags }} bags</div></div>
+        <div style="background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Stock</div><div style="font-size:20px;font-weight:800;">{{ cementSiteDetail.stockBags }} bags</div></div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ cementSiteDetailFilter.from }}" onChange="{{ onCementSiteDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ cementSiteDetailFilter.to }}" onChange="{{ onCementSiteDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onCementSiteDetailMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Pick a month</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+        <div style="font-weight:700;font-size:15px;">Date-wise Activity</div>
+        <div style="display:flex;gap:8px;">
+          <button onClick="{{ exportCementSiteDetailExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
+          <button onClick="{{ exportCementSiteDetailPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:600px;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Date</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Type</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Bags</th>
+            <th style="text-align:right;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Amount</th>
+            <th style="text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Party / Remarks</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ cementSiteDetail.txns }}" as="tx" hint-placeholder-count="4">
+              <tr>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ tx.Date }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:{{ tx.typeColor }};font-weight:600;">{{ tx.Type }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ tx.Bags }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ tx.AmountFmt }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);color:var(--muted);white-space:nowrap;">{{ tx.Detail }}</td>
               </tr>
             </sc-for>
           </tbody>
@@ -1905,34 +2006,6 @@
         </div>
       </sc-if>
       </sc-if>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
-        <div style="font-weight:700;font-size:15px;">Site Balances</div>
-        <div style="display:flex;gap:8px;">
-          <button onClick="{{ exportSiteWalletExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
-          <button onClick="{{ exportSiteWalletPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button>
-        </div>
-      </div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
-        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ siteWalletFilter.from }}" onChange="{{ onSiteWalletFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
-        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ siteWalletFilter.to }}" onChange="{{ onSiteWalletTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
-        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-          <select onChange="{{ onSiteWalletMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-            <option value="">Pick a month</option>
-            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
-          </select>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;" data-card-grid>
-        <sc-for list="{{ siteWalletCards }}" as="sc" hint-placeholder-count="3">
-          <div onClick="{{ sc.onOpen }}" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer;">
-            <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:14px;">{{ sc.SiteName }}</div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Received</span><span style="color:#2e9e5b;font-weight:600;">{{ sc.receivedFmt }}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--muted);">Total Expenditure</span><span style="color:#e2574c;font-weight:600;">{{ sc.totalExpendFmt }}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:8px;border-top:1px solid var(--border-soft);"><span style="color:var(--muted);">Balance</span><span style="color:var(--gold);font-weight:700;">{{ sc.balanceFmt }}</span></div>
-          </div>
-        </sc-for>
-      </div>
-
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
         <div onClick="{{ sectionToggle.siteExpenditure }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;"><span style="color:var(--muted);font-size:12px;">{{ sectionIcon.siteExpenditure }}</span>Site Expenditure</div>
         <button onClick="{{ openSiteExpenseModal }}" style="background:var(--gold);color:#0e0e10;font-weight:700;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;">+ Log Expenditure</button>
@@ -2887,6 +2960,42 @@
         </form>
       </sc-if>
 
+      <sc-if value="{{ modalIs.cementReceived }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitCementReceived }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="date" name="Date" required="true" defaultValue="{{ cementReceivedDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ cementReceivedDefaults.Site }}" list="cementRecSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="cementRecSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <input type="number" step="any" name="Bags" placeholder="Bags received" required="true" defaultValue="{{ cementReceivedDefaults.Bags }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="number" step="any" name="Amount" placeholder="Amount (₹, optional)" defaultValue="{{ cementReceivedDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <select name="PaymentMethod" defaultValue="{{ cementReceivedDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;">
+            <option value="Cash">Cash</option>
+            <option value="A/C">A/C</option>
+          </select>
+          <input type="text" name="Party" placeholder="Party / Supplier (optional)" defaultValue="{{ cementReceivedDefaults.Party }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <textarea name="Remarks" placeholder="Remarks (optional)" defaultValue="{{ cementReceivedDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:var(--gold);color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIs.cementUsed }}">
+        <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
+        <form key="{{ formKey }}" onSubmit="{{ submitCementUsed }}" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="date" name="Date" required="true" defaultValue="{{ cementUsedDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
+          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ cementUsedDefaults.Site }}" list="cementUseSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <datalist id="cementUseSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+          <input type="number" step="any" name="Bags" placeholder="Bags used" required="true" defaultValue="{{ cementUsedDefaults.Bags }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks — purpose (required — press Enter to save)" defaultValue="{{ cementUsedDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            <button type="submit" style="flex:1;background:var(--gold);color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;">Save</button>
+          </div>
+        </form>
+      </sc-if>
+
       <sc-if value="{{ modalIs.otherPayment }}">
         <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
         <form key="{{ formKey }}" onSubmit="{{ submitOtherPayment }}" style="display:flex;flex-direction:column;gap:12px;">
@@ -3057,11 +3166,12 @@ class Component extends DCLogic {
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [],
-    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], staffBF: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], mistriBF: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], labourBF: [], vehicles: [], vehicleDailyLog: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], otherPayments: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
-    selectedSupplier: null, selectedMistri: null, selectedLabour: null, selectedSite: null, selectedDieselSupplier: null, selectedVehicle: null, modal: null, editRecord: null,
+    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], staffBF: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], mistriBF: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], labourBF: [], vehicles: [], vehicleDailyLog: [], fundTransfers: [], siteAllocations: [], siteExpenses: [], otherPayments: [], cementReceived: [], cementUsed: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
+    selectedSupplier: null, selectedMistri: null, selectedLabour: null, selectedSite: null, selectedDieselSupplier: null, selectedVehicle: null, selectedCementSite: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, siteDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
     fundTransferFilter: { from: '', to: '', party: '' }, userBalanceFilter: { from: '', to: '', name: '' }, userBalanceExportScope: 'site', userRowFilter: {}, fundTransferShowAll: false,
+    cementFilter: { from: '', to: '' }, cementSiteDetailFilter: { from: '', to: '' },
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
     reportTab: 'supplier', showPassword: false, theme: 'light', maintenance: { enabled: false, message: '' }, announcement: { enabled: false, message: '' }
   };
@@ -3135,6 +3245,7 @@ class Component extends DCLogic {
       Mistri: s.mistri, MistriDue: s.mistriDue, MistriPayments: s.mistriPayments, MistriAdvances: s.mistriAdvances, MistriBF: s.mistriBF,
       Labour: s.labour, LabourEntries: s.labourEntries, LabourPayments: s.labourPayments, LabourAdvances: s.labourAdvances, LabourBF: s.labourBF,
       FundTransfers: s.fundTransfers, SiteAllocations: s.siteAllocations, SiteExpenses: s.siteExpenses, OtherPayments: s.otherPayments,
+      CementReceived: s.cementReceived, CementUsed: s.cementUsed,
       TaskCompletions: s.taskCompletions,
       Vehicles: s.vehicles, VehicleDailyLog: s.vehicleDailyLog
     };
@@ -3169,6 +3280,7 @@ class Component extends DCLogic {
         labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [], labourBF: r.labourBF || [],
         fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
         vehicles: r.vehicles || [], vehicleDailyLog: r.vehicleDailyLog || [],
+        cementReceived: r.cementReceived || [], cementUsed: r.cementUsed || [],
         maintenance: r.maintenance || { enabled: false, message: '' },
         announcement: r.announcement || { enabled: false, message: '' },
         loading: false
@@ -3190,7 +3302,8 @@ class Component extends DCLogic {
       Labour: 'labour', LabourEntry: 'labourEntries', LabourPayment: 'labourPayments', LabourAdvance: 'labourAdvances', LabourBF: 'labourBF',
       StaffBF: 'staffBF',
       Vehicle: 'vehicles', VehicleLog: 'vehicleDailyLog',
-      FundTransfer: 'fundTransfers', SiteAllocation: 'siteAllocations', SiteExpense: 'siteExpenses', OtherPayment: 'otherPayments', TaskCompletion: 'taskCompletions', User: 'users'
+      FundTransfer: 'fundTransfers', SiteAllocation: 'siteAllocations', SiteExpense: 'siteExpenses', OtherPayment: 'otherPayments', TaskCompletion: 'taskCompletions', User: 'users',
+      CementReceived: 'cementReceived', CementUsed: 'cementUsed'
     };
     const entity = action.replace(/^(add|update|delete)/, '');
     const key = map[entity];
@@ -3212,7 +3325,8 @@ class Component extends DCLogic {
         mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [], mistriBF: r.mistriBF || [],
         labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [], labourBF: r.labourBF || [],
         fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], siteExpenses: r.siteExpenses || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
-        vehicles: r.vehicles || [], vehicleDailyLog: r.vehicleDailyLog || []
+        vehicles: r.vehicles || [], vehicleDailyLog: r.vehicleDailyLog || [],
+        cementReceived: r.cementReceived || [], cementUsed: r.cementUsed || []
       });
     });
   }
@@ -3437,8 +3551,8 @@ class Component extends DCLogic {
     if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
     const rows = this._lastSiteRows || [];
     const wb = XLSX.utils.book_new();
-    const aoa = [['Site Name', 'Purchase', 'Paid', 'Outstanding', 'Status']];
-    rows.forEach(function (r) { aoa.push([r.SiteName, r.purchaseFmt, r.paidFmt, r.outstandingFmt, r.Status]); });
+    const aoa = [['Site Name', 'Received', 'Expenditure', 'Balance', 'Cement Stock (bags)']];
+    rows.forEach(function (r) { aoa.push([r.SiteName, r.receivedFmt, r.expendFmt, r.balanceFmt, r.cementStock]); });
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'Sites');
     XLSX.writeFile(wb, 'panda-construction-sites.xlsx');
   }
@@ -3451,9 +3565,53 @@ class Component extends DCLogic {
     if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
-    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Sites — Material Purchase Overview', 40, y); y += 16;
-    doc.autoTable({ startY: y + 6, head: [['Site Name', 'Purchase', 'Paid', 'Outstanding', 'Status']], body: rows.map(function (r) { return [r.SiteName, r.purchaseFmt, r.paidFmt, r.outstandingFmt, r.Status]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Sites — Money & Cement Overview', 40, y); y += 16;
+    doc.autoTable({ startY: y + 6, head: [['Site Name', 'Received', 'Expenditure', 'Balance', 'Cement Stock (bags)']], body: rows.map(function (r) { return [r.SiteName, r.receivedFmt, r.expendFmt, r.balanceFmt, r.cementStock]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
     doc.save('panda-construction-sites.pdf');
+  }
+  exportCementExcel() {
+    if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
+    const rows = this._lastCementRows || [];
+    const wb = XLSX.utils.book_new();
+    const aoa = [['Site', 'Received (bags)', 'Used (bags)', 'Stock (bags)']];
+    rows.forEach(function (r) { aoa.push([r.SiteName, r.receivedBags, r.usedBags, r.stockBags]); });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'Cement');
+    XLSX.writeFile(wb, 'panda-construction-cement.xlsx');
+  }
+  async exportCementPDF() {
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const rows = this._lastCementRows || [];
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    let y = 40;
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
+    doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
+    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Cement Stock by Site', 40, y); y += 16;
+    doc.autoTable({ startY: y + 6, head: [['Site', 'Received (bags)', 'Used (bags)', 'Stock (bags)']], body: rows.map(function (r) { return [r.SiteName, r.receivedBags, r.usedBags, r.stockBags]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.save('panda-construction-cement.pdf');
+  }
+  exportCementSiteDetailExcel() {
+    if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
+    const d = this._lastCementSiteDetail; if (!d) return;
+    const wb = XLSX.utils.book_new();
+    const aoa = [['Date', 'Type', 'Bags', 'Amount', 'Party / Remarks']];
+    d.txns.forEach(function (tx) { aoa.push([tx.Date, tx.Type, tx.Bags, tx.AmountFmt, tx.Detail]); });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'Cement');
+    XLSX.writeFile(wb, 'panda-construction-' + d.name.replace(/\s+/g, '-') + '-cement.xlsx');
+  }
+  async exportCementSiteDetailPDF() {
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const d = this._lastCementSiteDetail; if (!d) return;
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    let y = 40;
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
+    doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
+    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text(d.name + ' — Cement', 40, y); y += 16;
+    doc.autoTable({ startY: y + 6, head: [['Date', 'Type', 'Bags', 'Amount', 'Party / Remarks']], body: d.txns.map(function (tx) { return [tx.Date, tx.Type, tx.Bags, tx.AmountFmt, tx.Detail]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.save('panda-construction-' + d.name.replace(/\s+/g, '-') + '-cement.pdf');
   }
   exportDieselTxExcel() {
     if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
@@ -3624,7 +3782,7 @@ class Component extends DCLogic {
   }
   toggleTheme() { this.setState(function (s) { const t = s.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('panda_theme', t); return { theme: t }; }); }
   setView(view) {
-    this.setState({ view: view, selectedSupplier: null, selectedSite: null, modal: null, mobileNavOpen: false });
+    this.setState({ view: view, selectedSupplier: null, selectedSite: null, selectedCementSite: null, modal: null, mobileNavOpen: false });
 
     if (this._trackedSections && this._trackedSections.indexOf(view) !== -1) {
       const seen = Object.assign({}, this.state.lastSeen); seen[view] = new Date().toISOString();
@@ -3646,6 +3804,11 @@ class Component extends DCLogic {
   openSiteDetail(name) { this.setState({ view: 'siteDetail', selectedSite: name, modal: null, mobileNavOpen: false }); }
   openSiteExpenseModalFor(siteName) { this.setState({ modal: 'siteExpense', editRecord: null, sitePrefill: siteName }); }
   openSiteAllocationModalFor(siteName) { this.setState({ modal: 'siteAllocation', editRecord: null, sitePrefill: siteName }); }
+  openCementReceivedModal() { this.setState({ modal: 'cementReceived', editRecord: null, sitePrefill: '' }); }
+  openCementReceivedModalFor(siteName) { this.setState({ modal: 'cementReceived', editRecord: null, sitePrefill: siteName }); }
+  openCementUsedModal() { this.setState({ modal: 'cementUsed', editRecord: null, sitePrefill: '' }); }
+  openCementUsedModalFor(siteName) { this.setState({ modal: 'cementUsed', editRecord: null, sitePrefill: siteName }); }
+  openCementSiteDetail(siteName) { this.setState({ view: 'cementSiteDetail', selectedCementSite: siteName, modal: null, mobileNavOpen: false }); }
   onZoomIn() { this.setState(function (s) { return { zoomLevel: Math.min(1.5, Math.round(((s.zoomLevel || 1) + 0.1) * 100) / 100) }; }); }
   onZoomOut() { this.setState(function (s) { return { zoomLevel: Math.max(0.5, Math.round(((s.zoomLevel || 1) - 0.1) * 100) / 100) }; }); }
   onZoomReset() { this.setState({ zoomLevel: 1 }); }
@@ -4260,6 +4423,24 @@ class Component extends DCLogic {
     const payload = { Date: f.Date.value, Site: f.Site.value, Amount: f.Amount.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.ExpenseID = ed.ExpenseID; this.submitGeneric('updateSiteExpense', payload, 'Site expenditure updated successfully.'); }
     else this.submitGeneric('addSiteExpense', payload, 'Site expenditure saved successfully.');
+  }
+  submitCementReceived(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value || !f.Site.value || !f.Bags.value) { this.showToast('Date, site and bags are required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, Site: f.Site.value, Bags: f.Bags.value, Amount: f.Amount.value || 0, PaymentMethod: f.PaymentMethod.value, Party: f.Party.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.ReceiptID = ed.ReceiptID; this.submitGeneric('updateCementReceived', payload, 'Cement received updated successfully.'); }
+    else this.submitGeneric('addCementReceived', payload, 'Cement received logged successfully.');
+  }
+  submitCementUsed(e) {
+    e.preventDefault();
+    const f = e.target.elements;
+    if (!f.Date.value || !f.Site.value || !f.Bags.value) { this.showToast('Date, site and bags are required.'); return; }
+    const ed = this.state.editRecord;
+    const payload = { Date: f.Date.value, Site: f.Site.value, Bags: f.Bags.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    if (ed) { payload.UsageID = ed.UsageID; this.submitGeneric('updateCementUsed', payload, 'Cement usage updated successfully.'); }
+    else this.submitGeneric('addCementUsed', payload, 'Cement usage logged successfully.');
   }
   submitOtherPayment(e) {
     e.preventDefault();
@@ -5244,10 +5425,38 @@ class Component extends DCLogic {
     });
 
     const siteRows = s.sites.map(function (site) {
-      const purchase = self.sum(s.transactions.filter(function (t) { return t.Site === site.SiteName; }), 'Value') + self.sum(s.transactions.filter(function (t) { return t.Site === site.SiteName && t.FareType === 'Self'; }), 'FareAmount');
-      const paid = self.sum(s.payments.filter(function (p) { return p.Site === site.SiteName; }), 'AmountPaid');
-      return Object.assign({}, site, { purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(purchase - paid), outstandingColor: self.oc(purchase - paid), onEdit: function (e) { e.stopPropagation(); self.openModal('site', site); }, onDelete: function (e) { e.stopPropagation(); self.deleteSite(site); }, onOpen: function () { self.openSiteDetail(site.SiteName); }, onLogExpense: function (e) { e.stopPropagation(); self.openSiteExpenseModalFor(site.SiteName); }, onAllocate: function (e) { e.stopPropagation(); self.openSiteAllocationModalFor(site.SiteName); } });
+      const received = self.sum(s.siteAllocations.filter(function (a) { return a.Site === site.SiteName; }), 'Amount');
+      const expend = self.siteOtherExpenditure(site.SiteName, s, '', '') + self.siteMistriPaid(site.SiteName, s, '', '') + self.siteLabourPaid(site.SiteName, s, '', '');
+      const balance = received - expend;
+      const cementReceivedBags = self.sum(s.cementReceived.filter(function (c) { return c.Site === site.SiteName; }), 'Bags');
+      const cementUsedBags = self.sum(s.cementUsed.filter(function (c) { return c.Site === site.SiteName; }), 'Bags');
+      const cementStock = cementReceivedBags - cementUsedBags;
+      return Object.assign({}, site, { receivedFmt: fmt(received), expendFmt: fmt(expend), balanceFmt: fmt(balance), balanceColor: self.oc(-balance), cementStock: cementStock, _received: received, _expend: expend, _balance: balance, onEdit: function (e) { e.stopPropagation(); self.openModal('site', site); }, onDelete: function (e) { e.stopPropagation(); self.deleteSite(site); }, onOpen: function () { self.openSiteDetail(site.SiteName); }, onLogExpense: function (e) { e.stopPropagation(); self.openSiteExpenseModalFor(site.SiteName); }, onAllocate: function (e) { e.stopPropagation(); self.openSiteAllocationModalFor(site.SiteName); } });
     });
+
+    const cf = s.cementFilter;
+    const cementRows = s.sites.map(function (site) {
+      const receivedBags = self.sum(s.cementReceived.filter(function (c) { return c.Site === site.SiteName && self.inRange(c.Date, cf.from, cf.to); }), 'Bags');
+      const usedBags = self.sum(s.cementUsed.filter(function (c) { return c.Site === site.SiteName && self.inRange(c.Date, cf.from, cf.to); }), 'Bags');
+      return { SiteName: site.SiteName, receivedBags: receivedBags, usedBags: usedBags, stockBags: receivedBags - usedBags, onOpen: function () { self.openCementSiteDetail(site.SiteName); }, onLogReceived: function (e) { e.stopPropagation(); self.openCementReceivedModalFor(site.SiteName); }, onLogUsed: function (e) { e.stopPropagation(); self.openCementUsedModalFor(site.SiteName); } };
+    });
+    this._lastCementRows = cementRows;
+    const cementTotals = { receivedBags: self.sum(s.cementReceived.filter(function (c) { return self.inRange(c.Date, cf.from, cf.to); }), 'Bags'), usedBags: self.sum(s.cementUsed.filter(function (c) { return self.inRange(c.Date, cf.from, cf.to); }), 'Bags') };
+    cementTotals.stockBags = cementTotals.receivedBags - cementTotals.usedBags;
+    let cementSiteDetail = { name: '', receivedBags: 0, usedBags: 0, stockBags: 0, txns: [] };
+    if (s.selectedCementSite) {
+      const ccsName = s.selectedCementSite;
+      const csdf = s.cementSiteDetailFilter;
+      const recRows = s.cementReceived.filter(function (c) { return c.Site === ccsName && self.inRange(c.Date, csdf.from, csdf.to); });
+      const useRows = s.cementUsed.filter(function (c) { return c.Site === ccsName && self.inRange(c.Date, csdf.from, csdf.to); });
+      const recBags = self.sum(recRows, 'Bags'), useBags = self.sum(useRows, 'Bags');
+      const cTxns = [];
+      recRows.forEach(function (r) { cTxns.push({ Date: r.Date, Type: 'Received', typeColor: '#2e9e5b', Bags: Number(r.Bags) || 0, AmountFmt: r.Amount ? fmt(r.Amount) : '—', Detail: r.Party || r.Remarks || '' }); });
+      useRows.forEach(function (r) { cTxns.push({ Date: r.Date, Type: 'Used', typeColor: '#e2574c', Bags: Number(r.Bags) || 0, AmountFmt: '—', Detail: r.Remarks || '' }); });
+      cTxns.sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); });
+      cementSiteDetail = { name: ccsName, receivedBags: recBags, usedBags: useBags, stockBags: recBags - useBags, txns: cTxns };
+      this._lastCementSiteDetail = cementSiteDetail;
+    }
     this._lastSiteRows = siteRows;
 
     const isOwnerOrAdmin1 = !!(s.session && (s.session.role === 'Owner' || s.session.role === 'Admin 1' || s.session.name === 'Sukadev'));
@@ -5455,8 +5664,9 @@ class Component extends DCLogic {
       const otherExpenditure = self.siteOtherExpenditure(site.SiteName, s, rf.from, rf.to);
       const mistriPaid = self.siteMistriPaid(site.SiteName, s, rf.from, rf.to);
       const labourPaid = self.siteLabourPaid(site.SiteName, s, rf.from, rf.to);
+      const cementSpend = self.sum(s.cementReceived.filter(function (c) { return c.Site === site.SiteName && self.inRange(c.Date, rf.from, rf.to); }), 'Amount');
       const expenditure = purchase + otherExpenditure + mistriPaid + labourPaid;
-      return { Site: site.SiteName, Material: fmt(purchase), Expenditure: fmt(expenditure), OtherExpenditure: fmt(otherExpenditure), Mistri: fmt(mistriPaid), Labour: fmt(labourPaid), _Material: purchase, _Expenditure: expenditure, _OtherExpenditure: otherExpenditure, _Mistri: mistriPaid, _Labour: labourPaid };
+      return { Site: site.SiteName, Material: fmt(purchase), Expenditure: fmt(expenditure), OtherExpenditure: fmt(otherExpenditure), Mistri: fmt(mistriPaid), Labour: fmt(labourPaid), Cement: fmt(cementSpend), _Material: purchase, _Expenditure: expenditure, _OtherExpenditure: otherExpenditure, _Mistri: mistriPaid, _Labour: labourPaid, _Cement: cementSpend };
     });
     const materialReportRows = rMaterialsF.map(function (m) {
       const rows = rTxF.filter(function (t) { return String(t.Material || '').trim().toLowerCase() === String(m.MaterialName || '').trim().toLowerCase(); });
@@ -5482,7 +5692,7 @@ class Component extends DCLogic {
 
     const reportColumnsMap = {
       supplier: [{ key: 'Supplier', label: 'Supplier', type: 'text' }, { key: '_BF', label: 'BF', type: 'currency' }, { key: '_Purchase', label: 'Purchase', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
-      site: [{ key: 'Site', label: 'Site', type: 'text' }, { key: '_Material', label: 'Material', type: 'currency' }, { key: '_OtherExpenditure', label: 'Other Expenditure', type: 'currency' }, { key: '_Mistri', label: 'Mistri', type: 'currency' }, { key: '_Labour', label: 'Labour', type: 'currency' }, { key: '_Expenditure', label: 'Total Expenditure', type: 'currency' }],
+      site: [{ key: 'Site', label: 'Site', type: 'text' }, { key: '_Material', label: 'Material', type: 'currency' }, { key: '_OtherExpenditure', label: 'Other Expenditure', type: 'currency' }, { key: '_Mistri', label: 'Mistri', type: 'currency' }, { key: '_Labour', label: 'Labour', type: 'currency' }, { key: '_Cement', label: 'Cement', type: 'currency' }, { key: '_Expenditure', label: 'Total Expenditure', type: 'currency' }],
       material: [{ key: 'Material', label: 'Material', type: 'text' }, { key: '_Quantity', label: 'Quantity', type: 'number' }, { key: '_Value', label: 'Value', type: 'currency' }],
       monthly: [{ key: 'Month', label: 'Month', type: 'text' }, { key: '_Purchase', label: 'Purchase', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
       diesel: [{ key: 'Supplier', label: 'Fuel Station', type: 'text' }, { key: '_BF', label: 'BF', type: 'currency' }, { key: '_Cost', label: 'Cost', type: 'currency' }, { key: '_Paid', label: 'Paid', type: 'currency' }, { key: '_Outstanding', label: 'Outstanding', type: 'currency' }],
@@ -5527,11 +5737,11 @@ class Component extends DCLogic {
       transactions: s.view === 'transactions', payments: s.view === 'payments', bf: s.view === 'bf',
       dieselTx: s.view === 'dieselTx', dieselPayments: s.view === 'dieselPayments', dieselBF: s.view === 'dieselBF', dieselSuppliers: s.view === 'dieselSuppliers', dieselSupplierDetail: s.view === 'dieselSupplierDetail',
       vehicles: s.view === 'vehicles', vehicleDetail: s.view === 'vehicleDetail',
-      sites: s.view === 'sites', materials: s.view === 'materials', reports: s.view === 'reports', settings: s.view === 'settings',
+      sites: s.view === 'sites', materials: s.view === 'materials', cement: s.view === 'cement', cementSiteDetail: s.view === 'cementSiteDetail', reports: s.view === 'reports', settings: s.view === 'settings',
       tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', labour: s.view === 'labour', labourDetail: s.view === 'labourDetail', funds: s.view === 'funds', attendance: s.view === 'attendance', siteDetail: s.view === 'siteDetail'
     };
     const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel', staffDue: s.reportTab === 'staffDue', labour: s.reportTab === 'labour' };
-    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment', labour: s.modal === 'labour', labourEntry: s.modal === 'labourEntry', labourPayment: s.modal === 'labourPayment', otherPayment: s.modal === 'otherPayment', staffBF: s.modal === 'staffBF', labourBF: s.modal === 'labourBF', mistriBF: s.modal === 'mistriBF', vehicle: s.modal === 'vehicle', vehicleLog: s.modal === 'vehicleLog' };
+    const modalIs = { transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', cementReceived: s.modal === 'cementReceived', cementUsed: s.modal === 'cementUsed', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment', labour: s.modal === 'labour', labourEntry: s.modal === 'labourEntry', labourPayment: s.modal === 'labourPayment', otherPayment: s.modal === 'otherPayment', staffBF: s.modal === 'staffBF', labourBF: s.modal === 'labourBF', mistriBF: s.modal === 'mistriBF', vehicle: s.modal === 'vehicle', vehicleLog: s.modal === 'vehicleLog' };
     const editRecordRaw = s.editRecord || {};
     const myName = s.session ? s.session.name : '';
     const isHrushikesh = !!(s.session && s.session.name === 'Hrushikesh Padhi');
@@ -5696,6 +5906,8 @@ class Component extends DCLogic {
     const fundTransferDefaults = { Date: editRecordRaw.Date || todayStr, To: editRecordRaw._isAdvance ? ('MISTRI::' + editRecordRaw.MistriName) : (editRecordRaw._isLabourAdvance ? ('LABOUR::' + editRecordRaw.LabourName) : (editRecordRaw.To || '')), Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '', Site: editRecordRaw.Site || '' };
     const siteAllocationDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || s.sitePrefill || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
     const siteExpenseDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || s.sitePrefill || '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', Remarks: editRecordRaw.Remarks || '' };
+    const cementReceivedDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || s.sitePrefill || '', Bags: editRecordRaw.Bags != null ? editRecordRaw.Bags : '', Amount: editRecordRaw.Amount != null ? editRecordRaw.Amount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', Party: editRecordRaw.Party || '', Remarks: editRecordRaw.Remarks || '' };
+    const cementUsedDefaults = { Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || s.sitePrefill || '', Bags: editRecordRaw.Bags != null ? editRecordRaw.Bags : '', Remarks: editRecordRaw.Remarks || '' };
     const fundRecipientOptions = s.users.filter(function (u) { return u.Name !== myName; }).map(function (u) { return u.Name; });
     const staffOptions = s.staff.map(function (st) { return st.Name; });
     const showStaffPicker = !s.selectedStaff;
@@ -5731,11 +5943,11 @@ class Component extends DCLogic {
     const showLabourPicker = !s.selectedLabour;
     const labourOptions = s.labour.map(function (l) { return l.Name; });
     const staffRateReadOnly = false;
-    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment', labour: isEditing ? 'Edit Labour' : 'Add Labour', labourEntry: isEditing ? 'Edit Labour Entry' : 'Add Labour Entry', labourPayment: isEditing ? 'Edit Labour Payment' : 'Add Labour Payment', otherPayment: isEditing ? 'Edit Payment' : 'Send Payment', staffBF: isEditing ? 'Edit Staff BF Balance' : 'Add Staff BF Balance', labourBF: isEditing ? 'Edit Labour BF Balance' : 'Add Labour BF Balance', mistriBF: isEditing ? 'Edit Mistri BF Balance' : 'Add Mistri BF Balance', vehicle: isEditing ? 'Edit Vehicle' : 'Add Vehicle', vehicleLog: isEditing ? 'Edit Daily Log' : 'Add Daily Log' };
+    const modalTitleMap = { transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', cementReceived: isEditing ? 'Edit Cement Received' : 'Log Cement Received', cementUsed: isEditing ? 'Edit Cement Used' : 'Log Cement Used', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment', labour: isEditing ? 'Edit Labour' : 'Add Labour', labourEntry: isEditing ? 'Edit Labour Entry' : 'Add Labour Entry', labourPayment: isEditing ? 'Edit Labour Payment' : 'Add Labour Payment', otherPayment: isEditing ? 'Edit Payment' : 'Send Payment', staffBF: isEditing ? 'Edit Staff BF Balance' : 'Add Staff BF Balance', labourBF: isEditing ? 'Edit Labour BF Balance' : 'Add Labour BF Balance', mistriBF: isEditing ? 'Edit Mistri BF Balance' : 'Add Mistri BF Balance', vehicle: isEditing ? 'Edit Vehicle' : 'Add Vehicle', vehicleLog: isEditing ? 'Edit Daily Log' : 'Add Daily Log' };
     const modalTitle = modalTitleMap[s.modal] || '';
 
     const navBtn = function (active) { return 'display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;margin-bottom:2px;box-sizing:border-box;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';border-left:3px solid ' + (active ? 'var(--gold)' : 'transparent') + ';'; };
-    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselSuppliers: navBtn(viewIs.dieselSuppliers || viewIs.dieselSupplierDetail), dieselTx: navBtn(viewIs.dieselTx), vehicles: navBtn(viewIs.vehicles || viewIs.vehicleDetail), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), labour: navBtn(viewIs.labour || viewIs.labourDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
+    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselSuppliers: navBtn(viewIs.dieselSuppliers || viewIs.dieselSupplierDetail), dieselTx: navBtn(viewIs.dieselTx), vehicles: navBtn(viewIs.vehicles || viewIs.vehicleDetail), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), cement: navBtn(viewIs.cement), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), labour: navBtn(viewIs.labour || viewIs.labourDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
     const tabBtn = function (active) { return 'padding:9px 16px;border-radius:20px;border:1px solid ' + (active ? 'var(--gold)' : 'var(--border)') + ';cursor:pointer;font-size:13px;font-weight:600;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';'; };
     const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel), staffDue: tabBtn(reportTabIs.staffDue), labour: tabBtn(reportTabIs.labour) };
 
@@ -5753,7 +5965,7 @@ class Component extends DCLogic {
       navDashboard: function () { self.setView('dashboard'); }, navSuppliers: function () { self.setView('suppliers'); }, navTransactions: function () { self.setView('transactions'); },
       navPayments: function () { self.setView('payments'); }, navBF: function () { self.setView('bf'); }, navDieselSuppliers: function () { self.setView('dieselSuppliers'); }, navDieselTx: function () { self.setView('dieselTx'); }, navVehicles: function () { self.setView('vehicles'); },
       navDieselPayments: function () { self.setView('dieselPayments'); }, navDieselBF: function () { self.setView('dieselBF'); }, navSites: function () { self.setView('sites'); },
-      navMaterials: function () { self.setView('materials'); }, navReports: function () { self.setView('reports'); }, navSettings: function () { self.setView('settings'); },
+      navMaterials: function () { self.setView('materials'); }, navCement: function () { self.setView('cement'); }, navReports: function () { self.setView('reports'); }, navSettings: function () { self.setView('settings'); },
       navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navMistri: function () { self.setView('mistri'); }, navFunds: function () { self.setView('funds'); }, navAttendance: function () { self.setView('attendance'); },
       mobileNavOpen: s.mobileNavOpen, toggleMobileNav: this.toggleMobileNav.bind(this), closeMobileNav: this.closeMobileNav.bind(this),
       isOwnerOrAdmin1: isOwnerOrAdmin1, canSeeAllFunds: canSeeAllFunds, isAdmin1: isAdmin1, showAppPicker: showAppPicker, pickConstruction: this.pickConstruction.bind(this), pickHomePipes: this.pickHomePipes.bind(this), showMaintenanceLock: showMaintenanceLock, appAccessible: appAccessible,
@@ -5786,6 +5998,7 @@ class Component extends DCLogic {
       totalSupplierPurchase: fmt(totalSupplierPurchaseN), totalSupplierPaid: fmt(totalSupplierPaidN), totalSupplierOutstanding: fmt(totalSupplierOutstandingN), totalSupplierOutstandingColor: self.oc(totalSupplierOutstandingN),
       totalDieselCost: fmt(totalDieselCostN), totalDieselPaid: fmt(totalDieselPaidN), totalDieselOutstanding: fmt(totalDieselOutstandingN), totalDieselOutstandingColor: self.oc(totalDieselOutstandingN),
       currentMonthExpenditure: fmt(currentMonthExpenditureTotalN), totalStaffOutstanding: fmt(totalStaffOutstandingN), totalStaffOutstandingColor: self.oc(totalStaffOutstandingN),
+      totalCementStock: this.sum(s.cementReceived, 'Bags') - this.sum(s.cementUsed, 'Bags'),
       dashboardPopup: s.dashboardPopup ? { title: s.dashboardPopup.title, rows: s.dashboardPopup.rows } : null,
       closeDashPopup: function () { self.setState({ dashboardPopup: null }); },
       onOpenSupplierPurchase: openDashPopup('Total Supplier Purchase — by Supplier', toPopupRows(supplierPurchaseBreakdown)),
@@ -5820,6 +6033,14 @@ class Component extends DCLogic {
       submitDieselTx: this.submitDieselTx.bind(this), submitDieselPayment: this.submitDieselPayment.bind(this), submitDieselBF: this.submitDieselBF.bind(this),
       submitSupplier: this.submitSupplier.bind(this), submitSite: this.submitSite.bind(this), submitMaterial: this.submitMaterial.bind(this),
       siteRows: siteRows, materialAnalysis: materialAnalysis, exportSitesExcel: this.exportSitesExcel.bind(this), exportSitesPDF: this.exportSitesPDF.bind(this),
+      cementRows: cementRows, exportCementExcel: this.exportCementExcel.bind(this), exportCementPDF: this.exportCementPDF.bind(this),
+      openCementReceivedModal: this.openCementReceivedModal.bind(this), openCementUsedModal: this.openCementUsedModal.bind(this),
+      submitCementReceived: this.submitCementReceived.bind(this), submitCementUsed: this.submitCementUsed.bind(this),
+      cementReceivedDefaults: cementReceivedDefaults, cementUsedDefaults: cementUsedDefaults,
+      cementFilter: s.cementFilter, onCementFrom: this.setGenericFilter('cementFilter', 'from'), onCementTo: this.setGenericFilter('cementFilter', 'to'), onCementMonth: this.setMonthShortcut('cementFilter'),
+      cementTotals: cementTotals, cementSiteDetail: cementSiteDetail,
+      cementSiteDetailFilter: s.cementSiteDetailFilter, onCementSiteDetailFrom: this.setGenericFilter('cementSiteDetailFilter', 'from'), onCementSiteDetailTo: this.setGenericFilter('cementSiteDetailFilter', 'to'), onCementSiteDetailMonth: this.setMonthShortcut('cementSiteDetailFilter'),
+      exportCementSiteDetailExcel: this.exportCementSiteDetailExcel.bind(this), exportCementSiteDetailPDF: this.exportCementSiteDetailPDF.bind(this),
       supplierReportRows: supplierReportRows, siteReportRows: siteReportRows, materialReportRows: materialReportRows, monthlyReportRows: monthlyReportRows, dieselReportRows: dieselReportRows, staffDueReportRows: staffDueReportRows,
       setReportSupplier: function () { self.setState({ reportTab: 'supplier' }); }, setReportSite: function () { self.setState({ reportTab: 'site' }); }, setReportMaterial: function () { self.setState({ reportTab: 'material' }); },
       setReportMonthly: function () { self.setState({ reportTab: 'monthly' }); }, setReportDiesel: function () { self.setState({ reportTab: 'diesel' }); }, setReportStaffDue: function () { self.setState({ reportTab: 'staffDue' }); }, setReportLabour: function () { self.setState({ reportTab: 'labour' }); },
