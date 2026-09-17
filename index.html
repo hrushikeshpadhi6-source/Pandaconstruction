@@ -3702,7 +3702,7 @@ class Component extends DCLogic {
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Sites — Money & Cement Overview', 40, y); y += 16;
-    doc.autoTable({ startY: y + 6, head: [['Site Name', 'Received', 'Expenditure', 'Balance', 'Cement Stock (bags)']], body: rows.map(function (r) { return [r.SiteName, r.receivedFmt, r.expendFmt, r.balanceFmt, r.cementStock]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.autoTable({ startY: y + 6, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 8, cellPadding: 5 }, head: [['Site Name', 'Received', 'Expenditure', 'Balance', 'Cement Stock (bags)']], body: rows.map(function (r) { return [r.SiteName, this.fmtPdf(r._received), this.fmtPdf(r._expend), this.fmtPdf(r._balance), r.cementStock]; }, this), headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' }, columnStyles: { 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' } } });
     doc.save('panda-construction-sites.pdf');
   }
   exportCementExcel() {
@@ -3876,7 +3876,7 @@ class Component extends DCLogic {
     doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Site Balances', 40, y); y += 16;
-    doc.autoTable({ startY: y + 6, head: [['Site Name', 'Received', 'Total Expenditure', 'Balance']], body: rows.map(function (r) { return [r.SiteName, r.receivedFmt, r.totalExpendFmt, r.balanceFmt]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.autoTable({ startY: y + 6, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 8, cellPadding: 5 }, headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' }, columnStyles: { 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' } }, head: [['Site Name', 'Received', 'Total Expenditure', 'Balance']], body: rows.map(function (r) { return [r.SiteName, this.fmtPdf(r._received != null ? r._received : 0), this.fmtPdf(r._totalExpend != null ? r._totalExpend : 0), this.fmtPdf(r._balance != null ? r._balance : 0)]; }, this) });
     doc.save('panda-construction-site-balances.pdf');
   }
   toggleAuthMode() { this.setState(function (s) { return { authMode: s.authMode === 'login' ? 'signup' : 'login', signupError: '', loginError: '' }; }); }
@@ -6089,7 +6089,7 @@ class Component extends DCLogic {
         { label: 'To Labour', valueFmt: fmt(labourPaid) },
         { label: 'Transferred (net)', valueFmt: fmt(transferNet) }
       ];
-      return { SiteName: site.SiteName, receivedFmt: fmt(received), expendFmt: fmt(expend), mistriPaidFmt: fmt(mistriPaid), labourPaidFmt: fmt(labourPaid), totalExpendFmt: fmt(totalExpend), expendBreakdown: expendBreakdown, balanceFmt: fmt(balance), balanceColor: self.oc(-balance), hasActivity: received !== 0 || expend !== 0 || mistriPaid !== 0 || labourPaid !== 0 || transferNet !== 0, txns: txns, isExpanded: isExpanded, toggleIcon: isExpanded ? '▾' : '▸', onToggle: function () { self.toggleSiteBalance(site.SiteName); }, onOpen: function () { self.openSiteDetail(site.SiteName); } };
+      return { SiteName: site.SiteName, receivedFmt: fmt(received), expendFmt: fmt(expend), mistriPaidFmt: fmt(mistriPaid), labourPaidFmt: fmt(labourPaid), totalExpendFmt: fmt(totalExpend), expendBreakdown: expendBreakdown, balanceFmt: fmt(balance), balanceColor: self.oc(-balance), hasActivity: received !== 0 || expend !== 0 || mistriPaid !== 0 || labourPaid !== 0 || transferNet !== 0, txns: txns, isExpanded: isExpanded, toggleIcon: isExpanded ? '▾' : '▸', onToggle: function () { self.toggleSiteBalance(site.SiteName); }, onOpen: function () { self.openSiteDetail(site.SiteName); }, _received: received, _totalExpend: totalExpend, _balance: balance };
     }).filter(function (r) { return r.hasActivity; });
     this._lastSiteWalletCards = siteWalletCards;
     let siteDetail = { name: '', receivedFmt: fmt(0), totalExpendFmt: fmt(0), balanceFmt: fmt(0), balanceColor: '', expendBreakdown: [], txns: [] };
