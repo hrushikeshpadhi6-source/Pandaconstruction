@@ -2686,7 +2686,6 @@
           <input type="date" name="Date" required="true" defaultValue="{{ payDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <select name="Supplier" required="true" defaultValue="{{ payDefaults.Supplier }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ payDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <input type="number" step="any" name="DiscountAmount" placeholder="Discount / Rebate (₹, optional)" defaultValue="{{ payDefaults.DiscountAmount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="hidden" name="WalletUser" value="Sukadev" />
           <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ payDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
@@ -2822,7 +2821,6 @@
           <input type="text" name="Supplier" placeholder="Supplier / Fuel Station" required="true" defaultValue="{{ dieselPayDefaults.Supplier }}" list="dieselSupplierList2" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="dieselSupplierList2"><sc-for list="{{ dieselSupplierOptions }}" as="opt" hint-placeholder-count="2"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ dieselPayDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <input type="number" step="any" name="DiscountAmount" placeholder="Discount / Rebate (₹, optional)" defaultValue="{{ dieselPayDefaults.DiscountAmount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="hidden" name="WalletUser" value="Sukadev" />
           <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ dieselPayDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
@@ -3165,7 +3163,6 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ mistriPaymentDefaults.Site }}" list="mistriPaySiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="mistriPaySiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ mistriPaymentDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <input type="number" step="any" name="DiscountAmount" placeholder="Discount / Rebate (₹, optional)" defaultValue="{{ mistriPaymentDefaults.DiscountAmount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="hidden" name="WalletUser" value="Sukadev" />
           <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ mistriPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
@@ -3266,7 +3263,6 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ labourPaymentDefaults.Site }}" list="labourPaySiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="labourPaySiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ labourPaymentDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <input type="number" step="any" name="DiscountAmount" placeholder="Discount / Rebate (₹, optional)" defaultValue="{{ labourPaymentDefaults.DiscountAmount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="hidden" name="WalletUser" value="Sukadev" />
           <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ labourPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
@@ -3651,12 +3647,12 @@ class Component extends DCLogic {
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Labour Statement — ' + d.name, 40, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today'), 40, y); y += 18;
     doc.setFontSize(10); doc.setFont(undefined, 'bold');
-    doc.text('BF: ' + fmt(d.bfAmt), 40, y); doc.text('Total Due: ' + fmt(d.due), 160, y); doc.text('Paid: ' + fmt(d.paid), 300, y); doc.text('Outstanding: ' + fmt(d.outstanding), 420, y); y += 16;
+    doc.text('BF: ' + fmt(d.bfAmt), 40, y); doc.text('Total Due: ' + fmt(d.due), 160, y); doc.text('Paid: ' + fmt(d.paid), 300, y); doc.text('Discount: ' + fmt(d.discount || 0), 380, y); doc.text('Outstanding: ' + fmt(d.outstanding), 460, y); y += 16;
     doc.setFont(undefined, 'normal');
     doc.autoTable({ startY: y + 6, head: [['Date', 'Month', 'Type', 'Site', 'How Many', 'Rate', 'Extra', 'Remarks', 'Net Amount']], body: d.entryRows.map(function (r) { const extra = (Number(r.AdditionalAmount) || 0) + (Number(r.Fare) || 0); return [r.Date, r.Month, r.Type, r.Site, r.HowManyLabour || '—', r.DailyPrice ? fmt(r.DailyPrice) : '—', extra ? fmt(extra) : '—', r.Remarks, fmt(r.NetAmount)]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
     let y2 = doc.lastAutoTable.finalY + 20;
     doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Payments', 40, y2); y2 += 6;
-    doc.autoTable({ startY: y2 + 4, head: [['Date', 'Site', 'Amount Paid', 'Method', 'Reference']], body: d.paymentRows.map(function (r) { return [r.Date, r.Site, fmt(r.AmountPaid), r.PaymentMethod, r.ReferenceNumber]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.autoTable({ startY: y2 + 4, head: [['Date', 'Site', 'Amount Paid', 'Discount', 'Method', 'Reference']], body: d.paymentRows.map(function (r) { return [r.Date, r.Site, fmt(r.AmountPaid), fmt(r.DiscountAmount || 0), r.PaymentMethod, r.ReferenceNumber]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
     let y3 = doc.lastAutoTable.finalY + 20;
     doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Advances', 40, y3); y3 += 6;
     doc.autoTable({ startY: y3 + 4, head: [['Date', 'Site', 'Amount', 'From', 'Remarks']], body: d.advanceRows.map(function (r) { return [r.Date, r.Site, fmt(r.Amount), r.From, r.Remarks]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
@@ -3692,12 +3688,12 @@ class Component extends DCLogic {
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Mistri Statement — ' + d.name, 40, y); y += 16;
     doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('Range: ' + (d.filter.from || 'Start') + ' to ' + (d.filter.to || 'Today'), 40, y); y += 18;
     doc.setFontSize(10); doc.setFont(undefined, 'bold');
-    doc.text('BF: ' + fmt(d.bfAmt), 40, y); doc.text('Total Due: ' + fmt(d.due), 160, y); doc.text('Paid: ' + fmt(d.paid), 300, y); doc.text('Outstanding: ' + fmt(d.outstanding), 420, y); y += 16;
+    doc.text('BF: ' + fmt(d.bfAmt), 40, y); doc.text('Total Due: ' + fmt(d.due), 160, y); doc.text('Paid: ' + fmt(d.paid), 300, y); doc.text('Discount: ' + fmt(d.discount || 0), 380, y); doc.text('Outstanding: ' + fmt(d.outstanding), 460, y); y += 16;
     doc.setFont(undefined, 'normal');
     doc.autoTable({ startY: y + 6, head: [['Month', 'Site', 'Net Due']], body: d.dueRows.map(function (r) { return [r.Month, r.Site, fmt(r.NetDue)]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
     let y2 = doc.lastAutoTable.finalY + 20;
     doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Payments', 40, y2); y2 += 6;
-    doc.autoTable({ startY: y2 + 4, head: [['Date', 'Site', 'Amount Paid', 'Method', 'Reference']], body: d.paymentRows.map(function (r) { return [r.Date, r.Site, fmt(r.AmountPaid), r.PaymentMethod, r.ReferenceNumber]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
+    doc.autoTable({ startY: y2 + 4, head: [['Date', 'Site', 'Amount Paid', 'Discount', 'Method', 'Reference']], body: d.paymentRows.map(function (r) { return [r.Date, r.Site, fmt(r.AmountPaid), fmt(r.DiscountAmount || 0), r.PaymentMethod, r.ReferenceNumber]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
     let y3 = doc.lastAutoTable.finalY + 20;
     doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Advances', 40, y3); y3 += 6;
     doc.autoTable({ startY: y3 + 4, head: [['Date', 'Site', 'Amount', 'From', 'Remarks']], body: d.advanceRows.map(function (r) { return [r.Date, r.Site, fmt(r.Amount), r.From, r.Remarks]; }), styles: { fontSize: 8 }, headStyles: { fillColor: [212, 175, 55] } });
@@ -3767,13 +3763,13 @@ class Component extends DCLogic {
     doc.text('Supplier Payments', 40, y); y += 16;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(110, 110, 110);
     doc.text('Generated: ' + new Date().toLocaleString('en-IN'), 40, y); y += 14;
-    let total = 0; rows.forEach(function (r) { total += Number(r.AmountPaid) || 0; });
+    let total = 0, totalDiscount = 0; rows.forEach(function (r) { total += Number(r.AmountPaid) || 0; totalDiscount += Number(r.DiscountAmount) || 0; });
     doc.autoTable({
       startY: y, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 8, cellPadding: 5 },
-      head: [['Date', 'Supplier', 'Amount Paid', 'Method', 'Reference', 'Site', 'Remarks']],
-      body: rows.map(function (r) { return [r.Date, r.Supplier, self.fmtPdf(r.AmountPaid), r.PaymentMethod || '', r.ReferenceNumber || '', r.Site || '', r.Remarks || '']; }).concat([['', '', self.fmtPdf(total), '', '', '', 'TOTAL']]),
+      head: [['Date', 'Supplier', 'Amount Paid', 'Discount', 'Method', 'Reference', 'Site', 'Remarks']],
+      body: rows.map(function (r) { return [r.Date, r.Supplier, self.fmtPdf(r.AmountPaid), self.fmtPdf(r.DiscountAmount || 0), r.PaymentMethod || '', r.ReferenceNumber || '', r.Site || '', r.Remarks || '']; }).concat([['', '', self.fmtPdf(total), self.fmtPdf(totalDiscount), '', '', '', 'TOTAL']]),
       headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' },
-      columnStyles: { 2: { halign: 'right' } }
+      columnStyles: { 2: { halign: 'right' }, 3: { halign: 'right' } }
     });
     doc.save('panda-construction-supplier-payments.pdf');
   }
@@ -4111,8 +4107,8 @@ class Component extends DCLogic {
 
     doc.autoTable({
       startY: y, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 9, cellPadding: 6 },
-      head: [['BF Balance', 'Material', 'Supplier Fare', 'Self Fare', 'Total', 'Paid', 'Outstanding']],
-      body: [[this.fmtPdf(d.bfAmt), this.fmtPdf(d.materialN), this.fmtPdf(d.supplierFareN), this.fmtPdf(d.selfFareN), this.fmtPdf(d.purchaseN), this.fmtPdf(d.paidN), this.fmtPdf(d.outstandingN)]],
+      head: [['BF Balance', 'Material', 'Supplier Fare', 'Self Fare', 'Total', 'Paid', 'Discount', 'Outstanding']],
+      body: [[this.fmtPdf(d.bfAmt), this.fmtPdf(d.materialN), this.fmtPdf(d.supplierFareN), this.fmtPdf(d.selfFareN), this.fmtPdf(d.purchaseN), this.fmtPdf(d.paidN), this.fmtPdf(d.discountN), this.fmtPdf(d.outstandingN)]],
       headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' },
       columnStyles: { 0: { halign: 'right' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' } }
     });
@@ -4132,10 +4128,10 @@ class Component extends DCLogic {
     doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text('Payments', 40, y); y += 10;
     doc.autoTable({
       startY: y, theme: 'grid', margin: { left: 40, right: 40 }, styles: { fontSize: 8, cellPadding: 5 },
-      head: [['Date', 'Amount Paid', 'Method', 'Reference', 'Remarks']],
-      body: d.payRaw.map(function (r) { return [r.Date, self.fmtPdf(r.AmountPaid), r.PaymentMethod || '', r.ReferenceNumber || '', r.Remarks || '']; }),
+      head: [['Date', 'Amount Paid', 'Discount', 'Method', 'Reference', 'Remarks']],
+      body: d.payRaw.map(function (r) { return [r.Date, self.fmtPdf(r.AmountPaid), self.fmtPdf(r.DiscountAmount || 0), r.PaymentMethod || '', r.ReferenceNumber || '', r.Remarks || '']; }),
       headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' },
-      columnStyles: { 1: { halign: 'right' } }
+      columnStyles: { 1: { halign: 'right' }, 2: { halign: 'right' } }
     });
     y = doc.lastAutoTable.finalY + 24;
     if (y > doc.internal.pageSize.getHeight() - 120) { doc.addPage(); y = 40; }
@@ -4845,18 +4841,18 @@ class Component extends DCLogic {
     const self = this; const s = this.state;
     const inR = function (d) { return self.inRange(d, from, to); };
     const supplierPurchase = self.sum(s.transactions.filter(function (t) { return inR(t.Date); }), 'Value');
-    const supplierPaid = self.sum(s.payments.filter(function (p) { return inR(p.Date); }), 'AmountPaid');
+    const supplierPaid = self.paidWithDiscount(s.payments.filter(function (p) { return inR(p.Date); }));
     const supplierBF = self.sumLatestBF(s.bf);
     const dieselCost = self.sum(s.dieselTx.filter(function (t) { return inR(t.Date); }), 'Value');
-    const dieselPaid = self.sum(s.dieselPayments.filter(function (p) { return inR(p.Date); }), 'AmountPaid');
+    const dieselPaid = self.paidWithDiscount(s.dieselPayments.filter(function (p) { return inR(p.Date); }));
     const dieselBF = self.sumLatestBF(s.dieselBF);
     const staffPaid = self.sum(s.staffPayments.filter(function (p) { return inR(p.Date); }), 'AmountPaid');
     const noSlip = function () { return false; };
     const curMonthKey = (to || new Date().toISOString().slice(0, 10)).slice(0, 7);
     const staffOutstanding = self.sum(s.staff.map(function (st) { return { v: self.staffFinancials(st, s, s.staffAttendance, curMonthKey, noSlip).outstanding }; }), 'v');
-    const mistriPaid = self.sum(s.mistriPayments.filter(function (p) { return inR(p.Date); }), 'AmountPaid') + self.sum(s.mistriAdvances.filter(function (p) { return inR(p.Date); }), 'Amount');
+    const mistriPaid = self.paidWithDiscount(s.mistriPayments.filter(function (p) { return inR(p.Date); })) + self.sum(s.mistriAdvances.filter(function (p) { return inR(p.Date); }), 'Amount');
     const mistriOutstanding = self.sum(s.mistri.map(function (m) { return { v: self.mistriFinancials(m, s).outstanding }; }), 'v');
-    const labourPaid = self.sum(s.labourPayments.filter(function (p) { return inR(p.Date); }), 'AmountPaid') + self.sum(s.labourAdvances.filter(function (p) { return inR(p.Date); }), 'Amount');
+    const labourPaid = self.paidWithDiscount(s.labourPayments.filter(function (p) { return inR(p.Date); })) + self.sum(s.labourAdvances.filter(function (p) { return inR(p.Date); }), 'Amount');
     const labourOutstanding = self.sum(s.labour.map(function (l) { return { v: self.labourFinancials(l, s).outstanding }; }), 'v');
     const siteReceived = self.sum(s.siteAllocations.filter(function (a) { return inR(a.Date); }), 'Amount');
     const siteSpent = self.sum(s.siteExpenses.filter(function (e) { return inR(e.Date); }), 'Amount');
@@ -5256,6 +5252,7 @@ class Component extends DCLogic {
   }
   fmtPdf(n) { n = Number(n) || 0; return 'Rs. ' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 }); }
   sum(list, field) { return (list || []).reduce(function (a, r) { return a + (Number(r[field]) || 0); }, 0); }
+  paidWithDiscount(list) { return this.sum(list, 'AmountPaid') + this.sum(list, 'DiscountAmount'); }
   inRange(dateStr, from, to) { if (!dateStr) return true; if (from && dateStr < from) return false; if (to && dateStr > to) return false; return true; }
   oc(n) { n = Number(n) || 0; return n > 0 ? '#e2574c' : (n < 0 ? '#2ea043' : 'var(--muted)'); }
   computeWalletTotals(name) {
@@ -5303,20 +5300,22 @@ class Component extends DCLogic {
     const bf = this.personLatestBF(s.mistriBF, m.Name, m.BFAmount);
     const due = this.sum(s.mistriDue.filter(function (r) { return r.MistriName === m.Name && (!bf.date || (r.Month + '-01') > bf.date); }), 'NetDue');
     const advances = this.sum(s.mistriAdvances.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }), 'Amount');
-    const paid = this.sum(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }), 'AmountPaid') + this.sum(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }), 'DiscountAmount');
+    const paid = this.paidWithDiscount(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }));
+    const discount = this.sum(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }), 'DiscountAmount');
     const bfAmt = bf.amt;
     const outstanding = bfAmt + due + advances - paid;
-    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, advances: advances, paid: paid, outstanding: outstanding };
+    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, advances: advances, paid: paid, discount: discount, outstanding: outstanding };
   }
   // Same idea for Labour: BF + all entries (daily or contract, across every site) + advances minus payments.
   labourFinancials(l, s) {
     const bf = this.personLatestBF(s.labourBF, l.Name, l.BFAmount);
     const due = this.sum(s.labourEntries.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }), 'NetAmount');
     const advances = this.sum(s.labourAdvances.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }), 'Amount');
-    const paid = this.sum(s.labourPayments.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }), 'AmountPaid') + this.sum(s.labourPayments.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }), 'DiscountAmount');
+    const paid = this.paidWithDiscount(s.labourPayments.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }));
+    const discount = this.sum(s.labourPayments.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }), 'DiscountAmount');
     const bfAmt = bf.amt;
     const outstanding = bfAmt + due + advances - paid;
-    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, advances: advances, paid: paid, outstanding: outstanding };
+    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, advances: advances, paid: paid, discount: discount, outstanding: outstanding };
   }
   // A site's own balance before any transfers are applied — used to decide which way a
   // transfer should move each side (see siteTransferNet).
@@ -5342,11 +5341,11 @@ class Component extends DCLogic {
   }
   siteMistriPaid(siteName, s, from, to) {
     const self = this;
-    return this.sum(s.mistriPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, from, to); }), 'AmountPaid');
+    return this.paidWithDiscount(s.mistriPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, from, to); }));
   }
   siteLabourPaid(siteName, s, from, to) {
     const self = this;
-    return this.sum(s.labourPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, from, to); }), 'AmountPaid');
+    return this.paidWithDiscount(s.labourPayments.filter(function (p) { return p.Site === siteName && self.inRange(p.Date, from, to); }));
   }
 
   exportCSV(rows, headers, filename) {
@@ -5542,11 +5541,11 @@ class Component extends DCLogic {
     const dieselPayF = s.dieselPayments.filter(function (p) { return self.inRange(p.Date, df.from, df.to) && (!df.site || p.Site === df.site); });
 
     const totalSupplierPurchaseN = this.sum(txF, 'Value');
-    const totalSupplierPaidN = this.sum(payF, 'AmountPaid');
+    const totalSupplierPaidN = this.paidWithDiscount(payF);
     const totalSupplierBFN = this.sumLatestBF(s.bf.filter(function (b) { return (!df.supplier || b.Supplier === df.supplier) && (!df.site || b.Site === df.site); }));
     const totalSupplierOutstandingN = totalSupplierBFN + totalSupplierPurchaseN - totalSupplierPaidN;
     const totalDieselCostN = this.sum(dieselTxF, 'Value');
-    const totalDieselPaidN = this.sum(dieselPayF, 'AmountPaid');
+    const totalDieselPaidN = this.paidWithDiscount(dieselPayF);
     const totalDieselBFN = this.sumLatestBF(s.dieselBF.filter(function (b) { return (!df.supplier || b.Supplier === df.supplier) && (!df.site || b.Site === df.site); }));
     const totalDieselOutstandingN = totalDieselBFN + totalDieselCostN - totalDieselPaidN;
     const curMonth = new Date().toISOString().slice(0, 7);
@@ -5579,7 +5578,7 @@ class Component extends DCLogic {
       const name = sp.SupplierName;
       const bfAmt = self.sumLatestBF(s.bf.filter(function (b) { return b.Supplier === name; }));
       const purch = self.sum(txF.filter(function (t) { return t.Supplier === name; }), 'Value');
-      const paid = self.sum(payF.filter(function (p) { return p.Supplier === name; }), 'AmountPaid');
+      const paid = self.paidWithDiscount(payF.filter(function (p) { return p.Supplier === name; }));
       return { label: name, value: bfAmt + purch - paid };
     }).filter(function (r) { return r.value !== 0; }).sort(function (a, b) { return b.value - a.value; });
     const dieselCostBreakdown = groupSum(dieselTxF, 'Supplier', 'Value');
@@ -5587,7 +5586,7 @@ class Component extends DCLogic {
     const dieselOutstandingBreakdown = Array.from(new Set(s.dieselTx.map(function (t) { return t.Supplier; }).concat(s.dieselBF.map(function (b) { return b.Supplier; })))).filter(function (name) { return name && (!df.supplier || name === df.supplier); }).map(function (name) {
       const bfAmt = self.sumLatestBF(s.dieselBF.filter(function (b) { return b.Supplier === name; }));
       const cost = self.sum(dieselTxF.filter(function (t) { return t.Supplier === name; }), 'Value');
-      const paid = self.sum(dieselPayF.filter(function (p) { return p.Supplier === name; }), 'AmountPaid');
+      const paid = self.paidWithDiscount(dieselPayF.filter(function (p) { return p.Supplier === name; }));
       return { label: name, value: bfAmt + cost - paid };
     }).filter(function (r) { return r.value !== 0; }).sort(function (a, b) { return b.value - a.value; });
     const dieselSupplierNames = Array.from(new Set(s.dieselTx.map(function (t) { return t.Supplier; }).concat(s.dieselBF.map(function (b) { return b.Supplier; })).concat(s.dieselPayments.map(function (p) { return p.Supplier; })))).filter(Boolean);
@@ -5596,7 +5595,7 @@ class Component extends DCLogic {
       const dbfAmt = self.latestBFFor(s.dieselBF, name);
       const dcost = self.sum(s.dieselTx.filter(function (t) { return t.Supplier === name && (!dbfDate || t.Date > dbfDate); }), 'Value');
       const dpayRows = s.dieselPayments.filter(function (p) { return p.Supplier === name && (!dbfDate || p.Date > dbfDate); });
-      const dpaid = self.sum(dpayRows, 'AmountPaid') + self.sum(dpayRows, 'DiscountAmount');
+      const dpaid = self.paidWithDiscount(dpayRows);
       const doutstanding = dbfAmt + dcost - dpaid;
       return { name: name, costFmt: fmt(dcost), paidFmt: fmt(dpaid), outstandingFmt: fmt(doutstanding), outstandingColor: self.oc(doutstanding), onOpen: function () { self.openDieselSupplier(name); } };
     });
@@ -5608,7 +5607,7 @@ class Component extends DCLogic {
       const dbfMonth2 = self.latestBFMonthFor(s.dieselBF, dname);
       const dcost2 = self.sum(s.dieselTx.filter(function (t) { return t.Supplier === dname && (!dbfDate2 || t.Date > dbfDate2); }), 'Value');
       const dpayRows2 = s.dieselPayments.filter(function (p) { return p.Supplier === dname && (!dbfDate2 || p.Date > dbfDate2); });
-      const dpaid2 = self.sum(dpayRows2, 'AmountPaid') + self.sum(dpayRows2, 'DiscountAmount');
+      const dpaid2 = self.paidWithDiscount(dpayRows2);
       const doutstanding2 = dbfAmt2 + dcost2 - dpaid2;
       dieselSupplierDetail = {
         name: dname, bfFmt: fmt(dbfAmt2), bfMonth: dbfMonth2, costFmt: fmt(dcost2), paidFmt: fmt(dpaid2), outstandingFmt: fmt(doutstanding2), outstandingColor: self.oc(doutstanding2),
@@ -5755,7 +5754,7 @@ class Component extends DCLogic {
     const supplierCards = s.suppliers.map(function (sup) {
       const bfDate = self.latestBFDateFor(s.bf, sup.SupplierName);
       const purchase = self.sum(s.transactions.filter(function (t) { return t.Supplier === sup.SupplierName && (!bfDate || t.Date > bfDate); }), 'Value');
-      const paid = self.sum(s.payments.filter(function (p) { return p.Supplier === sup.SupplierName && (!bfDate || p.Date > bfDate); }), 'AmountPaid') + self.sum(s.payments.filter(function (p) { return p.Supplier === sup.SupplierName && (!bfDate || p.Date > bfDate); }), 'DiscountAmount');
+      const paid = self.paidWithDiscount(s.payments.filter(function (p) { return p.Supplier === sup.SupplierName && (!bfDate || p.Date > bfDate); }));
       const bfAmt = self.latestBFFor(s.bf, sup.SupplierName);
       const outstanding = bfAmt + purchase - paid;
       return Object.assign({}, sup, { purchase: fmt(purchase), paid: fmt(paid), outstanding: fmt(outstanding), outstandingColor: self.oc(outstanding), onOpen: function () { self.openSupplier(sup.SupplierName); }, onEdit: function () { self.openModal('supplier', sup); }, onDelete: function () { self.deleteSupplier(sup); } });
@@ -5772,7 +5771,8 @@ class Component extends DCLogic {
       const pay = s.payments.filter(function (p) { return p.Supplier === name && (!bfDate || p.Date > bfDate); });
       const bfEntries = s.bf.filter(function (b) { return b.Supplier === name; });
       const purchase = this.sum(allTx, 'Value');
-      const paid = this.sum(pay, 'AmountPaid') + this.sum(pay, 'DiscountAmount');
+      const paid = this.paidWithDiscount(pay);
+      const discount = this.sum(pay, 'DiscountAmount');
       const bfAmt = this.latestBFFor(bfEntries, name);
       const outstanding = bfAmt + purchase - paid;
       const matAmtOf = function (r) { return r.MaterialAmount != null ? Number(r.MaterialAmount) : (Number(r.Quantity) || 0) * (Number(r.Rate) || 0); };
@@ -5789,7 +5789,7 @@ class Component extends DCLogic {
         rows: filteredTx.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), FareTypeLabel: fareTypeLabel(r), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
         allTxRaw: filteredTx.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         payRaw: pay.filter(function (p) { return self.inRange(p.Date, dfl.from, dfl.to); }).sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
-        bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, outstandingN: outstanding, filter: dfl,
+        bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, discountN: discount, outstandingN: outstanding, filter: dfl,
         onExportExcel: function () { self.exportSupplierExcel(name); }, onExportPDF: function () { self.exportSupplierPDF(name); }
       };
       this._lastSupplierDetail = supplierDetail;
@@ -5995,7 +5995,7 @@ class Component extends DCLogic {
         paymentRows: s.mistriPayments.filter(function (r) { return r.MistriName === miName && self.inRange(r.Date, s.mistriDetailFilter.from, s.mistriDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), DiscountAmountFmt: fmt(r.DiscountAmount || 0), onEdit: function () { self.openModal('mistriPayment', r); }, onDelete: function () { self.deleteMistriPayment(r); } }); }),
         advanceRows: s.mistriAdvances.filter(function (r) { return r.MistriName === miName && self.inRange(r.Date, s.mistriDetailFilter.from, s.mistriDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isAdvance: true })); }, onDelete: function () { self.deleteMistriAdvance(r); } }); })
       };
-      this._lastMistriDetail = { name: mistriDetail.Name, dueRows: mistriDetail.dueRows, paymentRows: mistriDetail.paymentRows, advanceRows: mistriDetail.advanceRows, filter: s.mistriDetailFilter, bfAmt: fin.bfAmt, due: fin.due, paid: fin.paid, outstanding: fin.outstanding };
+      this._lastMistriDetail = { name: mistriDetail.Name, dueRows: mistriDetail.dueRows, paymentRows: mistriDetail.paymentRows, advanceRows: mistriDetail.advanceRows, filter: s.mistriDetailFilter, bfAmt: fin.bfAmt, due: fin.due, paid: fin.paid, discount: fin.discount, outstanding: fin.outstanding };
     }
 
     let labourDetail = { Name: '', ContactNumber: '', bfFmt: fmt(0), totalDueFmt: fmt(0), totalPaidFmt: fmt(0), outstandingFmt: fmt(0), outstandingColor: 'var(--muted)', entryRows: [], paymentRows: [], advanceRows: [] };
@@ -6012,7 +6012,7 @@ class Component extends DCLogic {
         paymentRows: s.labourPayments.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), DiscountAmountFmt: fmt(r.DiscountAmount || 0), onEdit: function () { self.openModal('labourPayment', r); }, onDelete: function () { self.deleteLabourPayment(r); } }); }),
         advanceRows: s.labourAdvances.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isLabourAdvance: true })); }, onDelete: function () { self.deleteLabourAdvance(r); } }); })
       };
-      this._lastLabourDetail = { name: labourDetail.Name, entryRows: labourDetail.entryRows, paymentRows: labourDetail.paymentRows, advanceRows: labourDetail.advanceRows, filter: s.labourDetailFilter, bfAmt: finL.bfAmt, due: finL.due, paid: finL.paid, outstanding: finL.outstanding };
+      this._lastLabourDetail = { name: labourDetail.Name, entryRows: labourDetail.entryRows, paymentRows: labourDetail.paymentRows, advanceRows: labourDetail.advanceRows, filter: s.labourDetailFilter, bfAmt: finL.bfAmt, due: finL.due, paid: finL.paid, discount: finL.discount, outstanding: finL.outstanding };
     }
 
     const rf = s.reportFilters;
@@ -6036,7 +6036,7 @@ class Component extends DCLogic {
 
     const supplierReportRows = rSuppliersF.map(function (sup) {
       const purchase = self.sum(rTxF.filter(function (t) { return t.Supplier === sup.SupplierName; }), 'Value');
-      const paid = self.sum(rPayF.filter(function (p) { return p.Supplier === sup.SupplierName; }), 'AmountPaid') + self.sum(rPayF.filter(function (p) { return p.Supplier === sup.SupplierName; }), 'DiscountAmount');
+      const paid = self.paidWithDiscount(rPayF.filter(function (p) { return p.Supplier === sup.SupplierName; }));
       const bfAmt = self.latestBFFor(rBFF, sup.SupplierName);
       const outstanding = bfAmt + purchase - paid;
       return { Supplier: sup.SupplierName, BF: fmt(bfAmt), Purchase: fmt(purchase), Paid: fmt(paid), Outstanding: fmt(outstanding), OutstandingColor: self.oc(outstanding), _BF: bfAmt, _Purchase: purchase, _Paid: paid, _Outstanding: outstanding };
