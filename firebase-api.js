@@ -119,6 +119,7 @@
     MistriBF: { coll: "mistriBF", idField: "BFID", counter: "MistriBFID", prefix: "MBF" },
     FundTransfer: { coll: "fundTransfers", idField: "TransferID", counter: "TransferID", prefix: "FT", def: { Status: "Active" } },
     SiteAllocation: { coll: "siteAllocations", idField: "AllocationID", counter: "AllocationID", prefix: "SA", def: { Status: "Active" } },
+    DriverAllocation: { coll: "driverAllocations", idField: "AllocationID", counter: "DriverAllocationID", prefix: "DA", def: { Status: "Active" } },
     SiteExpense: { coll: "siteExpenses", idField: "ExpenseID", counter: "ExpenseID", prefix: "SE", def: { Status: "Active" } },
     SiteTransfer: { coll: "siteTransfers", idField: "TransferID", counter: "SiteTransferID", prefix: "STX", def: { Status: "Active" } },
     OtherPayment: { coll: "otherPayments", idField: "PaymentID", counter: "OtherPaymentID", prefix: "OTH", def: { Status: "Active" } },
@@ -180,8 +181,8 @@
   }
 
   async function computeUserBalance(walletUserName) {
-    const [fundTransfers, siteAllocations, payments, dieselPayments, staffPayments, mistriPayments, mistriAdvances, labourPayments, labourAdvances, otherPayments] = await Promise.all([
-      colToArray("fundTransfers"), colToArray("siteAllocations"), colToArray("payments"), colToArray("dieselPayments"),
+    const [fundTransfers, siteAllocations, driverAllocations, payments, dieselPayments, staffPayments, mistriPayments, mistriAdvances, labourPayments, labourAdvances, otherPayments] = await Promise.all([
+      colToArray("fundTransfers"), colToArray("siteAllocations"), colToArray("driverAllocations"), colToArray("payments"), colToArray("dieselPayments"),
       colToArray("staffPayments"), colToArray("mistriPayments"), colToArray("mistriAdvances"), colToArray("labourPayments"), colToArray("labourAdvances"), colToArray("otherPayments")
     ]);
     const sumBy = function (arr, field, matchFn) { return arr.filter(matchFn).reduce(function (a, r) { return a + (Number(r[field]) || 0); }, 0); };
@@ -189,13 +190,14 @@
     const received = sumBy(fundTransfers, "Amount", function (t) { return t.To === walletUserName; });
     const sentOut = sumBy(fundTransfers, "Amount", function (t) { return t.From === walletUserName; });
     const toSite = sumBy(siteAllocations, "Amount", byWallet("User"));
+    const toDriver = sumBy(driverAllocations, "Amount", byWallet("User"));
     const toSupplier = sumBy(payments, "AmountPaid", byWallet("CreatedBy"));
     const toDiesel = sumBy(dieselPayments, "AmountPaid", byWallet("CreatedBy"));
     const toStaff = sumBy(staffPayments, "AmountPaid", byWallet("CreatedBy"));
     const toMistri = sumBy(mistriPayments, "AmountPaid", byWallet("CreatedBy")) + sumBy(mistriAdvances, "Amount", byWallet("From"));
     const toLabour = sumBy(labourPayments, "AmountPaid", byWallet("CreatedBy")) + sumBy(labourAdvances, "Amount", byWallet("From"));
     const toOther = sumBy(otherPayments, "Amount", byWallet("From"));
-    return received - sentOut - toSite - toSupplier - toDiesel - toStaff - toMistri - toLabour - toOther;
+    return received - sentOut - toSite - toDriver - toSupplier - toDiesel - toStaff - toMistri - toLabour - toOther;
   }
 
   async function checkMoneySpend(requesterName, walletUserName, amount) {
@@ -458,8 +460,8 @@
         return { success: true, skipped: false, rolled: rolled, message: "Monthly rollover complete (" + rolled + " BF entries added)." };
       }
       case "getAllData": {
-        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "siteTransfers", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions", "staffBF", "labourBF", "mistriBF", "vehicles", "vehicleDailyLog", "cementReceived", "cementUsed"];
-        const dateFilteredNames = ["transactions", "payments", "dieselTx", "dieselPayments", "siteExpenses", "siteTransfers", "staffPayments", "mistriPayments", "mistriAdvances", "labourPayments", "labourAdvances", "otherPayments", "fundTransfers", "siteAllocations", "vehicleDailyLog", "cementReceived", "cementUsed", "staffAttendance", "labourEntries"];
+        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "siteTransfers", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions", "staffBF", "labourBF", "mistriBF", "vehicles", "vehicleDailyLog", "cementReceived", "cementUsed", "driverAllocations"];
+        const dateFilteredNames = ["transactions", "payments", "dieselTx", "dieselPayments", "siteExpenses", "siteTransfers", "staffPayments", "mistriPayments", "mistriAdvances", "labourPayments", "labourAdvances", "otherPayments", "fundTransfers", "siteAllocations", "vehicleDailyLog", "cementReceived", "cementUsed", "staffAttendance", "labourEntries", "driverAllocations"];
         const cutoff = await computeLoadCutoff();
         const arrs = await Promise.all(names.map(function (n) { return dateFilteredNames.indexOf(n) !== -1 ? colToArraySince(n, cutoff) : colToArray(n); }));
         const out = { success: true };
@@ -636,6 +638,11 @@
       case "addSiteAllocation": { const chk = await checkMoneySpend(p.CreatedBy, "Sukadev", p.Amount); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("SiteAllocation", { Date: p.Date, User: p.User, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", WalletUser: "Sukadev", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Site Allocation", "SiteAllocations", r.id, p.User + " -> " + p.Site + " Rs." + p.Amount); return { success: true, message: "Site allocation saved successfully." }; }
       case "updateSiteAllocation": { const ok = await genericUpdate("SiteAllocation", p, { Date: p.Date, User: p.User, Site: p.Site, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", WalletUser: "Sukadev" }); if (!ok) return { success: false, message: "Site allocation not found." }; await auditLog(p.CreatedBy, "Updated Site Allocation", "SiteAllocations", p.AllocationID, p.User + " -> " + p.Site + " Rs." + p.Amount); return { success: true, message: "Site allocation updated successfully." }; }
       case "deleteSiteAllocation": await genericDelete("SiteAllocation", p.AllocationID); await auditLog(p.CreatedBy, "Deleted Site Allocation", "SiteAllocations", p.AllocationID, ""); return { success: true, message: "Site allocation deleted successfully." };
+
+      case "getDriverAllocations": return { success: true, data: await colToArray("driverAllocations") };
+      case "addDriverAllocation": { const chk = await checkMoneySpend(p.CreatedBy, "Sukadev", p.Amount); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("DriverAllocation", { Date: p.Date, User: p.User, VehicleNumber: p.VehicleNumber, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", WalletUser: "Sukadev", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Driver Allocation", "DriverAllocations", r.id, p.User + " -> " + p.VehicleNumber + " Rs." + p.Amount); return { success: true, message: "Driver allocation saved successfully." }; }
+      case "updateDriverAllocation": { const ok = await genericUpdate("DriverAllocation", p, { Date: p.Date, User: p.User, VehicleNumber: p.VehicleNumber, Amount: p.Amount, PaymentMethod: p.PaymentMethod || "Cash", Remarks: p.Remarks || "", WalletUser: "Sukadev" }); if (!ok) return { success: false, message: "Driver allocation not found." }; await auditLog(p.CreatedBy, "Updated Driver Allocation", "DriverAllocations", p.AllocationID, p.User + " -> " + p.VehicleNumber + " Rs." + p.Amount); return { success: true, message: "Driver allocation updated successfully." }; }
+      case "deleteDriverAllocation": await genericDelete("DriverAllocation", p.AllocationID); await auditLog(p.CreatedBy, "Deleted Driver Allocation", "DriverAllocations", p.AllocationID, ""); return { success: true, message: "Driver allocation deleted successfully." };
 
       case "getSiteExpenses": return { success: true, data: await colToArray("siteExpenses") };
       case "addSiteExpense": { const r = await genericAdd("SiteExpense", { Date: p.Date, Site: p.Site, Amount: p.Amount, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Site Expense", "SiteExpenses", r.id, p.Site + " Rs." + p.Amount); return { success: true, message: "Site expenditure saved successfully." }; }
