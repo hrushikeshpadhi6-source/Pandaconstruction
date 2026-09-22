@@ -224,7 +224,10 @@
           </button>
           <sc-if value="{{ dupPanelOpen }}">
             <div style="position:fixed;top:60px;right:12px;left:12px;margin-left:auto;max-width:380px;width:auto;max-height:70vh;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.25);z-index:50;padding:12px;">
-              <div style="font-weight:700;font-size:14px;margin-bottom:10px;">Possible Duplicate Entries</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <div style="font-weight:700;font-size:14px;">Possible Duplicate Entries</div>
+                <button type="button" onClick="{{ toggleDupPanel }}" style="background:transparent;border:none;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:0 4px;">×</button>
+              </div>
               <sc-if value="{{ !dupCount }}"><div style="font-size:13px;color:var(--muted);padding:12px 0;text-align:center;">No duplicates found.</div></sc-if>
               <sc-for list="{{ dupGroups }}" as="grp" hint-placeholder-count="0">
                 <div style="border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;">
