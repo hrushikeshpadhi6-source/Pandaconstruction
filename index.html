@@ -217,6 +217,31 @@
       <h1 style="font-size:24px;font-weight:800;margin:0;">{{ pageTitle }}</h1>
       <div style="display:flex;align-items:center;gap:8px;">
         <sc-if value="{{ isDemo }}"><div style="background:var(--chip);color:var(--gold);font-size:12px;padding:6px 14px;border-radius:20px;white-space:nowrap;">Demo Data — connect config.js for live Sheet</div></sc-if>
+        <div style="position:relative;">
+          <button type="button" onClick="{{ toggleDupPanel }}" title="Duplicate entries" style="position:relative;background:var(--surface);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:16px;">
+            🔔
+            <sc-if value="{{ dupCount }}"><span style="position:absolute;top:-6px;right:-6px;background:#e2574c;color:#fff;font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 3px;">{{ dupCount }}</span></sc-if>
+          </button>
+          <sc-if value="{{ dupPanelOpen }}">
+            <div style="position:absolute;top:42px;right:0;width:380px;max-height:480px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.25);z-index:50;padding:12px;">
+              <div style="font-weight:700;font-size:14px;margin-bottom:10px;">Possible Duplicate Entries</div>
+              <sc-if value="{{ !dupCount }}"><div style="font-size:13px;color:var(--muted);padding:12px 0;text-align:center;">No duplicates found.</div></sc-if>
+              <sc-for list="{{ dupGroups }}" as="grp" hint-placeholder-count="0">
+                <div style="border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;">
+                  <div style="font-size:12px;font-weight:700;color:#e2574c;margin-bottom:4px;">⚠ {{ grp.label }} — duplicate</div>
+                  <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">{{ grp.fieldsText }}</div>
+                  <sc-for list="{{ grp.records }}" as="item" hint-placeholder-count="0">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-top:1px solid var(--border-soft);">
+                      <span style="font-size:12px;">Entry</span>
+                      <button type="button" onClick="{{ item.onDelete }}" style="background:transparent;border:1px solid var(--border);color:#e2574c;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;">Delete</button>
+                    </div>
+                  </sc-for>
+                  <button type="button" onClick="{{ grp.onMarkReviewed }}" style="width:100%;margin-top:8px;background:transparent;border:1px solid var(--gold);color:var(--gold);padding:7px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;">Mark Reviewed — No Issue</button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
         <div style="display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:4px;">
           <button type="button" onClick="{{ onZoomOut }}" title="Zoom out" style="background:transparent;border:none;color:var(--text);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:15px;font-weight:700;">−</button>
           <span style="font-size:12px;color:var(--muted);width:40px;text-align:center;">{{ zoomLabel }}</span>
@@ -2721,7 +2746,8 @@
         <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
         <form key="{{ formKey }}" onSubmit="{{ submitPayment }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="date" name="Date" required="true" defaultValue="{{ payDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
-          <select name="Supplier" required="true" defaultValue="{{ payDefaults.Supplier }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <select name="Supplier" required="true" defaultValue="{{ payDefaults.Supplier }}" onChange="{{ onPartyPickerChange }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <sc-if value="{{ partyOutstanding.show }}"><div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;display:flex;justify-content:space-between;"><span style="color:var(--muted);">Outstanding balance</span><span style="font-weight:700;color:{{ partyOutstanding.color }};">{{ partyOutstanding.fmt }}</span></div></sc-if>
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ payDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="hidden" name="WalletUser" value="Sukadev" />
           <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
@@ -2740,7 +2766,8 @@
         <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Reduces the supplier's outstanding only. No cash or wallet is affected.</div>
         <form key="{{ formKey }}" onSubmit="{{ submitPaymentDiscount }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="date" name="Date" required="true" defaultValue="{{ payDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
-          <select name="Supplier" required="true" defaultValue="{{ payDefaults.Supplier }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <select name="Supplier" required="true" defaultValue="{{ payDefaults.Supplier }}" onChange="{{ onPartyPickerChange }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+          <sc-if value="{{ partyOutstanding.show }}"><div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;display:flex;justify-content:space-between;"><span style="color:var(--muted);">Outstanding balance</span><span style="font-weight:700;color:{{ partyOutstanding.color }};">{{ partyOutstanding.fmt }}</span></div></sc-if>
           <input type="number" step="any" name="DiscountAmount" placeholder="Discount Amount (₹)" required="true" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
@@ -2831,7 +2858,21 @@
           <input type="date" name="Date" required="true" defaultValue="{{ dieselTxDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <input type="text" name="Supplier" placeholder="Supplier / Fuel Station" required="true" defaultValue="{{ dieselTxDefaults.Supplier }}" list="dieselSupplierList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="dieselSupplierList"><sc-for list="{{ dieselSupplierOptions }}" as="opt" hint-placeholder-count="2"><option value="{{ opt }}"></option></sc-for></datalist>
-          <input type="text" name="VehicleNumber" placeholder="Vehicle / Equipment Number" defaultValue="{{ dieselTxDefaults.VehicleNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;gap:8px;">
+            <button type="button" onClick="{{ setDieselForVehicle }}" disabled="{{ dieselForIsVehicle }}" style="{{ dieselForVehicleBtnStyle }}">{{ dieselForVehicleBtnLabel }}</button>
+            <button type="button" onClick="{{ setDieselForSite }}" disabled="{{ !dieselForIsVehicle }}" style="{{ dieselForSiteBtnStyle }}">{{ dieselForSiteBtnLabel }}</button>
+          </div>
+          <sc-if value="{{ dieselForIsVehicle }}">
+            <input type="text" name="VehicleNumber" placeholder="Vehicle / Equipment Number" required="true" defaultValue="{{ dieselTxDefaults.VehicleNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            <input type="hidden" name="Site" value="" />
+            <input type="hidden" name="PersonName" value="" />
+          </sc-if>
+          <sc-if value="{{ !dieselForIsVehicle }}">
+            <input type="hidden" name="VehicleNumber" value="" />
+            <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ dieselTxDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+            <input type="text" name="PersonName" placeholder="Person Name (who collected the diesel/barrel)" defaultValue="{{ dieselTxDefaults.PersonName }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          </sc-if>
           <div style="display:flex;gap:10px;">
             <input type="number" step="any" name="DieselQuantity" placeholder="Quantity (Litres)" required="true" defaultValue="{{ dieselTxDefaults.DieselQuantity }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
             <input type="number" step="any" name="Rate" placeholder="Rate (₹)" required="true" defaultValue="{{ dieselTxDefaults.Rate }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
@@ -2840,9 +2881,12 @@
             <input type="text" name="ChalanNumber" placeholder="Chalan Number" defaultValue="{{ dieselTxDefaults.ChalanNumber }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
             <input type="time" name="Time" placeholder="Time" defaultValue="{{ dieselTxDefaults.Time }}" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           </div>
-          <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" defaultValue="{{ dieselTxDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
-          <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
-          <input type="text" name="Driver" placeholder="Driver / Operator" defaultValue="{{ dieselTxDefaults.Driver }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <sc-if value="{{ dieselForIsVehicle }}">
+            <input type="text" name="Driver" placeholder="Driver / Operator" defaultValue="{{ dieselTxDefaults.Driver }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          </sc-if>
+          <sc-if value="{{ !dieselForIsVehicle }}">
+            <input type="hidden" name="Driver" value="" />
+          </sc-if>
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ dieselTxDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -2855,8 +2899,9 @@
         <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
         <form key="{{ formKey }}" onSubmit="{{ submitDieselPayment }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="date" name="Date" required="true" defaultValue="{{ dieselPayDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
-          <input type="text" name="Supplier" placeholder="Supplier / Fuel Station" required="true" defaultValue="{{ dieselPayDefaults.Supplier }}" list="dieselSupplierList2" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="Supplier" placeholder="Supplier / Fuel Station" required="true" defaultValue="{{ dieselPayDefaults.Supplier }}" onChange="{{ onPartyPickerChange }}" list="dieselSupplierList2" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="dieselSupplierList2"><sc-for list="{{ dieselSupplierOptions }}" as="opt" hint-placeholder-count="2"><option value="{{ opt }}"></option></sc-for></datalist>
+          <sc-if value="{{ partyOutstanding.show }}"><div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;display:flex;justify-content:space-between;"><span style="color:var(--muted);">Outstanding balance</span><span style="font-weight:700;color:{{ partyOutstanding.color }};">{{ partyOutstanding.fmt }}</span></div></sc-if>
           <input type="number" step="any" name="AmountPaid" placeholder="Amount Paid (₹)" required="true" defaultValue="{{ dieselPayDefaults.AmountPaid }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <input type="hidden" name="WalletUser" value="Sukadev" />
           <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
@@ -2875,8 +2920,9 @@
         <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Reduces the fuel station's outstanding only. No cash or wallet is affected.</div>
         <form key="{{ formKey }}" onSubmit="{{ submitDieselPaymentDiscount }}" style="display:flex;flex-direction:column;gap:12px;">
           <input type="date" name="Date" required="true" defaultValue="{{ dieselPayDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
-          <input type="text" name="Supplier" placeholder="Supplier / Fuel Station" required="true" defaultValue="{{ dieselPayDefaults.Supplier }}" list="dieselSupplierList3" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="text" name="Supplier" placeholder="Supplier / Fuel Station" required="true" defaultValue="{{ dieselPayDefaults.Supplier }}" onChange="{{ onPartyPickerChange }}" list="dieselSupplierList3" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="dieselSupplierList3"><sc-for list="{{ dieselSupplierOptions }}" as="opt" hint-placeholder-count="2"><option value="{{ opt }}"></option></sc-for></datalist>
+          <sc-if value="{{ partyOutstanding.show }}"><div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;display:flex;justify-content:space-between;"><span style="color:var(--muted);">Outstanding balance</span><span style="font-weight:700;color:{{ partyOutstanding.color }};">{{ partyOutstanding.fmt }}</span></div></sc-if>
           <input type="number" step="any" name="DiscountAmount" placeholder="Discount Amount (₹)" required="true" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
@@ -3211,11 +3257,12 @@
         <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
         <form key="{{ formKey }}" onSubmit="{{ submitMistriPayment }}" style="display:flex;flex-direction:column;gap:12px;">
           <sc-if value="{{ showMistriPicker }}">
-            <select name="MistriName" required="true" defaultValue="{{ mistriPaymentDefaults.MistriName }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Mistri</option><sc-for list="{{ mistriOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+            <select name="MistriName" required="true" defaultValue="{{ mistriPaymentDefaults.MistriName }}" onChange="{{ onPartyPickerChange }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Mistri</option><sc-for list="{{ mistriOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           </sc-if>
           <sc-if value="{{ !showMistriPicker }}">
             <input type="hidden" name="MistriName" defaultValue="{{ mistriPaymentDefaults.MistriName }}" />
           </sc-if>
+          <sc-if value="{{ partyOutstanding.show }}"><div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;display:flex;justify-content:space-between;"><span style="color:var(--muted);">Outstanding balance</span><span style="font-weight:700;color:{{ partyOutstanding.color }};">{{ partyOutstanding.fmt }}</span></div></sc-if>
           <input type="date" name="Date" required="true" defaultValue="{{ mistriPaymentDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ mistriPaymentDefaults.Site }}" list="mistriPaySiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="mistriPaySiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
@@ -3237,11 +3284,12 @@
         <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Reduces the mistri's outstanding only. No cash or wallet is affected.</div>
         <form key="{{ formKey }}" onSubmit="{{ submitMistriPaymentDiscount }}" style="display:flex;flex-direction:column;gap:12px;">
           <sc-if value="{{ showMistriPicker }}">
-            <select name="MistriName" required="true" defaultValue="{{ mistriPaymentDefaults.MistriName }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Mistri</option><sc-for list="{{ mistriOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+            <select name="MistriName" required="true" defaultValue="{{ mistriPaymentDefaults.MistriName }}" onChange="{{ onPartyPickerChange }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Mistri</option><sc-for list="{{ mistriOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           </sc-if>
           <sc-if value="{{ !showMistriPicker }}">
             <input type="hidden" name="MistriName" defaultValue="{{ mistriPaymentDefaults.MistriName }}" />
           </sc-if>
+          <sc-if value="{{ partyOutstanding.show }}"><div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;display:flex;justify-content:space-between;"><span style="color:var(--muted);">Outstanding balance</span><span style="font-weight:700;color:{{ partyOutstanding.color }};">{{ partyOutstanding.fmt }}</span></div></sc-if>
           <input type="date" name="Date" required="true" defaultValue="{{ mistriPaymentDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ mistriPaymentDefaults.Site }}" list="mistriDiscountSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="mistriDiscountSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
@@ -3311,11 +3359,12 @@
         <div style="font-weight:700;font-size:16px;margin-bottom:20px;">{{ modalTitle }}</div>
         <form key="{{ formKey }}" onSubmit="{{ submitLabourPayment }}" style="display:flex;flex-direction:column;gap:12px;">
           <sc-if value="{{ showLabourPicker }}">
-            <select name="LabourName" required="true" defaultValue="{{ labourPaymentDefaults.LabourName }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Labour</option><sc-for list="{{ labourOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+            <select name="LabourName" required="true" defaultValue="{{ labourPaymentDefaults.LabourName }}" onChange="{{ onPartyPickerChange }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Labour</option><sc-for list="{{ labourOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           </sc-if>
           <sc-if value="{{ !showLabourPicker }}">
             <input type="hidden" name="LabourName" defaultValue="{{ labourPaymentDefaults.LabourName }}" />
           </sc-if>
+          <sc-if value="{{ partyOutstanding.show }}"><div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;display:flex;justify-content:space-between;"><span style="color:var(--muted);">Outstanding balance</span><span style="font-weight:700;color:{{ partyOutstanding.color }};">{{ partyOutstanding.fmt }}</span></div></sc-if>
           <input type="date" name="Date" required="true" defaultValue="{{ labourPaymentDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ labourPaymentDefaults.Site }}" list="labourPaySiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="labourPaySiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
@@ -3337,11 +3386,12 @@
         <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Reduces the labour's outstanding only. No cash or wallet is affected.</div>
         <form key="{{ formKey }}" onSubmit="{{ submitLabourPaymentDiscount }}" style="display:flex;flex-direction:column;gap:12px;">
           <sc-if value="{{ showLabourPicker }}">
-            <select name="LabourName" required="true" defaultValue="{{ labourPaymentDefaults.LabourName }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Labour</option><sc-for list="{{ labourOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+            <select name="LabourName" required="true" defaultValue="{{ labourPaymentDefaults.LabourName }}" onChange="{{ onPartyPickerChange }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><option value="">Select Labour</option><sc-for list="{{ labourOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           </sc-if>
           <sc-if value="{{ !showLabourPicker }}">
             <input type="hidden" name="LabourName" defaultValue="{{ labourPaymentDefaults.LabourName }}" />
           </sc-if>
+          <sc-if value="{{ partyOutstanding.show }}"><div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:13px;display:flex;justify-content:space-between;"><span style="color:var(--muted);">Outstanding balance</span><span style="font-weight:700;color:{{ partyOutstanding.color }};">{{ partyOutstanding.fmt }}</span></div></sc-if>
           <input type="date" name="Date" required="true" defaultValue="{{ labourPaymentDefaults.Date }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;" />
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ labourPaymentDefaults.Site }}" list="labourDiscountSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="labourDiscountSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
@@ -3371,7 +3421,7 @@ class Component extends DCLogic {
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [], siteTransfers: [],
-    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], staffBF: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], mistriBF: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], labourBF: [], vehicles: [], vehicleDailyLog: [], fundTransfers: [], siteAllocations: [], driverAllocations: [], siteExpenses: [], otherPayments: [], cementReceived: [], cementUsed: [], taskCompletions: [], taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
+    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], staffBF: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], mistriBF: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], labourBF: [], vehicles: [], vehicleDailyLog: [], fundTransfers: [], siteAllocations: [], driverAllocations: [], siteExpenses: [], otherPayments: [], cementReceived: [], cementUsed: [], taskCompletions: [], duplicateReviews: [], dupPanelOpen: false, taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
     selectedSupplier: null, selectedMistri: null, selectedLabour: null, selectedSite: null, selectedDieselSupplier: null, selectedVehicle: null, selectedCementSite: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, siteDetailFilter: { from: '', to: '' }, vehicleDetailFilter: defaultFromSept1(), vehicleWalletTab: {}, vehicleDetailTab: 'log', staffDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
@@ -3483,7 +3533,7 @@ class Component extends DCLogic {
         staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [], staffBF: r.staffBF || [],
         mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [], mistriBF: r.mistriBF || [],
         labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [], labourBF: r.labourBF || [],
-        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], driverAllocations: r.driverAllocations || [], siteExpenses: r.siteExpenses || [], siteTransfers: r.siteTransfers || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
+        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], driverAllocations: r.driverAllocations || [], siteExpenses: r.siteExpenses || [], siteTransfers: r.siteTransfers || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [], duplicateReviews: r.duplicateReviews || [],
         vehicles: r.vehicles || [], vehicleDailyLog: r.vehicleDailyLog || [],
         cementReceived: r.cementReceived || [], cementUsed: r.cementUsed || [],
         maintenance: r.maintenance || { enabled: false, message: '' },
@@ -3529,7 +3579,7 @@ class Component extends DCLogic {
         staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [], staffBF: r.staffBF || [],
         mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [], mistriBF: r.mistriBF || [],
         labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [], labourBF: r.labourBF || [],
-        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], driverAllocations: r.driverAllocations || [], siteExpenses: r.siteExpenses || [], siteTransfers: r.siteTransfers || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [],
+        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], driverAllocations: r.driverAllocations || [], siteExpenses: r.siteExpenses || [], siteTransfers: r.siteTransfers || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [], duplicateReviews: r.duplicateReviews || [],
         vehicles: r.vehicles || [], vehicleDailyLog: r.vehicleDailyLog || [],
         cementReceived: r.cementReceived || [], cementUsed: r.cementUsed || []
       });
@@ -4095,6 +4145,40 @@ class Component extends DCLogic {
     return (list || []).filter(function (r) { return (r.CreatedAt || r.Date || '') > ts; }).length;
   }
   toggleMobileNav() { this.setState(function (s) { return { mobileNavOpen: !s.mobileNavOpen }; }); }
+  toggleDupPanel() { this.setState(function (s) { return { dupPanelOpen: !s.dupPanelOpen }; }); }
+  markDupReviewed(key, category) {
+    PandaAPI.call('addDuplicateReview', { Key: key, Category: category, CreatedBy: this.currentUserName() }).then((res) => {
+      if (res && res.success) this.setState((s) => ({ duplicateReviews: s.duplicateReviews.concat([{ Key: key, Category: category, ReviewedBy: this.currentUserName(), ReviewedAt: new Date().toISOString() }]) }));
+    });
+  }
+  computeDuplicateGroups(s) {
+    const self = this;
+    const reviewedKeys = new Set(s.duplicateReviews.map(function (r) { return r.Key; }));
+    const groupsFor = function (category, label, records, keyFn, fieldsFn, onDelete) {
+      const byKey = {};
+      records.forEach(function (r) { const k = keyFn(r); if (!k) return; (byKey[k] = byKey[k] || []).push(r); });
+      const out = [];
+      Object.keys(byKey).forEach(function (k) {
+        const list = byKey[k];
+        const fullKey = category + '|' + k;
+        if (list.length > 1 && !reviewedKeys.has(fullKey)) {
+          out.push({ fullKey: fullKey, category: category, label: label, fieldsText: fieldsFn(list[0]), records: list.map(function (r) { return { rec: r, onDelete: function () { onDelete(r); } }; }), onMarkReviewed: function () { self.markDupReviewed(fullKey, category); } });
+        }
+      });
+      return out;
+    };
+    const fmtDate = function (r) { return r.Date || ''; };
+    let groups = [];
+    groups = groups.concat(groupsFor('supplierTx', 'Supplier Transaction', s.transactions, function (r) { return r.VehicleNumber ? [r.Date, r.VehicleNumber, r.Quantity, r.Rate].join('::') : ''; }, function (r) { return fmtDate(r) + ' \u2022 Vehicle ' + r.VehicleNumber + ' \u2022 Qty ' + r.Quantity + ' \u2022 Rate ' + r.Rate; }, function (r) { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, ''); }));
+    groups = groups.concat(groupsFor('supplierPay', 'Supplier Payment', s.payments, function (r) { return [r.Date, r.Supplier, r.AmountPaid].join('::'); }, function (r) { return fmtDate(r) + ' \u2022 ' + r.Supplier + ' \u2022 \u20b9' + r.AmountPaid; }, function (r) { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, ''); }));
+    groups = groups.concat(groupsFor('dieselTx', 'Diesel Transaction', s.dieselTx, function (r) { return r.VehicleNumber ? [r.Date, r.VehicleNumber, r.DieselQuantity].join('::') : ''; }, function (r) { return fmtDate(r) + ' \u2022 Vehicle ' + r.VehicleNumber + ' \u2022 Qty ' + r.DieselQuantity; }, function (r) { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, ''); }));
+    groups = groups.concat(groupsFor('dieselPay', 'Diesel Payment', s.dieselPayments, function (r) { return [r.Date, r.Supplier, r.AmountPaid].join('::'); }, function (r) { return fmtDate(r) + ' \u2022 ' + r.Supplier + ' \u2022 \u20b9' + r.AmountPaid; }, function (r) { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, ''); }));
+    groups = groups.concat(groupsFor('staffPay', 'Staff Payment', s.staffPayments, function (r) { return [r.Date, r.StaffName, r.AmountPaid].join('::'); }, function (r) { return fmtDate(r) + ' \u2022 ' + r.StaffName + ' \u2022 \u20b9' + r.AmountPaid; }, function (r) { self.deleteStaffPayment(r); }));
+    groups = groups.concat(groupsFor('mistriPay', 'Mistri Payment', s.mistriPayments, function (r) { return [r.Date, r.MistriName, r.AmountPaid].join('::'); }, function (r) { return fmtDate(r) + ' \u2022 ' + r.MistriName + ' \u2022 \u20b9' + r.AmountPaid; }, function (r) { self.deleteMistriPayment(r); }));
+    groups = groups.concat(groupsFor('labourPay', 'Labour Payment', s.labourPayments, function (r) { return [r.Date, r.LabourName, r.AmountPaid].join('::'); }, function (r) { return fmtDate(r) + ' \u2022 ' + r.LabourName + ' \u2022 \u20b9' + r.AmountPaid; }, function (r) { self.deleteLabourPayment(r); }));
+    groups = groups.concat(groupsFor('siteAlloc', 'Site Allocation', s.siteAllocations, function (r) { return [r.Date, r.Site, r.Amount].join('::'); }, function (r) { return fmtDate(r) + ' \u2022 ' + r.Site + ' \u2022 \u20b9' + r.Amount; }, function (r) { self.deleteRecord('deleteSiteAllocation', { AllocationID: r.AllocationID }, ''); }));
+    return groups;
+  }
   closeMobileNav() { this.setState({ mobileNavOpen: false }); }
   openSupplier(name) { this._pushHist(); this.setState({ view: 'supplierDetail', selectedSupplier: name, mobileNavOpen: false }); }
   openDieselSupplier(name) { this._pushHist(); this.setState({ view: 'dieselSupplierDetail', selectedDieselSupplier: name, mobileNavOpen: false }); }
@@ -4335,7 +4419,34 @@ class Component extends DCLogic {
     if (!digits) { this.showToast('No WhatsApp number on file for this admin. Add it from Settings.'); return; }
     window.open('https://wa.me/' + digits + '?text=' + encodeURIComponent(message), '_blank');
   }
-  openModal(type, record) { this.setState({ modal: type, editRecord: record || null }); }
+  openModal(type, record) {
+    const r = record || {};
+    const partyStartMap = { payment: r.Supplier, paymentDiscount: r.Supplier, dieselPayment: r.Supplier, dieselPaymentDiscount: r.Supplier, mistriPayment: this.state.selectedMistri || r.MistriName, mistriPaymentDiscount: this.state.selectedMistri || r.MistriName, labourPayment: this.state.selectedLabour || r.LabourName, labourPaymentDiscount: this.state.selectedLabour || r.LabourName };
+    const patch = { modal: type, editRecord: record || null, partyPicker: partyStartMap.hasOwnProperty(type) ? (partyStartMap[type] || '') : null };
+    if (type === 'dieselTx') patch.dieselForIsVehicle = !r.Site || !!r.VehicleNumber;
+    this.setState(patch);
+  }
+  setDieselForVehicle() { this.setState({ dieselForIsVehicle: true }); }
+  setDieselForSite() { this.setState({ dieselForIsVehicle: false }); }
+  onPartyPickerChange(e) { this.setState({ partyPicker: e.target.value }); }
+  partyOutstandingFor(kind, name, s) {
+    if (!name) return 0;
+    if (kind === 'supplier') {
+      const bfDate = this.latestBFDateFor(s.bf, name);
+      const purchase = this.sum(s.transactions.filter(function (t) { return t.Supplier === name && (!bfDate || t.Date > bfDate); }), 'Value');
+      const paid = this.paidWithDiscount(s.payments.filter(function (p) { return p.Supplier === name && (!bfDate || p.Date > bfDate); }));
+      return this.latestBFFor(s.bf, name) + purchase - paid;
+    }
+    if (kind === 'diesel') {
+      const bfDate = this.latestBFDateFor(s.dieselBF, name);
+      const cost = this.sum(s.dieselTx.filter(function (t) { return t.Supplier === name && (!bfDate || t.Date > bfDate); }), 'Value');
+      const paid = this.paidWithDiscount(s.dieselPayments.filter(function (p) { return p.Supplier === name && (!bfDate || p.Date > bfDate); }));
+      return this.latestBFFor(s.dieselBF, name) + cost - paid;
+    }
+    if (kind === 'mistri') return this.mistriFinancials({ Name: name }, s).outstanding;
+    if (kind === 'labour') return this.labourFinancials({ Name: name }, s).outstanding;
+    return 0;
+  }
   onRemarksKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (e.target.form) e.target.form.requestSubmit(); } }
   openLabourEntryModal(record) { this.setState({ modal: 'labourEntry', editRecord: record || null, labourEntryTypeUI: (record && record.Type) || 'Daily' }); }
   closeModal() { this.setState({ modal: null, editRecord: null, sitePrefill: null }); }
@@ -4522,9 +4633,9 @@ class Component extends DCLogic {
   submitDieselTx(e) {
     e.preventDefault();
     const f = e.target.elements;
-    if (!f.Date.value || !f.Supplier.value || !f.DieselQuantity.value || !f.Rate.value || !f.Site.value) { this.showToast('Please fill all required fields.'); return; }
+    if (!f.Date.value || !f.Supplier.value || !f.DieselQuantity.value || !f.Rate.value || (!f.Site.value && !f.VehicleNumber.value)) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, ChalanNumber: f.ChalanNumber.value, Time: f.Time.value, DieselQuantity: f.DieselQuantity.value, Rate: f.Rate.value, Site: f.Site.value, Driver: f.Driver.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, ChalanNumber: f.ChalanNumber.value, Time: f.Time.value, DieselQuantity: f.DieselQuantity.value, Rate: f.Rate.value, Site: f.Site.value, PersonName: f.PersonName ? f.PersonName.value : '', Driver: f.Driver.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.SLNo = ed.SLNo; this.submitGeneric('updateDieselTransaction', payload, 'Diesel transaction updated successfully.'); }
     else this.submitGeneric('addDieselTransaction', payload, 'Diesel transaction saved successfully.');
   }
@@ -6396,7 +6507,7 @@ class Component extends DCLogic {
     const submitPersonBF = this.submitPersonBF.bind(this, s.modal, personBFName);
     const vehicleDefaults = { VehicleNumber: editRecordRaw.VehicleNumber || '', DriverName: editRecordRaw.DriverName || '', VehicleType: editRecordRaw.VehicleType || 'Truck', Mileage: editRecordRaw.Mileage != null ? editRecordRaw.Mileage : '', HourlyRate: editRecordRaw.HourlyRate != null ? editRecordRaw.HourlyRate : '', MonthlyRent: editRecordRaw.MonthlyRent != null ? editRecordRaw.MonthlyRent : '', DailyDriverFee: editRecordRaw.DailyDriverFee != null ? editRecordRaw.DailyDriverFee : '', Notes: editRecordRaw.Notes || '' };
     const vehicleLogDefaults = { Date: editRecordRaw.Date || todayStr, KmRun: editRecordRaw.KmRun != null ? editRecordRaw.KmRun : '', HoursRun: editRecordRaw.HoursRun != null ? editRecordRaw.HoursRun : '', Fooding: editRecordRaw.Fooding != null ? editRecordRaw.Fooding : '', OtherExpense: editRecordRaw.OtherExpense != null ? editRecordRaw.OtherExpense : '', OilPricePerLitre: editRecordRaw.OilPricePerLitre != null ? editRecordRaw.OilPricePerLitre : '', Remarks: editRecordRaw.Remarks || '' };
-    const dieselTxDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', ChalanNumber: editRecordRaw.ChalanNumber || '', Time: editRecordRaw.Time || '', DieselQuantity: editRecordRaw.DieselQuantity != null ? editRecordRaw.DieselQuantity : '', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Driver: editRecordRaw.Driver || '', Remarks: editRecordRaw.Remarks || '' };
+    const dieselTxDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', PersonName: editRecordRaw.PersonName || '', ChalanNumber: editRecordRaw.ChalanNumber || '', Time: editRecordRaw.Time || '', DieselQuantity: editRecordRaw.DieselQuantity != null ? editRecordRaw.DieselQuantity : '', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Site: editRecordRaw.Site || '', Driver: editRecordRaw.Driver || '', Remarks: editRecordRaw.Remarks || '' };
     const dieselPayDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', DiscountAmount: editRecordRaw.DiscountAmount != null ? editRecordRaw.DiscountAmount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
     const dieselBFDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '2026-08-31', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const supplierDefaults = { SupplierName: editRecordRaw.SupplierName || '', ContactPerson: editRecordRaw.ContactPerson || '', ContactNumber: editRecordRaw.ContactNumber || '', MaterialType: editRecordRaw.MaterialType || '' };
@@ -6414,10 +6525,21 @@ class Component extends DCLogic {
     const labourDefaults = { Name: editRecordRaw.Name || '', ContactNumber: editRecordRaw.ContactNumber || '', DefaultSite: editRecordRaw.DefaultSite || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '' };
     const labourEntryDefaults = { LabourName: s.selectedLabour || '', Date: editRecordRaw.Date || todayStr, Month: isEditing ? this.monthLabelToKey(editRecordRaw.Month) : todayStr.slice(0, 7), Site: editRecordRaw.Site || s.labour.find(function (x) { return x.Name === s.selectedLabour; }) && (s.labour.find(function (x) { return x.Name === s.selectedLabour; }).DefaultSite) || '', Type: s.labourEntryTypeUI || 'Daily', DailyPrice: editRecordRaw.DailyPrice != null ? editRecordRaw.DailyPrice : '', HowManyLabour: editRecordRaw.HowManyLabour != null ? editRecordRaw.HowManyLabour : '', WorkMeter: editRecordRaw.WorkMeter != null ? editRecordRaw.WorkMeter : '', Price: editRecordRaw.Price != null ? editRecordRaw.Price : '', AdditionalAmount: editRecordRaw.AdditionalAmount != null ? editRecordRaw.AdditionalAmount : '', Fare: editRecordRaw.Fare != null ? editRecordRaw.Fare : '', Remarks: editRecordRaw.Remarks || '' };
     const isLabourEntryDaily = (s.labourEntryTypeUI || 'Daily') !== 'Contract';
+    const partyKindByModal = { payment: 'supplier', paymentDiscount: 'supplier', dieselPayment: 'diesel', dieselPaymentDiscount: 'diesel', mistriPayment: 'mistri', mistriPaymentDiscount: 'mistri', labourPayment: 'labour', labourPaymentDiscount: 'labour' };
+    const partyKind = partyKindByModal[s.modal];
+    let partyOutstanding = { show: false, fmt: '', color: 'var(--muted)' };
+    if (partyKind) {
+      const partyNameMap = { supplier: (s.partyPicker != null ? s.partyPicker : (editRecordRaw.Supplier || '')), diesel: (s.partyPicker != null ? s.partyPicker : (editRecordRaw.Supplier || '')), mistri: (s.partyPicker != null ? s.partyPicker : (s.selectedMistri || editRecordRaw.MistriName || '')), labour: (s.partyPicker != null ? s.partyPicker : (s.selectedLabour || editRecordRaw.LabourName || '')) };
+      const partyNm = partyNameMap[partyKind];
+      if (partyNm) { const pv = this.partyOutstandingFor(partyKind, partyNm, s); partyOutstanding = { show: true, fmt: fmt(pv), color: this.oc(pv) }; }
+    }
     const labourPaymentDefaults = { LabourName: s.selectedLabour || editRecordRaw.LabourName || '', Date: editRecordRaw.Date || todayStr, Site: editRecordRaw.Site || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', DiscountAmount: editRecordRaw.DiscountAmount != null ? editRecordRaw.DiscountAmount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Cash', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
     const showLabourPicker = !s.selectedLabour;
     const labourOptions = s.labour.map(function (l) { return l.Name; });
     const staffRateReadOnly = false;
+    const dieselForIsVehicleVal = s.dieselForIsVehicle !== false;
+    const dieselForToggleStyle = function (active) { return 'flex:1;background:' + (active ? 'var(--gold)' : 'transparent') + ';color:' + (active ? '#0e0e10' : 'var(--text)') + ';font-weight:700;border:1px solid ' + (active ? 'var(--gold)' : 'var(--border)') + ';box-shadow:' + (active ? 'inset 0 1px 3px rgba(0,0,0,0.35)' : 'none') + ';opacity:' + (active ? '0.85' : '1') + ';padding:9px;border-radius:6px;cursor:' + (active ? 'default' : 'pointer') + ';font-size:13px;'; };
+    const dupGroups = this.computeDuplicateGroups(s);
     const modalTitleMap = { driverAllocation: isEditing ? 'Edit Driver Allocation' : 'Add Driver Allocation', transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', paymentDiscount: 'Add Supplier Discount', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselPaymentDiscount: 'Add Diesel Discount', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', cementReceived: isEditing ? 'Edit Cement Received' : 'Log Cement Received', cementUsed: isEditing ? 'Edit Cement Used' : 'Log Cement Used', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment', mistriPaymentDiscount: 'Add Mistri Discount', labour: isEditing ? 'Edit Labour' : 'Add Labour', labourEntry: isEditing ? 'Edit Labour Entry' : 'Add Labour Entry', labourPayment: isEditing ? 'Edit Labour Payment' : 'Add Labour Payment', labourPaymentDiscount: 'Add Labour Discount', otherPayment: isEditing ? 'Edit Payment' : 'Send Payment', staffBF: isEditing ? 'Edit Staff BF Balance' : 'Add Staff BF Balance', labourBF: isEditing ? 'Edit Labour BF Balance' : 'Add Labour BF Balance', mistriBF: isEditing ? 'Edit Mistri BF Balance' : 'Add Mistri BF Balance', vehicle: isEditing ? 'Edit Vehicle' : 'Add Vehicle', vehicleLog: isEditing ? 'Edit Daily Log' : 'Add Daily Log', siteTransfer: isEditing ? 'Edit Site Transfer' : 'Transfer Balance' };
     const modalTitle = modalTitleMap[s.modal] || '';
 
@@ -6426,7 +6548,7 @@ class Component extends DCLogic {
     const tabBtn = function (active) { return 'padding:9px 16px;border-radius:20px;border:1px solid ' + (active ? 'var(--gold)' : 'var(--border)') + ';cursor:pointer;font-size:13px;font-weight:600;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';'; };
     const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel), staffDue: tabBtn(reportTabIs.staffDue), labour: tabBtn(reportTabIs.labour) };
 
-    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', sites: 'Sites', materials: 'Materials', reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', mistri: 'Mistri', mistriDetail: mistriDetail.Name, labour: 'Labour', labourDetail: labourDetail.Name, funds: 'Fund Distribution', attendance: 'Attendance' };
+    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', dieselSuppliers: 'Diesel Suppliers', dieselSupplierDetail: dieselSupplierDetail.name, vehicles: 'Vehicles', vehicleDetail: vehicleDetail.VehicleNumber, sites: 'Sites', siteDetail: siteDetail.name, materials: 'Materials', cement: 'Cement', cementSiteDetail: cementSiteDetail.name, reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', mistri: 'Mistri', mistriDetail: mistriDetail.Name, labour: 'Labour', labourDetail: labourDetail.Name, funds: 'Fund Distribution', attendance: 'Attendance' };
 
     return {
       session: s.session, loading: s.loading, toast: s.toast, loginError: s.loginError, isDemo: isDemo, todayStr: todayStr,
@@ -6436,7 +6558,11 @@ class Component extends DCLogic {
       authIsLogin: s.authMode === 'login', toggleAuthMode: this.toggleAuthMode.bind(this), submitSignup: this.submitSignup.bind(this), signupError: s.signupError, signingUp: s.signingUp, signupBtnLabel: s.signingUp ? 'Submitting…' : 'Request Account', activeUsers: activeUsers, isHrushikesh: isHrushikesh, pendingUsers: pendingUsers, hasPendingUsers: hasPendingUsers,
       moneyEnabled: moneyEnabled, moneyGateTitle: moneyGateTitle, moneyGateOpacity: moneyGateOpacity, moneyGateCursor: moneyGateCursor, toggleMoneyPermission: this.toggleMoneyPermission.bind(this), isSukadev: isSukadev,
       theme: s.theme, themeToggleLabel: s.theme === 'light' ? 'Dark Mode' : 'Light Mode', toggleTheme: this.toggleTheme.bind(this),
-      handleLogin: this.handleLogin.bind(this), logout: this.logout.bind(this), goBack: this.goBack.bind(this),
+      handleLogin: this.handleLogin.bind(this), logout: this.logout.bind(this), goBack: this.goBack.bind(this), partyOutstanding: partyOutstanding, onPartyPickerChange: this.onPartyPickerChange.bind(this),
+      dupGroups: dupGroups, dupCount: dupGroups.length, dupPanelOpen: s.dupPanelOpen, toggleDupPanel: this.toggleDupPanel.bind(this),
+      dieselForIsVehicle: s.dieselForIsVehicle !== false, setDieselForVehicle: this.setDieselForVehicle.bind(this), setDieselForSite: this.setDieselForSite.bind(this),
+      dieselForVehicleBtnStyle: dieselForToggleStyle(dieselForIsVehicleVal), dieselForSiteBtnStyle: dieselForToggleStyle(!dieselForIsVehicleVal),
+      dieselForVehicleBtnLabel: dieselForIsVehicleVal ? '\u2713 Vehicle' : 'Vehicle', dieselForSiteBtnLabel: !dieselForIsVehicleVal ? '\u2713 Site' : 'Site',
       showBackButton: !!(s.viewHistory && s.viewHistory.length) && s.view !== 'login' && !viewIs.supplierDetail && !viewIs.dieselSupplierDetail && !viewIs.cementSiteDetail && !viewIs.staffDetail && !viewIs.mistriDetail && !viewIs.labourDetail && !viewIs.siteDetail && !viewIs.vehicleDetail,
       navDashboard: function () { self.setView('dashboard'); }, navSuppliers: function () { self.setView('suppliers'); }, navTransactions: function () { self.setView('transactions'); },
       navPayments: function () { self.setView('payments'); }, navBF: function () { self.setView('bf'); }, navDieselSuppliers: function () { self.setView('dieselSuppliers'); }, navDieselTx: function () { self.setView('dieselTx'); }, navVehicles: function () { self.setView('vehicles'); },
