@@ -40,12 +40,12 @@
   }
 
   async function colToArray(name) {
-    const snap = await db.collection(name).get();
+    const snap = await db.collection(name).get({ source: "server" });
     return snap.docs.map(function (d) { return d.data(); });
   }
   async function colToArraySince(name, sinceDate) {
     if (!sinceDate) return colToArray(name);
-    const snap = await db.collection(name).where("Date", ">=", sinceDate).get();
+    const snap = await db.collection(name).where("Date", ">=", sinceDate).get({ source: "server" });
     return snap.docs.map(function (d) { return d.data(); });
   }
   // The earliest BF date across all BF ledgers is the oldest date any balance calc still needs
@@ -537,8 +537,8 @@
       case "deleteMistriBF": { const snap = await db.collection("mistriBF").where("Name", "==", p.Name).where("BFMonth", "==", p.BFMonth).where("BFDate", "==", p.BFDate).get(); if (snap.empty) return { success: false, message: "BF entry not found." }; await snap.docs[0].ref.delete(); await auditLog(p.CreatedBy, "Deleted BF Entry", "MistriBF", p.Name, ""); return { success: true, message: "BF entry deleted successfully." }; }
 
       case "getDieselTransactions": return { success: true, data: await colToArray("dieselTx") };
-      case "addDieselTransaction": { const value = Number(p.DieselQuantity) * Number(p.Rate); const r = await genericAdd("DieselTransaction", { Date: p.Date, ChalanNumber: p.ChalanNumber || "", Time: p.Time || "", Supplier: p.Supplier, VehicleNumber: p.VehicleNumber || "", DieselQuantity: p.DieselQuantity, Unit: p.Unit || "Litres", Rate: p.Rate, Value: value, Site: p.Site || "", PersonName: p.PersonName || "", Driver: p.Driver || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Diesel Transaction", "DieselTransactions", r.id, p.Supplier + " ₹" + value); return { success: true, message: "Diesel transaction saved successfully.", data: { Value: value } }; }
-      case "updateDieselTransaction": { const value = Number(p.DieselQuantity) * Number(p.Rate); const ok = await genericUpdate("DieselTransaction", { SLNo: p.SLNo }, { Date: p.Date, ChalanNumber: p.ChalanNumber || "", Time: p.Time || "", Supplier: p.Supplier, VehicleNumber: p.VehicleNumber || "", DieselQuantity: p.DieselQuantity, Rate: p.Rate, Value: value, Site: p.Site || "", PersonName: p.PersonName || "", Driver: p.Driver, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Diesel transaction not found." }; await auditLog(p.CreatedBy, "Updated Diesel Transaction", "DieselTransactions", p.SLNo, p.Supplier + " ₹" + value); return { success: true, message: "Diesel transaction updated successfully." }; }
+      case "addDieselTransaction": { const value = Number(p.DieselQuantity) * Number(p.Rate); const r = await genericAdd("DieselTransaction", { Date: p.Date, ChalanNumber: p.ChalanNumber || "", Time: p.Time || "", Supplier: p.Supplier, VehicleNumber: p.VehicleNumber || "", DieselQuantity: p.DieselQuantity, Unit: p.Unit || "Litres", Rate: p.Rate, Value: value, Site: p.Site || "", VehicleSite: p.VehicleSite || "", PersonName: p.PersonName || "", Driver: p.Driver || "", Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Diesel Transaction", "DieselTransactions", r.id, p.Supplier + " ₹" + value); return { success: true, message: "Diesel transaction saved successfully.", data: { Value: value } }; }
+      case "updateDieselTransaction": { const value = Number(p.DieselQuantity) * Number(p.Rate); const ok = await genericUpdate("DieselTransaction", { SLNo: p.SLNo }, { Date: p.Date, ChalanNumber: p.ChalanNumber || "", Time: p.Time || "", Supplier: p.Supplier, VehicleNumber: p.VehicleNumber || "", DieselQuantity: p.DieselQuantity, Rate: p.Rate, Value: value, Site: p.Site || "", VehicleSite: p.VehicleSite || "", PersonName: p.PersonName || "", Driver: p.Driver, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Diesel transaction not found." }; await auditLog(p.CreatedBy, "Updated Diesel Transaction", "DieselTransactions", p.SLNo, p.Supplier + " ₹" + value); return { success: true, message: "Diesel transaction updated successfully." }; }
       case "deleteDieselTransaction": await genericDelete("DieselTransaction", p.SLNo); await auditLog(p.CreatedBy, "Deleted Diesel Transaction", "DieselTransactions", p.SLNo, ""); return { success: true, message: "Diesel transaction deleted successfully." };
 
       case "getDieselPayments": return { success: true, data: await colToArray("dieselPayments") };
