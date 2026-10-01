@@ -285,8 +285,9 @@
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ dashFilters.from }}" onChange="{{ onDashFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ dashFilters.to }}" onChange="{{ onDashTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-          <select onChange="{{ onDashMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-            <option value="">Pick a month</option>
+          <select onChange="{{ onDashMonth }}" value="{{ monthVal.dashFilters }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
             <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
           </select>
         </div>
@@ -391,8 +392,9 @@
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ detailFilters.from }}" onChange="{{ onDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ detailFilters.to }}" onChange="{{ onDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-          <select onChange="{{ onDetailMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-            <option value="">Pick a month</option>
+          <select onChange="{{ onDetailMonth }}" value="{{ monthVal.detailFilters }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
             <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
           </select>
         </div>
@@ -474,8 +476,9 @@
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ siteDetailFilter.from }}" onChange="{{ onSiteDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ siteDetailFilter.to }}" onChange="{{ onSiteDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-          <select onChange="{{ onSiteDetailMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-            <option value="">Pick a month</option>
+          <select onChange="{{ onSiteDetailMonth }}" value="{{ monthVal.siteDetailFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
             <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
           </select>
         </div>
@@ -487,6 +490,7 @@
             <th style="text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Date</th>
             <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Allocated</th>
             <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Expenditure</th>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Transfer</th>
             <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Balance</th>
           </tr></thead>
           <tbody>
@@ -495,6 +499,7 @@
                 <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">{{ r.Date }}</td>
                 <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#2e9e5b;font-weight:600;">{{ r.allocatedFmt }}</td>
                 <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#e2574c;font-weight:600;">{{ r.expenditureFmt }}</td>
+                <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.transferColor }};font-weight:600;">{{ r.transferFmt }}</td>
                 <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:{{ r.balanceColor }};font-weight:600;">{{ r.balanceFmt }}</td>
               </tr>
             </sc-for>
@@ -544,8 +549,9 @@
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ txPageFilters.from }}" onChange="{{ onTxFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ txPageFilters.to }}" onChange="{{ onTxTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-            <select onChange="{{ onTxMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-              <option value="">Pick a month</option>
+            <select onChange="{{ onTxMonth }}" value="{{ monthVal.txPageFilters }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+              <option value="">Custom range</option>
+              <option value="all">All</option>
               <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
             </select>
           </div>
@@ -621,6 +627,13 @@
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ payPageFilters.from }}" onChange="{{ onPayFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ payPageFilters.to }}" onChange="{{ onPayTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+          <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onPayMonth }}" value="{{ monthVal.payPageFilters }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Supplier</label>
             <select onChange="{{ onPaySupplier }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
               <option value="">All</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for>
@@ -716,6 +729,18 @@
 
     <sc-if value="{{ viewIs.dieselSupplierDetail }}">
       <button onClick="{{ goBack }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:20px;">← Back</button>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ dieselSupDetailFilter.from }}" onChange="{{ onDieselSupDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ dieselSupDetailFilter.to }}" onChange="{{ onDieselSupDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onDieselSupDetailMonth }}" value="{{ monthVal.dieselSupDetailFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
+        <div style="font-size:12px;color:var(--muted2);align-self:center;">Pick a month to see that month’s statement: BF = balance before it, Outstanding = balance at its end.</div>
+      </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" data-stat-grid>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">BF Balance<sc-if value="{{ dieselSupplierDetail.bfMonth }}"> ({{ dieselSupplierDetail.bfMonth }})</sc-if></div><div style="font-size:20px;font-weight:800;">{{ dieselSupplierDetail.bfFmt }}</div></div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Diesel Cost</div><div style="font-size:20px;font-weight:800;">{{ dieselSupplierDetail.costFmt }}</div></div>
@@ -794,6 +819,7 @@
           <input type="date" value="{{ vehiclesSummaryFilter.from }}" onChange="{{ onVehiclesSummaryFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px;font-size:13px;" />
           <span style="color:var(--muted2);font-size:12px;">to</span>
           <input type="date" value="{{ vehiclesSummaryFilter.to }}" onChange="{{ onVehiclesSummaryTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px;font-size:13px;" />
+          <select onChange="{{ onVehiclesSummaryMonth }}" value="{{ monthVal.vehiclesSummaryFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;"><option value="">Custom range</option><option value="all">All</option><sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for></select>
           <button onClick="{{ onVehiclesSummaryAll }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;">All</button>
           <button onClick="{{ onExportVehiclesSummaryPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF (All Vehicles)</button>
         </div>
@@ -933,8 +959,9 @@
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ dieselPageFilters.from }}" onChange="{{ onDieselTxFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ dieselPageFilters.to }}" onChange="{{ onDieselTxTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-            <select onChange="{{ onDieselTxMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-              <option value="">Pick a month</option>
+            <select onChange="{{ onDieselTxMonth }}" value="{{ monthVal.dieselPageFilters }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+              <option value="">Custom range</option>
+              <option value="all">All</option>
               <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
             </select>
           </div>
@@ -1119,8 +1146,9 @@
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ cementFilter.from }}" onChange="{{ onCementFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ cementFilter.to }}" onChange="{{ onCementTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-          <select onChange="{{ onCementMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-            <option value="">Pick a month</option>
+          <select onChange="{{ onCementMonth }}" value="{{ monthVal.cementFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
             <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
           </select>
         </div>
@@ -1166,8 +1194,9 @@
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ cementSiteDetailFilter.from }}" onChange="{{ onCementSiteDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ cementSiteDetailFilter.to }}" onChange="{{ onCementSiteDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-          <select onChange="{{ onCementSiteDetailMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-            <option value="">Pick a month</option>
+          <select onChange="{{ onCementSiteDetailMonth }}" value="{{ monthVal.cementSiteDetailFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
             <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
           </select>
         </div>
@@ -1296,6 +1325,18 @@
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;">
         <div style="font-weight:700;font-size:18px;">{{ staffDetail.Name }}</div>
         <div style="color:var(--muted);font-size:13px;margin-top:4px;">{{ staffDetail.Role }} &middot; {{ staffDetail.ContactNumber }} &middot; {{ staffDetail.basisLabel }}</div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ staffDetailFilter.from }}" onChange="{{ onStaffDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ staffDetailFilter.to }}" onChange="{{ onStaffDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onStaffDetailMonth }}" value="{{ monthVal.staffDetailFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
+        <div style="font-size:12px;color:var(--muted2);align-self:center;">Pick a month to see that month’s statement: BF = balance before it, Outstanding = balance at its end.</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);">This Month (Attendance)</div><div style="font-size:22px;font-weight:700;margin-top:6px;">{{ staffDetail.monthEarnedFmt }}</div><div style="font-size:11px;color:var(--muted2);margin-top:4px;">{{ staffDetail.presentDaysThisMonthFmt }} days present{{ staffDetail.monthAlreadySlippedNote }}</div></div>
@@ -1504,8 +1545,9 @@
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ mistriDetailFilter.from }}" onChange="{{ onMistriDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ mistriDetailFilter.to }}" onChange="{{ onMistriDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-          <select onChange="{{ onMistriDetailMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-            <option value="">Pick a month</option>
+          <select onChange="{{ onMistriDetailMonth }}" value="{{ monthVal.mistriDetailFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
             <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
           </select>
         </div>
@@ -1643,8 +1685,9 @@
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ labourDetailFilter.from }}" onChange="{{ onLabourDetailFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ labourDetailFilter.to }}" onChange="{{ onLabourDetailTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-          <select onChange="{{ onLabourDetailMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-            <option value="">Pick a month</option>
+          <select onChange="{{ onLabourDetailMonth }}" value="{{ monthVal.labourDetailFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
             <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
           </select>
         </div>
@@ -1780,8 +1823,9 @@
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ staffPaymentsFilter.from }}" onChange="{{ onStaffPaymentsFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ staffPaymentsFilter.to }}" onChange="{{ onStaffPaymentsTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-            <select onChange="{{ onStaffPaymentsMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-              <option value="">Pick a month</option>
+            <select onChange="{{ onStaffPaymentsMonth }}" value="{{ monthVal.staffPaymentsFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+              <option value="">Custom range</option>
+              <option value="all">All</option>
               <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
             </select>
           </div>
@@ -1943,8 +1987,9 @@
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ userBalanceFilter.from }}" onChange="{{ onUserBalanceFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ userBalanceFilter.to }}" onChange="{{ onUserBalanceTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
           <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-            <select onChange="{{ onUserBalanceMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-              <option value="">Pick a month</option>
+            <select onChange="{{ onUserBalanceMonth }}" value="{{ monthVal.userBalanceFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+              <option value="">Custom range</option>
+              <option value="all">All</option>
               <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
             </select>
           </div>
@@ -2079,8 +2124,9 @@
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ fundTransferFilter.from }}" onChange="{{ onFundTransferFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ fundTransferFilter.to }}" onChange="{{ onFundTransferTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
-          <select onChange="{{ onFundTransferMonth }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
-            <option value="">Pick a month</option>
+          <select onChange="{{ onFundTransferMonth }}" value="{{ monthVal.fundTransferFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
             <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
           </select>
         </div>
@@ -2657,6 +2703,13 @@
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">From</label><input type="date" value="{{ activityTrackerFilter.from }}" onChange="{{ onActivityTrackerFrom }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
         <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">To</label><input type="date" value="{{ activityTrackerFilter.to }}" onChange="{{ onActivityTrackerTo }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;" /></div>
+        <div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Month</label>
+          <select onChange="{{ onActivityTrackerMonth }}" value="{{ monthVal.activityTrackerFilter }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;">
+            <option value="">Custom range</option>
+            <option value="all">All</option>
+            <sc-for list="{{ monthShortcutOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.v }}">{{ opt.l }}</option></sc-for>
+          </select>
+        </div>
         <button type="button" onClick="{{ onActivityTrackerToday }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Today</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;">
@@ -3020,7 +3073,7 @@
           <input type="hidden" name="StaffName" defaultValue="{{ staffSalaryDefaults.StaffName }}" />
           <div style="color:var(--muted2);font-size:12px;">{{ staffDetail.rateHint }}</div>
           <div style="color:var(--muted2);font-size:12px;">Current BF Balance: {{ staffDetail.bfFmt }} (carried at staff level — added automatically into Total Outstanding, not part of this slip's Net Salary).</div>
-          <input type="month" name="Month" required="true" defaultValue="{{ staffSalaryDefaults.Month }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <input type="month" name="Month" required="true" onChange="{{ onSalaryMonthChange }}" defaultValue="{{ staffSalaryDefaults.Month }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <div>
             <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Days Worked (from Attendance)</label>
             <input type="number" step="any" name="DaysWorked" readOnly="true" defaultValue="{{ staffSalaryDefaults.DaysWorked }}" style="background:var(--chip);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
@@ -3419,6 +3472,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 function defaultLast7() { const t = new Date(); const to = t.toISOString().slice(0, 10); const f = new Date(t); f.setDate(f.getDate() - 6); return { from: f.toISOString().slice(0, 10), to: to }; }
+function curMonthRange() { const n = new Date(); const y = n.getFullYear(), m = n.getMonth() + 1; const p = function (x) { return String(x).padStart(2, '0'); }; return { from: y + '-' + p(m) + '-01', to: y + '-' + p(m) + '-' + p(new Date(y, m, 0).getDate()) }; }
 function defaultFromSept1() { const t = new Date(); const to = t.toISOString().slice(0, 10); const y = t.getMonth() >= 8 ? t.getFullYear() : t.getFullYear() - 1; return { from: y + '-09-01', to: to }; }
 class Component extends DCLogic {
   state = {
@@ -3433,7 +3487,7 @@ class Component extends DCLogic {
     txPageFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     payPageFilters: { from: '', to: '', supplier: '', site: '' },
     dieselPageFilters: { from: '', to: '', supplier: '', site: '' },
-    detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' }, mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, siteDetailFilter: { from: '', to: '' }, vehicleDetailFilter: defaultFromSept1(), vehicleWalletTab: {}, vehicleDetailTab: 'log', staffDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
+    detailFilters: Object.assign({ site: '', material: '', vehicle: '' }, curMonthRange()), mistriDetailFilter: curMonthRange(), labourDetailFilter: curMonthRange(), siteDetailFilter: { from: '', to: '' }, vehicleDetailFilter: defaultFromSept1(), vehicleWalletTab: {}, vehicleDetailTab: 'log', staffDetailFilter: curMonthRange(), dieselSupDetailFilter: curMonthRange(), staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' }, expandedUserBalance: null, expandedSiteBalance: null, expandedMyExpenditure: false, expandedSections: {},
     fundTransferFilter: Object.assign(defaultLast7(), { party: '' }), userBalanceFilter: { from: '', to: '', name: '' }, userBalanceExportScope: 'site', userRowFilter: {}, fundTransferShowAll: false,
     cementFilter: { from: '', to: '' }, cementSiteDetailFilter: { from: '', to: '' }, vehiclesSummaryFilter: { from: '', to: '' },
     reportFilters: { from: '', to: '', site: '', supplier: '', material: '', month: '', year: '', dieselSupplier: '' },
@@ -4142,8 +4196,8 @@ class Component extends DCLogic {
       txPageFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
       payPageFilters: { from: '', to: '', supplier: '', site: '' },
       dieselPageFilters: { from: '', to: '', supplier: '', site: '' },
-      detailFilters: { site: '', material: '', vehicle: '', from: '', to: '' },
-      mistriDetailFilter: { from: '', to: '' }, labourDetailFilter: { from: '', to: '' }, staffDetailFilter: { from: '', to: '' },
+      detailFilters: Object.assign({ site: '', material: '', vehicle: '' }, curMonthRange()),
+      mistriDetailFilter: curMonthRange(), labourDetailFilter: curMonthRange(), staffDetailFilter: curMonthRange(), dieselSupDetailFilter: curMonthRange(),
       siteDetailFilter: { from: '', to: '' }, staffPaymentsFilter: { from: '', to: '' }, siteWalletFilter: { from: '', to: '' },
       cementFilter: { from: '', to: '' }, cementSiteDetailFilter: { from: '', to: '' }, vehiclesSummaryFilter: { from: '', to: '' },
       fundTransferFilter: Object.assign(defaultLast7(), { party: '' })
@@ -4543,7 +4597,7 @@ class Component extends DCLogic {
     e.preventDefault();
     const f = e.target.elements;
     if (!f.Supplier.value || !f.BFAmount.value) { this.showToast('Please fill all required fields.'); return; }
-    const ed = this.state.editRecord;
+    const ed = (this.state.editRecord && this.state.editRecord.Auto) ? null : this.state.editRecord;
     const payload = { Supplier: f.Supplier.value, BFMonth: f.BFMonth.value, BFDate: f.BFDate.value, BFAmount: f.BFAmount.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.OrigSupplier = ed.Supplier; payload.OrigBFMonth = ed.BFMonth; payload.OrigBFDate = ed.BFDate; this.submitGeneric('updateBF', payload, 'BF balance updated successfully.'); }
     else this.submitGeneric('addBF', payload, 'BF balance saved successfully.');
@@ -4554,14 +4608,14 @@ class Component extends DCLogic {
     e.preventDefault();
     const f = e.target.elements;
     if (!f.BFMonth.value || !f.BFAmount.value) { this.showToast('Please fill all required fields.'); return; }
-    const ed = this.state.editRecord;
+    const ed = (this.state.editRecord && this.state.editRecord.Auto) ? null : this.state.editRecord;
     const payload = { Name: name, BFMonth: f.BFMonth.value, BFDate: f.BFDate.value, BFAmount: f.BFAmount.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     const addAction = kind === 'staffBF' ? 'addStaffBF' : (kind === 'labourBF' ? 'addLabourBF' : 'addMistriBF');
     const updAction = kind === 'staffBF' ? 'updateStaffBF' : (kind === 'labourBF' ? 'updateLabourBF' : 'updateMistriBF');
     if (ed) { payload.OrigName = ed.Name; payload.OrigBFMonth = ed.BFMonth; payload.OrigBFDate = ed.BFDate; this.submitGeneric(updAction, payload, 'BF balance updated successfully.'); }
     else this.submitGeneric(addAction, payload, 'BF balance saved successfully.');
   }
-  deletePersonBF(kind, deleteAction, r) {
+  deletePersonBF(kind, deleteAction, r) { if (arguments[2] && arguments[2].Auto) { this.showToast('This BF is calculated automatically from last month. Add a BF for this month to override it.'); return; }
     if (!window.confirm('Delete this BF entry?')) return;
     const self = this;
     PandaAPI.call(deleteAction, { Name: r.Name, BFMonth: r.BFMonth, BFDate: r.BFDate, CreatedBy: this.currentUserName() }).then(function (res) { self.showToast(res.message); if (res.success) self.refreshEntity(deleteAction.replace('delete', 'add')); });
@@ -4684,7 +4738,7 @@ class Component extends DCLogic {
     e.preventDefault();
     const f = e.target.elements;
     if (!f.Supplier.value || !f.BFAmount.value) { this.showToast('Please fill all required fields.'); return; }
-    const ed = this.state.editRecord;
+    const ed = (this.state.editRecord && this.state.editRecord.Auto) ? null : this.state.editRecord;
     const payload = { Supplier: f.Supplier.value, BFMonth: f.BFMonth.value, BFDate: f.BFDate.value, BFAmount: f.BFAmount.value, Site: f.Site.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
     if (ed) { payload.OrigSupplier = ed.Supplier; payload.OrigBFMonth = ed.BFMonth; payload.OrigBFDate = ed.BFDate; this.submitGeneric('updateDieselBF', payload, 'Diesel BF updated successfully.'); }
     else this.submitGeneric('addDieselBF', payload, 'Diesel BF saved successfully.');
@@ -5314,7 +5368,7 @@ class Component extends DCLogic {
   setDetailFilter(key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s.detailFilters); nf[key] = e.target.value; return { detailFilters: nf }; }); }.bind(this); }
   // Generic "Month" quick-filter: picking a month fills From/To with that month's first/last day for the given filter state key.
   monthShortcutRange(v) { if (!v) return { from: '', to: '' }; const y = Number(v.slice(0, 4)), m = Number(v.slice(5, 7)); const last = new Date(y, m, 0).getDate(); const pad = function (n) { return String(n).padStart(2, '0'); }; return { from: v + '-01', to: y + '-' + pad(m) + '-' + pad(last) }; }
-  setMonthShortcut(stateKey) { return function (e) { const range = this.monthShortcutRange(e.target.value); this.setState(function (s) { const nf = Object.assign({}, s[stateKey] || {}, range); return (function () { const o = {}; o[stateKey] = nf; return o; })(); }); }.bind(this); }
+  setMonthShortcut(stateKey) { return function (e) { if (e.target.value === '') return; const range = e.target.value === 'all' ? { from: '', to: '' } : this.monthShortcutRange(e.target.value); this.setState(function (s) { const nf = Object.assign({}, s[stateKey] || {}, range); return (function () { const o = {}; o[stateKey] = nf; return o; })(); }); }.bind(this); }
   setGenericFilter(stateKey, key) { return function (e) { this.setState(function (s) { const nf = Object.assign({}, s[stateKey] || {}); nf[key] = e.target.value; return (function () { const o = {}; o[stateKey] = nf; return o; })(); }); }.bind(this); }
   clearFilterToAll(stateKey) { return function () { this.setState(function (s) { const nf = Object.assign({}, s[stateKey] || {}, { from: '', to: '' }); return (function () { const o = {}; o[stateKey] = nf; return o; })(); }); }.bind(this); }
   setActivityTrackerToday() { const t = new Date().toISOString().slice(0, 10); this.setState({ activityTrackerFilter: { from: t, to: t } }); }
@@ -5502,6 +5556,145 @@ class Component extends DCLogic {
   // Single source of truth for a staff member's payroll balance — BF + all past salary slips +
   // this month's not-yet-slipped attendance earnings, minus payments made. Used everywhere
   // (dashboard total, staff list, staff detail, Reports > Staff Due) so they never disagree.
+  salaryFromAttendance(stName, monthKey) {
+    const self = this, s = this.state;
+    const st = (s.staff || []).find(function (x) { return x.Name === stName; }) || {};
+    const rows = (this._attDeduped || []).filter(function (r) { return r.StaffName === stName && String(r.Date).slice(0, 7) === monthKey; });
+    const days = this.sum(rows.map(function (r) { return { v: self.dayValue(r.Status) }; }), 'v');
+    const basic = st.SalaryBasis === 'Daily' ? days * (Number(st.DailyRate) || 0) : (Number(st.MonthlyAmount) || '');
+    return { days: days || '', basic: basic === 0 ? '' : basic };
+  }
+  // Default to the latest month that has attendance but no slip yet (e.g. on Oct 1, suggest September).
+  pickSalaryMonth(stName, s, curMonthKey) {
+    const slipped = {};
+    const self = this;
+    s.staffSalary.forEach(function (r) { if (r.StaffName === stName) slipped[self.monthLabelToKey(r.Month) || r.Month] = true; });
+    const d = new Date(curMonthKey + '-01T00:00:00');
+    for (let k = 0; k < 3; k++) {
+      const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+      if (!slipped[key] && this.salaryFromAttendance(stName, key).days) return key;
+      d.setMonth(d.getMonth() - 1);
+    }
+    return curMonthKey;
+  }
+  onSalaryMonthChange(e) {
+    const f = e.target.form; if (!f || this.state.editRecord) return;
+    const r = this.salaryFromAttendance(this.state.selectedStaff, e.target.value);
+    if (f.DaysWorked) f.DaysWorked.value = r.days;
+    if (f.Basic) f.Basic.value = r.basic;
+  }
+  // Auto carry-forward: once a month ends, every supplier / diesel station / staff / mistri / labour
+  // gets a virtual BF row for that month = their outstanding as of its last day (e.g. on 1 Oct the
+  // BF becomes "September 2026" dated 30 Sep). Everything after that date (current month) is added
+  // on top as usual. It's recomputed live, so a September slip or payment saved later updates it.
+  // Month-wise statement helpers: balance of one party as of a date (everything up to and including it).
+  cutStateAt(st, date) {
+    const self = this;
+    const mk = function (m) { m = String(m || ''); return /^\d{4}-\d{2}$/.test(m) ? m : self.monthLabelToKey(m); };
+    const monthEnd = function (k) { const y = Number(k.slice(0, 4)), m = Number(k.slice(5, 7)); return k + '-' + String(new Date(y, m, 0).getDate()).padStart(2, '0'); };
+    const byDate = function (list) { return (list || []).filter(function (r) { return !r.Date || String(r.Date) <= date; }); };
+    const byMonth = function (list) { return (list || []).filter(function (r) { const k = mk(r.Month); return !k || monthEnd(k) <= date; }); };
+    const byBF = function (list) { return (list || []).filter(function (r) { return !r.BFDate || r.BFDate <= date; }); };
+    return Object.assign({}, st, {
+      transactions: byDate(st.transactions), payments: byDate(st.payments), dieselTx: byDate(st.dieselTx), dieselPayments: byDate(st.dieselPayments),
+      staffSalary: byMonth(st.staffSalary), staffPayments: byDate(st.staffPayments), staffAttendance: byDate(st.staffAttendance),
+      mistriDue: byMonth(st.mistriDue), mistriPayments: byDate(st.mistriPayments), mistriAdvances: byDate(st.mistriAdvances),
+      labourEntries: byDate(st.labourEntries), labourPayments: byDate(st.labourPayments), labourAdvances: byDate(st.labourAdvances),
+      bf: byBF(st.bf), dieselBF: byBF(st.dieselBF), staffBF: byBF(st.staffBF), mistriBF: byBF(st.mistriBF), labourBF: byBF(st.labourBF)
+    });
+  }
+  balanceAsOf(kind, row, date) {
+    const st = this.cutStateAt(this.state, date || '9999-12-31');
+    if (kind === 'supplier' || kind === 'diesel') return this.partyOutstandingFor(kind, row.Name, st);
+    if (kind === 'mistri') return this.mistriFinancials(row, st).outstanding;
+    if (kind === 'labour') return this.labourFinancials(row, st).outstanding;
+    if (kind === 'staff') {
+      const map = {};
+      st.staffAttendance.forEach(function (r) { const k = r.StaffName + '|' + r.Date; if (!map[k] || String(r.CreatedAt || '') >= String(map[k].CreatedAt || '')) map[k] = r; });
+      return this.staffFinancials(row, st, Object.keys(map).map(function (k) { return map[k]; }), String(date || '').slice(0, 7), function () { return false; }).outstanding;
+    }
+    return 0;
+  }
+  // { open, close, add, paid, discount, openLabel } for a From/To range. add = everything charged in the range.
+  periodStatement(kind, row, from, to) {
+    const self = this, s = this.state, n = row.Name;
+    let openDate = '';
+    if (from) { const d = new Date(from + 'T00:00:00'); d.setDate(d.getDate() - 1); openDate = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+    const open = openDate ? this.balanceAsOf(kind, row, openDate) : 0;
+    const close = this.balanceAsOf(kind, row, to || '');
+    const pick = { supplier: [s.payments, 'Supplier'], diesel: [s.dieselPayments, 'Supplier'], staff: [s.staffPayments, 'StaffName'], mistri: [s.mistriPayments, 'MistriName'], labour: [s.labourPayments, 'LabourName'] }[kind];
+    const pays = (pick[0] || []).filter(function (r) { return r[pick[1]] === n && self.inRange(r.Date, from, to); });
+    const paid = this.paidWithDiscount(pays);
+    let openLabel = '';
+    if (openDate) {
+      const od = new Date(openDate + 'T00:00:00');
+      openLabel = from.slice(8, 10) === '01' ? od.toLocaleString('en-US', { month: 'long' }) + ' ' + od.getFullYear() : 'as of ' + openDate;
+    }
+    return { open: open, close: close, paid: paid, discount: this.sum(pays, 'DiscountAmount'), add: close - open + paid, openLabel: openLabel };
+  }
+  // For exports with no date filter: statement from the day after the last BF you entered by hand,
+  // so the listed rows and the totals cover the same period (auto month-end BF is display-only).
+  exportPeriodFrom(rawList, field, name) {
+    const r = this.pickLatestBFRow((rawList || []).filter(function (x) { return x[field] === name; }));
+    if (!r || !r.BFDate) return '1900-01-02';
+    const d = new Date(r.BFDate + 'T00:00:00'); d.setDate(d.getDate() + 1);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  withAutoBF(st) {
+    const keys = ['bf', 'dieselBF', 'staffBF', 'mistriBF', 'labourBF', 'transactions', 'payments', 'dieselTx', 'dieselPayments', 'staff', 'staffSalary', 'staffPayments', 'staffAttendance', 'mistri', 'mistriDue', 'mistriPayments', 'mistriAdvances', 'labour', 'labourEntries', 'labourPayments', 'labourAdvances'];
+    const now = new Date();
+    const prevEndD = new Date(now.getFullYear(), now.getMonth(), 0);
+    const prevKey = prevEndD.getFullYear() + '-' + String(prevEndD.getMonth() + 1).padStart(2, '0');
+    const cutoff = prevKey + '-' + String(prevEndD.getDate()).padStart(2, '0');
+    const c = this._autoBFCache;
+    const build = function (lists) { return Object.assign({}, st, lists); };
+    if (c && c.cutoff === cutoff && keys.every(function (k) { return c.refs[k] === st[k]; })) return build(c.lists);
+    const self = this;
+    const prevLabel = prevEndD.toLocaleString('en-US', { month: 'long' }) + ' ' + prevEndD.getFullYear();
+    const mk = function (m) { m = String(m || ''); return /^\d{4}-\d{2}$/.test(m) ? m : self.monthLabelToKey(m); };
+    const byDate = function (list) { return (list || []).filter(function (r) { return !r.Date || String(r.Date) <= cutoff; }); };
+    const byMonth = function (list) { return (list || []).filter(function (r) { return mk(r.Month) <= prevKey; }); };
+    const cut = Object.assign({}, st, {
+      transactions: byDate(st.transactions), payments: byDate(st.payments), dieselTx: byDate(st.dieselTx), dieselPayments: byDate(st.dieselPayments),
+      staffSalary: byMonth(st.staffSalary), staffPayments: byDate(st.staffPayments), staffAttendance: byDate(st.staffAttendance),
+      mistriDue: byMonth(st.mistriDue), mistriPayments: byDate(st.mistriPayments), mistriAdvances: byDate(st.mistriAdvances),
+      labourEntries: byDate(st.labourEntries), labourPayments: byDate(st.labourPayments), labourAdvances: byDate(st.labourAdvances),
+      bf: (st.bf || []).filter(function (r) { return !r.BFDate || r.BFDate <= cutoff; }),
+      dieselBF: (st.dieselBF || []).filter(function (r) { return !r.BFDate || r.BFDate <= cutoff; }),
+      staffBF: (st.staffBF || []).filter(function (r) { return !r.BFDate || r.BFDate <= cutoff; }),
+      mistriBF: (st.mistriBF || []).filter(function (r) { return !r.BFDate || r.BFDate <= cutoff; }),
+      labourBF: (st.labourBF || []).filter(function (r) { return !r.BFDate || r.BFDate <= cutoff; })
+    });
+    const needs = function (rows) { const r = self.pickLatestBFRow(rows); return !r || ((mk(r.BFMonth) || '') < prevKey && (r.BFDate || '') < cutoff); };
+    const auto = function (nameField, name, amt) { const o = { BFMonth: prevLabel, BFDate: cutoff, BFAmount: amt, Remarks: 'Auto carry-forward (closing balance)', Auto: true }; o[nameField] = name; return o; };
+    const uniq = function () { const set = {}; Array.prototype.slice.call(arguments).forEach(function (pair) { (pair[0] || []).forEach(function (r) { if (r[pair[1]]) set[r[pair[1]]] = true; }); }); return Object.keys(set); };
+    const add = { bf: [], dieselBF: [], staffBF: [], mistriBF: [], labourBF: [] };
+    uniq([cut.bf, 'Supplier'], [cut.transactions, 'Supplier'], [cut.payments, 'Supplier']).forEach(function (n) {
+      if (needs((st.bf || []).filter(function (r) { return r.Supplier === n; }))) add.bf.push(auto('Supplier', n, self.partyOutstandingFor('supplier', n, cut)));
+    });
+    uniq([cut.dieselBF, 'Supplier'], [cut.dieselTx, 'Supplier'], [cut.dieselPayments, 'Supplier']).forEach(function (n) {
+      if (needs((st.dieselBF || []).filter(function (r) { return r.Supplier === n; }))) add.dieselBF.push(auto('Supplier', n, self.partyOutstandingFor('diesel', n, cut)));
+    });
+    const attMap = {};
+    cut.staffAttendance.forEach(function (r) { const k = r.StaffName + '|' + r.Date; if (!attMap[k] || String(r.CreatedAt || '') >= String(attMap[k].CreatedAt || '')) attMap[k] = r; });
+    const attDed = Object.keys(attMap).map(function (k) { return attMap[k]; });
+    (st.staff || []).forEach(function (p) {
+      if (needs((st.staffBF || []).filter(function (r) { return r.Name === p.Name; }))) add.staffBF.push(auto('Name', p.Name, self.staffFinancials(p, cut, attDed, prevKey, function () { return false; }).outstanding));
+    });
+    (st.mistri || []).forEach(function (p) {
+      if (needs((st.mistriBF || []).filter(function (r) { return r.Name === p.Name; }))) add.mistriBF.push(auto('Name', p.Name, self.mistriFinancials(p, cut).outstanding));
+    });
+    (st.labour || []).forEach(function (p) {
+      if (needs((st.labourBF || []).filter(function (r) { return r.Name === p.Name; }))) add.labourBF.push(auto('Name', p.Name, self.labourFinancials(p, cut).outstanding));
+    });
+    const lists = {
+      bf: (st.bf || []).concat(add.bf), dieselBF: (st.dieselBF || []).concat(add.dieselBF), staffBF: (st.staffBF || []).concat(add.staffBF),
+      mistriBF: (st.mistriBF || []).concat(add.mistriBF), labourBF: (st.labourBF || []).concat(add.labourBF)
+    };
+    const refs = {}; keys.forEach(function (k) { refs[k] = st[k]; });
+    this._autoBFCache = { cutoff: cutoff, refs: refs, lists: lists };
+    return build(lists);
+  }
   staffFinancials(st, s, attendanceDeduped, curMonthKey, hasSlipThisMonth) {
     const self = this;
     const bf = this.personLatestBF(s.staffBF, st.Name, st.BFAmount);
@@ -5509,7 +5702,14 @@ class Component extends DCLogic {
     const paid = this.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name && (!bf.date || r.Date > bf.date); }), 'AmountPaid');
     const bfAmt = bf.amt;
     const presentThisMonth = this.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKey; }).map(function (r) { return { v: self.dayValue(r.Status) }; }), 'v');
-    const monthEarned = (st.SalaryBasis === 'Daily' && !hasSlipThisMonth(st.Name)) ? presentThisMonth * (Number(st.DailyRate) || 0) : 0;
+    // Daily staff: count attendance after the BF date for every month that has no salary slip yet (e.g. September before its slip is saved).
+    let monthEarned = 0;
+    if (st.SalaryBasis === 'Daily') {
+      const slipped = {};
+      s.staffSalary.forEach(function (r) { if (r.StaffName === st.Name) slipped[self.monthLabelToKey(r.Month) || r.Month] = true; });
+      const unslippedDays = this.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && (!bf.date || String(r.Date) > bf.date) && !slipped[String(r.Date).slice(0, 7)]; }).map(function (r) { return { v: self.dayValue(r.Status) }; }), 'v');
+      monthEarned = unslippedDays * (Number(st.DailyRate) || 0);
+    }
     const outstanding = bfAmt + due + monthEarned - paid;
     return { bfAmt: bfAmt, bfMonth: bf.month, due: due, paid: paid, monthEarned: monthEarned, presentThisMonth: presentThisMonth, outstanding: outstanding };
   }
@@ -5689,7 +5889,10 @@ class Component extends DCLogic {
   }
 
   renderVals() {
-    const s = this.state;
+    const s = this.withAutoBF(this.state);
+    // Dashboard + Reports add BF to ALL purchases in range, so they must use only the BF rows you entered
+    // (not the automatic month-end carry-forward), otherwise last month would be counted twice.
+    const rawBF = this.state.bf || [], rawDieselBF = this.state.dieselBF || [];
     const self = this;
     this._trackedSections = ['transactions', 'payments', 'dieselTx', 'dieselPayments', 'staffPayments', 'mistri', 'labour', 'funds'];
     const lastSeen = s.lastSeen || {};
@@ -5723,9 +5926,9 @@ class Component extends DCLogic {
       maintCycleYear: maintCycleYear, canMarkPaid: canMarkPaid,
       onMarkInvoicePaid: this.markInvoicePaid.bind(this), onMarkMaintPaid: function () { self.markMaintenancePaid(maintCycleYear); }
     };
-    if (!s.mistriDetailFilter) s.mistriDetailFilter = { from: '', to: '' };
-    if (!s.labourDetailFilter) s.labourDetailFilter = { from: '', to: '' };
-    if (!s.staffDetailFilter) s.staffDetailFilter = { from: '', to: '' };
+    if (!s.mistriDetailFilter) s.mistriDetailFilter = curMonthRange();
+    if (!s.labourDetailFilter) s.labourDetailFilter = curMonthRange();
+    if (!s.staffDetailFilter) s.staffDetailFilter = curMonthRange();
     if (!s.activityTrackerFilter) { const t = new Date().toISOString().slice(0, 10); s.activityTrackerFilter = { from: t, to: t }; }
     const atf = s.activityTrackerFilter;
     const activityCounts = {
@@ -5768,11 +5971,11 @@ class Component extends DCLogic {
 
     const totalSupplierPurchaseN = this.sum(txF, 'Value');
     const totalSupplierPaidN = this.paidWithDiscount(payF);
-    const totalSupplierBFN = this.sumLatestBF(s.bf.filter(function (b) { return (!df.supplier || b.Supplier === df.supplier) && (!df.site || b.Site === df.site); }));
+    const totalSupplierBFN = this.sumLatestBF(rawBF.filter(function (b) { return (!df.supplier || b.Supplier === df.supplier) && (!df.site || b.Site === df.site); }));
     const totalSupplierOutstandingN = totalSupplierBFN + totalSupplierPurchaseN - totalSupplierPaidN;
     const totalDieselCostN = this.sum(dieselTxF, 'Value');
     const totalDieselPaidN = this.paidWithDiscount(dieselPayF);
-    const totalDieselBFN = this.sumLatestBF(s.dieselBF.filter(function (b) { return (!df.supplier || b.Supplier === df.supplier) && (!df.site || b.Site === df.site); }));
+    const totalDieselBFN = this.sumLatestBF(rawDieselBF.filter(function (b) { return (!df.supplier || b.Supplier === df.supplier) && (!df.site || b.Site === df.site); }));
     const totalDieselOutstandingN = totalDieselBFN + totalDieselCostN - totalDieselPaidN;
     const curMonth = new Date().toISOString().slice(0, 7);
     const currentMonthSiteExpN = this.sum(s.siteExpenses.filter(function (e) { return String(e.Date || '').slice(0, 7) === curMonth; }), 'Amount');
@@ -5802,7 +6005,7 @@ class Component extends DCLogic {
     const supplierPaidBreakdown = groupSum(payF, 'Supplier', 'AmountPaid');
     const supplierOutstandingBreakdown = s.suppliers.filter(function (sp) { return !df.supplier || sp.SupplierName === df.supplier; }).map(function (sp) {
       const name = sp.SupplierName;
-      const bfAmt = self.sumLatestBF(s.bf.filter(function (b) { return b.Supplier === name; }));
+      const bfAmt = self.sumLatestBF(rawBF.filter(function (b) { return b.Supplier === name; }));
       const purch = self.sum(txF.filter(function (t) { return t.Supplier === name; }), 'Value');
       const paid = self.paidWithDiscount(payF.filter(function (p) { return p.Supplier === name; }));
       return { label: name, value: bfAmt + purch - paid };
@@ -5810,7 +6013,7 @@ class Component extends DCLogic {
     const dieselCostBreakdown = groupSum(dieselTxF, 'Supplier', 'Value');
     const dieselPaidBreakdown = groupSum(dieselPayF, 'Supplier', 'AmountPaid');
     const dieselOutstandingBreakdown = Array.from(new Set(s.dieselTx.map(function (t) { return t.Supplier; }).concat(s.dieselBF.map(function (b) { return b.Supplier; })))).filter(function (name) { return name && (!df.supplier || name === df.supplier); }).map(function (name) {
-      const bfAmt = self.sumLatestBF(s.dieselBF.filter(function (b) { return b.Supplier === name; }));
+      const bfAmt = self.sumLatestBF(rawDieselBF.filter(function (b) { return b.Supplier === name; }));
       const cost = self.sum(dieselTxF.filter(function (t) { return t.Supplier === name; }), 'Value');
       const paid = self.paidWithDiscount(dieselPayF.filter(function (p) { return p.Supplier === name; }));
       return { label: name, value: bfAmt + cost - paid };
@@ -5839,9 +6042,16 @@ class Component extends DCLogic {
         name: dname, bfFmt: fmt(dbfAmt2), bfMonth: dbfMonth2, costFmt: fmt(dcost2), paidFmt: fmt(dpaid2), outstandingFmt: fmt(doutstanding2), outstandingColor: self.oc(doutstanding2),
         rows: s.dieselTx.filter(function (r) { return r.Supplier === dname; }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { ValueFmt: fmt(r.Value), RateFmt: fmt(r.Rate), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }),
         payRows: s.dieselPayments.filter(function (r) { return r.Supplier === dname; }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), DiscountAmountFmt: fmt(r.DiscountAmount || 0), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
-        bfRows: s.dieselBF.filter(function (r) { return r.Supplier === dname; }).slice().sort(function (a, b) { return (b.BFDate || '').localeCompare(a.BFDate || ''); }).map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
+        bfRows: s.dieselBF.filter(function (r) { return r.Supplier === dname; }).slice().sort(function (a, b) { return (b.BFDate || '').localeCompare(a.BFDate || ''); }).map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { if (r.Auto) { self.showToast('This BF is calculated automatically from last month. Add a BF for this month to override it.'); return; } self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
         onAddBF: function () { self.openModal('dieselBF', null); }
       };
+      const ddf = s.dieselSupDetailFilter || {};
+      if (ddf.from || ddf.to) {
+        const pd = self.periodStatement('diesel', { Name: dname }, ddf.from, ddf.to);
+        Object.assign(dieselSupplierDetail, { bfFmt: fmt(pd.open), bfMonth: pd.openLabel, costFmt: fmt(pd.add), paidFmt: fmt(pd.paid), outstandingFmt: fmt(pd.close), outstandingColor: self.oc(pd.close),
+          rows: dieselSupplierDetail.rows.filter(function (r) { return self.inRange(r.Date, ddf.from, ddf.to); }),
+          payRows: dieselSupplierDetail.payRows.filter(function (r) { return self.inRange(r.Date, ddf.from, ddf.to); }) });
+      }
     }
     // Vehicle Management. Three vehicle types, three income models:
     // Truck: income = "Self" fare-type supplier transactions (using our own truck instead of a
@@ -6028,11 +6238,28 @@ class Component extends DCLogic {
         materialN: materialTotal, supplierFareN: supplierFareTotal, selfFareN: selfFareTotal,
         rows: filteredTx.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r) { return Object.assign({}, r, { RateFmt: fmt(r.Rate), FareFmt: fmt(r.Fare), FareTypeLabel: fareTypeLabel(r), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('transaction', r); }, onDelete: function () { self.deleteRecord('deleteTransaction', { SLNo: r.SLNo }, 'transactions'); } }); }),
         allTxRaw: filteredTx.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
-        payRaw: pay.filter(function (p) { return self.inRange(p.Date, dfl.from, dfl.to); }).sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
+        payRaw: s.payments.filter(function (p) { return p.Supplier === name && self.inRange(p.Date, dfl.from, dfl.to); }).sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); }),
         bfRaw: bfEntries, bfAmt: bfAmt, purchaseN: purchase, paidN: paid, discountN: discount, outstandingN: outstanding, filter: dfl,
         onExportExcel: function () { self.exportSupplierExcel(name); }, onExportPDF: function () { self.exportSupplierPDF(name); }
       };
+      if (dfl.from || dfl.to) {
+        const ps = self.periodStatement('supplier', { Name: name }, dfl.from, dfl.to);
+        const txR = s.transactions.filter(function (t) { return t.Supplier === name && self.inRange(t.Date, dfl.from, dfl.to); });
+        const matR = txR.reduce(function (a, r) { return a + matAmtOf(r); }, 0);
+        const selfR = txR.filter(isSelfFare).reduce(function (a, r) { return a + fareAmtOf(r); }, 0);
+        const supR = txR.filter(function (r) { return !isSelfFare(r); }).reduce(function (a, r) { return a + fareAmtOf(r); }, 0);
+        Object.assign(supplierDetail, { bfAmt: ps.open, bfFmt: fmt(ps.open), bfMonth: ps.openLabel, materialFmt: fmt(matR), supplierFareFmt: fmt(supR), selfFareFmt: fmt(selfR), totalFmt: fmt(matR + supR), materialN: matR, supplierFareN: supR, selfFareN: selfR, purchaseN: matR + supR, purchaseFmt: fmt(matR + supR), paidN: ps.paid, paidFmt: fmt(ps.paid), discountN: ps.discount, outstandingN: ps.close, outstandingFmt: fmt(ps.close), outstandingColor: self.oc(ps.close) });
+      }
       this._lastSupplierDetail = supplierDetail;
+      if (!dfl.from && !dfl.to) {
+        const xf = self.exportPeriodFrom(this.state.bf, 'Supplier', name);
+        const px = self.periodStatement('supplier', { Name: name }, xf, '');
+        const txX = s.transactions.filter(function (t) { return t.Supplier === name && t.Date >= xf; });
+        const matX = txX.reduce(function (a, r) { return a + matAmtOf(r); }, 0);
+        const supX = txX.filter(function (r) { return !isSelfFare(r); }).reduce(function (a, r) { return a + fareAmtOf(r); }, 0);
+        const selfX = txX.filter(isSelfFare).reduce(function (a, r) { return a + fareAmtOf(r); }, 0);
+        this._lastSupplierDetail = Object.assign({}, supplierDetail, { bfAmt: px.open, materialN: matX, supplierFareN: supX, selfFareN: selfX, purchaseN: matX + supX, paidN: px.paid, discountN: px.discount, outstandingN: px.close });
+      }
     }
 
     const materialAnalysis = s.materials.map(function (m) {
@@ -6173,6 +6400,7 @@ class Component extends DCLogic {
     let staffDetail = { Name: '', Role: '', ContactNumber: '', basisLabel: '', bfFmt: fmt(0), monthEarnedFmt: fmt(0), totalDueFmt: fmt(0), totalPaidFmt: fmt(0), outstandingFmt: fmt(0), salaryRows: [], paymentRows: [], attendanceRows: [], rateHint: '', presentDaysThisMonthFmt: '0', attendanceDateResolved: s.attendanceDate || todayStr, todayAttendanceStatus: 'Not marked' };
     let presentDaysThisMonth = 0;
     let defaultBasicFromAttendance = '';
+    let salaryDefaultMonth = todayStr.slice(0, 7), salaryDefaultDays = '', salaryDefaultBasic = '';
     if (s.selectedStaff) {
       const stName = s.selectedStaff;
       const stRow = s.staff.find(function (x) { return x.Name === stName; }) || {};
@@ -6185,11 +6413,15 @@ class Component extends DCLogic {
       const due = fin.due, paid = fin.paid, bfAmt = fin.bfAmt, monthEarned = fin.monthEarned;
       presentDaysThisMonth = fin.presentThisMonth;
       defaultBasicFromAttendance = stRow.SalaryBasis === 'Daily' ? presentDaysThisMonth * (Number(stRow.DailyRate) || 0) : '';
+      self._attDeduped = attendanceDeduped;
+      salaryDefaultMonth = self.pickSalaryMonth(stName, s, curMonthKey);
+      const sm = self.salaryFromAttendance(stName, salaryDefaultMonth);
+      salaryDefaultDays = sm.days; salaryDefaultBasic = sm.basic;
       const todayAtt = attRowsAll.find(function (r) { return r.Date === attendanceDateResolved; });
       staffDetail = {
         Name: stRow.Name || stName, Role: stRow.Role || '', ContactNumber: stRow.ContactNumber || '',
         basisLabel: stRow.SalaryBasis === 'Daily' ? ('Daily — ' + fmt(stRow.DailyRate) + '/day') : ('Monthly — ' + fmt(stRow.MonthlyAmount) + '/month'),
-        bfFmt: fmt(bfAmt), monthEarnedFmt: fmt(monthEarned), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), bfMonth: fin.bfMonth,
+        bfFmt: fmt(bfAmt), monthEarnedFmt: fmt((stRow.SalaryBasis === 'Daily' && !hasSlipThisMonth(stName)) ? presentDaysThisMonth * (Number(stRow.DailyRate) || 0) : 0), totalDueFmt: fmt(due + monthEarned), totalPaidFmt: fmt(paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), bfMonth: fin.bfMonth,
         rateHint: 'Configured rate: ' + (stRow.SalaryBasis === 'Daily' ? fmt(stRow.DailyRate) + '/day' : fmt(stRow.MonthlyAmount) + '/month'),
         presentDaysThisMonthFmt: String(presentDaysThisMonth), monthAlreadySlippedNote: hasSlipThisMonth(stName) ? ' — already in this month\u2019s slip' : '', attendanceDateResolved: attendanceDateResolved, todayAttendanceStatus: todayAtt ? todayAtt.Status : 'Not marked',
         onMarkPresentToday: function () { self.markAttendance(stName, attendanceDateResolved, 'Present'); },
@@ -6219,6 +6451,17 @@ class Component extends DCLogic {
         salaryRows: salRows.slice().sort(function (a, b) { return (a.Month || '').localeCompare(b.Month || ''); }),
         paymentRows: payInRange.slice().sort(function (a, b) { return (a.Date || '').localeCompare(b.Date || ''); })
       };
+      const sdfP = s.staffDetailFilter || {};
+      if (sdfP.from || sdfP.to) {
+        const pst = self.periodStatement('staff', stRow.Name ? stRow : { Name: stName }, sdfP.from, sdfP.to);
+        Object.assign(staffDetail, { bfFmt: fmt(pst.open), bfMonth: pst.openLabel, totalDueFmt: fmt(pst.add), totalPaidFmt: fmt(pst.paid), outstandingFmt: fmt(pst.close), outstandingColor: self.oc(pst.close),
+          paymentRows: staffDetail.paymentRows.filter(function (r) { return self.inRange(r.Date, sdfP.from, sdfP.to); }),
+          salaryRows: staffDetail.salaryRows.filter(function (r) { const k = /^\d{4}-\d{2}$/.test(String(r.Month)) ? r.Month : self.monthLabelToKey(r.Month); return (!sdfP.from || k >= sdfP.from.slice(0, 7)) && (!sdfP.to || k <= sdfP.to.slice(0, 7)); }) });
+        Object.assign(this._lastStaffDetail, { bfAmt: pst.open, due: pst.add, monthEarned: 0, paid: pst.paid, outstanding: pst.close });
+      } else {
+        const psx = self.periodStatement('staff', stRow.Name ? stRow : { Name: stName }, self.exportPeriodFrom(this.state.staffBF, 'Name', stName), '');
+        Object.assign(this._lastStaffDetail, { bfAmt: psx.open, due: psx.add, monthEarned: 0, paid: psx.paid, outstanding: psx.close });
+      }
     }
 
     let mistriDetail = { Name: '', ContactNumber: '', bfFmt: fmt(0), totalDueFmt: fmt(0), totalPaidFmt: fmt(0), outstandingFmt: fmt(0), outstandingColor: 'var(--muted)', dueRows: [], paymentRows: [] };
@@ -6236,6 +6479,15 @@ class Component extends DCLogic {
         advanceRows: s.mistriAdvances.filter(function (r) { return r.MistriName === miName && self.inRange(r.Date, s.mistriDetailFilter.from, s.mistriDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isAdvance: true })); }, onDelete: function () { self.deleteMistriAdvance(r); } }); })
       };
       this._lastMistriDetail = { name: mistriDetail.Name, dueRows: mistriDetail.dueRows, paymentRows: mistriDetail.paymentRows, advanceRows: mistriDetail.advanceRows, filter: s.mistriDetailFilter, bfAmt: fin.bfAmt, due: fin.due, paid: fin.paid, discount: fin.discount, outstanding: fin.outstanding };
+      const mdf = s.mistriDetailFilter || {};
+      if (mdf.from || mdf.to) {
+        const pm = self.periodStatement('mistri', miRow.Name ? miRow : { Name: miName }, mdf.from, mdf.to);
+        Object.assign(mistriDetail, { bfFmt: fmt(pm.open), bfMonth: pm.openLabel, totalDueFmt: fmt(pm.add), totalPaidFmt: fmt(pm.paid), outstandingFmt: fmt(pm.close), outstandingColor: self.oc(pm.close) });
+        Object.assign(this._lastMistriDetail, { bfAmt: pm.open, due: pm.add, paid: pm.paid, discount: pm.discount, outstanding: pm.close });
+      } else {
+        const pmx = self.periodStatement('mistri', miRow.Name ? miRow : { Name: miName }, self.exportPeriodFrom(this.state.mistriBF, 'Name', miName), '');
+        Object.assign(this._lastMistriDetail, { bfAmt: pmx.open, due: pmx.add, paid: pmx.paid, discount: pmx.discount, outstanding: pmx.close });
+      }
     }
 
     let labourDetail = { Name: '', ContactNumber: '', bfFmt: fmt(0), totalDueFmt: fmt(0), totalPaidFmt: fmt(0), outstandingFmt: fmt(0), outstandingColor: 'var(--muted)', entryRows: [], paymentRows: [], advanceRows: [] };
@@ -6253,6 +6505,15 @@ class Component extends DCLogic {
         advanceRows: s.labourAdvances.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isLabourAdvance: true })); }, onDelete: function () { self.deleteLabourAdvance(r); } }); })
       };
       this._lastLabourDetail = { name: labourDetail.Name, entryRows: labourDetail.entryRows, paymentRows: labourDetail.paymentRows, advanceRows: labourDetail.advanceRows, filter: s.labourDetailFilter, bfAmt: finL.bfAmt, due: finL.due, paid: finL.paid, discount: finL.discount, outstanding: finL.outstanding };
+      const ldf = s.labourDetailFilter || {};
+      if (ldf.from || ldf.to) {
+        const pl = self.periodStatement('labour', lbRow.Name ? lbRow : { Name: lbName }, ldf.from, ldf.to);
+        Object.assign(labourDetail, { bfFmt: fmt(pl.open), bfMonth: pl.openLabel, totalDueFmt: fmt(pl.add), totalPaidFmt: fmt(pl.paid), outstandingFmt: fmt(pl.close), outstandingColor: self.oc(pl.close) });
+        Object.assign(this._lastLabourDetail, { bfAmt: pl.open, due: pl.add, paid: pl.paid, discount: pl.discount, outstanding: pl.close });
+      } else {
+        const plx = self.periodStatement('labour', lbRow.Name ? lbRow : { Name: lbName }, self.exportPeriodFrom(this.state.labourBF, 'Name', lbName), '');
+        Object.assign(this._lastLabourDetail, { bfAmt: plx.open, due: plx.add, paid: plx.paid, discount: plx.discount, outstanding: plx.close });
+      }
     }
 
     const rf = s.reportFilters;
@@ -6266,10 +6527,10 @@ class Component extends DCLogic {
     };
     const rTxF = s.transactions.filter(function (t) { return matchesPeriod(t.Date) && (!rf.site || t.Site === rf.site) && (!rf.supplier || t.Supplier === rf.supplier) && (!rf.material || t.Material === rf.material); });
     const rPayF = s.payments.filter(function (p) { return matchesPeriod(p.Date) && (!rf.site || p.Site === rf.site) && (!rf.supplier || p.Supplier === rf.supplier); });
-    const rBFF = s.bf.filter(function (b) { return (!rf.site || b.Site === rf.site) && (!rf.supplier || b.Supplier === rf.supplier); });
+    const rBFF = rawBF.filter(function (b) { return (!rf.site || b.Site === rf.site) && (!rf.supplier || b.Supplier === rf.supplier); });
     const rDieselTxF = s.dieselTx.filter(function (t) { return matchesPeriod(t.Date) && (!rf.site || t.Site === rf.site) && (!rf.dieselSupplier || t.Supplier === rf.dieselSupplier); });
     const rDieselPayF = s.dieselPayments.filter(function (p) { return matchesPeriod(p.Date) && (!rf.site || p.Site === rf.site) && (!rf.dieselSupplier || p.Supplier === rf.dieselSupplier); });
-    const rDieselBFF = s.dieselBF.filter(function (b) { return (!rf.site || b.Site === rf.site) && (!rf.dieselSupplier || b.Supplier === rf.dieselSupplier); });
+    const rDieselBFF = rawDieselBF.filter(function (b) { return (!rf.site || b.Site === rf.site) && (!rf.dieselSupplier || b.Supplier === rf.dieselSupplier); });
     const rSuppliersF = s.suppliers.filter(function (sup) { return !rf.supplier || sup.SupplierName === rf.supplier; });
     const rSitesF = s.sites.filter(function (site) { return !rf.site || site.SiteName === rf.site; });
     const rMaterialsF = s.materials.filter(function (m) { return !rf.material || m.MaterialName === rf.material; });
@@ -6470,7 +6731,7 @@ class Component extends DCLogic {
       dTxns.forEach(function (tx) { if (!byDate[tx.Date]) byDate[tx.Date] = { Date: tx.Date, allocated: 0, expenditure: 0, transferAdj: 0 }; if (tx.transferAdj != null) byDate[tx.Date].transferAdj += tx.transferAdj; else if (tx.isReceived) byDate[tx.Date].allocated += tx.AmountN; else if (!tx.workLog) byDate[tx.Date].expenditure += tx.AmountN; });
       const dateRowsAsc = Object.keys(byDate).sort().map(function (dt) { return byDate[dt]; });
       let running = 0;
-      const dateWiseRows = dateRowsAsc.map(function (r) { running += r.allocated - r.expenditure + r.transferAdj; return { Date: r.Date, allocatedFmt: fmt(r.allocated), expenditureFmt: fmt(r.expenditure), balanceFmt: fmt(running), balanceColor: self.oc(-running) }; }).reverse();
+      const dateWiseRows = dateRowsAsc.map(function (r) { running += r.allocated - r.expenditure + r.transferAdj; return { Date: r.Date, allocatedFmt: fmt(r.allocated), expenditureFmt: fmt(r.expenditure), transferFmt: r.transferAdj ? (r.transferAdj > 0 ? '+' : '') + fmt(r.transferAdj) : '—', transferColor: r.transferAdj > 0 ? '#2e9e5b' : (r.transferAdj < 0 ? '#e2574c' : 'var(--muted)'), balanceFmt: fmt(running), balanceColor: self.oc(-running) }; }).reverse();
       siteDetail = {
         name: siteName, receivedFmt: fmt(receivedD), totalExpendFmt: fmt(expendD), balanceFmt: fmt(balanceD), balanceColor: self.oc(-balanceD),
         expendBreakdown: [{ label: 'Other Expenditure', valueFmt: fmt(expendD) }, { label: 'Transferred (net)', valueFmt: fmt(transferNetD) }],
@@ -6547,7 +6808,7 @@ class Component extends DCLogic {
     const siteDefaults = { SiteName: editRecordRaw.SiteName || '' };
     const materialDefaults = { MaterialName: editRecordRaw.MaterialName || '', DefaultUnit: editRecordRaw.DefaultUnit || 'TON' };
     const staffDefaults = { Name: editRecordRaw.Name || '', Role: editRecordRaw.Role || '', ContactNumber: editRecordRaw.ContactNumber || '', SalaryBasis: editRecordRaw.SalaryBasis || 'Monthly', MonthlyAmount: editRecordRaw.MonthlyAmount != null ? editRecordRaw.MonthlyAmount : '', DailyRate: editRecordRaw.DailyRate != null ? editRecordRaw.DailyRate : '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '' };
-    const staffSalaryDefaults = { StaffName: s.selectedStaff || '', Month: isEditing ? this.monthLabelToKey(editRecordRaw.Month) : todayStr.slice(0, 7), DaysWorked: editRecordRaw.DaysWorked != null ? editRecordRaw.DaysWorked : (isEditing ? '' : presentDaysThisMonth || ''), Basic: editRecordRaw.Basic != null ? editRecordRaw.Basic : (isEditing ? '' : defaultBasicFromAttendance), DA: editRecordRaw.DA != null ? editRecordRaw.DA : '', Deductions: editRecordRaw.Deductions != null ? editRecordRaw.Deductions : '', BFDue: editRecordRaw.BFDue != null ? editRecordRaw.BFDue : '', Remarks: editRecordRaw.Remarks || '' };
+    const staffSalaryDefaults = { StaffName: s.selectedStaff || '', Month: isEditing ? this.monthLabelToKey(editRecordRaw.Month) : salaryDefaultMonth, DaysWorked: editRecordRaw.DaysWorked != null ? editRecordRaw.DaysWorked : (isEditing ? '' : salaryDefaultDays), Basic: editRecordRaw.Basic != null ? editRecordRaw.Basic : (isEditing ? '' : salaryDefaultBasic), DA: editRecordRaw.DA != null ? editRecordRaw.DA : '', Deductions: editRecordRaw.Deductions != null ? editRecordRaw.Deductions : '', BFDue: editRecordRaw.BFDue != null ? editRecordRaw.BFDue : '', Remarks: editRecordRaw.Remarks || '' };
     const staffPaymentDefaults = { StaffName: s.selectedStaff || '', Date: editRecordRaw.Date || todayStr, AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
     const userContactDefaults = { ContactNumber: editRecordRaw.ContactNumber || '' };
     const mistriDefaults = { Name: editRecordRaw.Name || '', ContactNumber: editRecordRaw.ContactNumber || '', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '' };
@@ -6657,13 +6918,13 @@ class Component extends DCLogic {
       exportPaymentsExcel: this.exportPaymentsExcel.bind(this), exportPaymentsPDF: this.exportPaymentsPDF.bind(this),
       exportTransactionsExcel: this.exportTransactionsExcel.bind(this), exportTransactionsPDF: this.exportTransactionsPDF.bind(this),
       payRows: payF2.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), DiscountAmountFmt: fmt(r.DiscountAmount || 0), onEdit: function () { self.openModal('payment', r); }, onDelete: function () { self.deleteRecord('deletePayment', { PaymentID: r.PaymentID }, 'payments'); } }); }),
-      bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
+      bfRows: s.bf.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('bf', r); }, onDelete: function () { if (r.Auto) { self.showToast('This BF is calculated automatically from last month. Add a BF for this month to override it.'); return; } self.deleteRecord('deleteBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'bf'); } }); }),
       dieselSupplierCards: dieselSupplierCards, dieselSupplierDetail: dieselSupplierDetail,
       vehicleCards: vehicleCards, vehicleDetail: vehicleDetail, openVehicleModal: function () { self.openModal('vehicle'); },
       vehiclesSummaryFilter: s.vehiclesSummaryFilter, onVehiclesSummaryFrom: this.setGenericFilter('vehiclesSummaryFilter', 'from'), onVehiclesSummaryTo: this.setGenericFilter('vehiclesSummaryFilter', 'to'), onVehiclesSummaryAll: this.clearFilterToAll('vehiclesSummaryFilter'), onExportVehiclesSummaryPDF: this.exportVehiclesSummaryPDF.bind(this),
       dieselTxRows: dieselTxF2.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i, SiteDisplay: r.Site || r.VehicleSite || '' }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }), exportDieselTxExcel: this.exportDieselTxExcel.bind(this), exportDieselTxPDF: this.exportDieselTxPDF.bind(this),
       dieselPayRows: dieselPayF2.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), DiscountAmountFmt: fmt(r.DiscountAmount || 0), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
-      dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
+      dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { if (r.Auto) { self.showToast('This BF is calculated automatically from last month. Add a BF for this month to override it.'); return; } self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
       formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, personBFDefaults: personBFDefaults, personBFName: personBFName, personBFModalOpen: (modalIs.staffBF || modalIs.labourBF || modalIs.mistriBF), vehicleDefaults: vehicleDefaults, vehicleLogDefaults: vehicleLogDefaults, submitVehicle: this.submitVehicle.bind(this), submitVehicleLog: this.submitVehicleLog.bind(this), dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
       totalDieselQty: totalDieselQty, avgDieselRate: avgDieselRate, currentMonthDiesel: currentMonthDiesel,
       openTransactionModal: function () { self.openModal('transaction'); }, openPaymentModal: function () { self.openModal('payment'); }, openPaymentDiscountModal: function () { self.openModal('paymentDiscount'); }, openBFModal: function () { self.openModal('bf'); },
@@ -6698,9 +6959,9 @@ class Component extends DCLogic {
       onAttendanceExportMonthNum: this.setAttendanceExportMonthNum.bind(this), onAttendanceExportYear: this.setAttendanceExportYear.bind(this),
       monthNumOptions: [{ v: '01', l: 'January' }, { v: '02', l: 'February' }, { v: '03', l: 'March' }, { v: '04', l: 'April' }, { v: '05', l: 'May' }, { v: '06', l: 'June' }, { v: '07', l: 'July' }, { v: '08', l: 'August' }, { v: '09', l: 'September' }, { v: '10', l: 'October' }, { v: '11', l: 'November' }, { v: '12', l: 'December' }],
       attendanceYearOptions: (function () { const cur = Number(todayStr.slice(0, 4)); return [cur - 1, cur, cur + 1]; })(),
-      staffCards: staffCards, staffDetail: staffDetail, staffDefaults: staffDefaults, staffSalaryDefaults: staffSalaryDefaults, staffPaymentDefaults: staffPaymentDefaults, userContactDefaults: userContactDefaults, staffRateReadOnly: staffRateReadOnly,
+      staffCards: staffCards, staffDetail: staffDetail, staffDefaults: staffDefaults, staffSalaryDefaults: staffSalaryDefaults, onSalaryMonthChange: this.onSalaryMonthChange.bind(this), staffPaymentDefaults: staffPaymentDefaults, userContactDefaults: userContactDefaults, staffRateReadOnly: staffRateReadOnly,
       mistriCards: mistriCards, mistriDetail: mistriDetail, mistriDefaults: mistriDefaults, mistriDueDefaults: mistriDueDefaults, mistriPaymentDefaults: mistriPaymentDefaults,
-      mistriDetailFilter: s.mistriDetailFilter, exportMistriDetailExcel: this.exportMistriDetailExcel.bind(this), exportMistriDetailPDF: this.exportMistriDetailPDF.bind(this), onMistriDetailFrom: this.setGenericFilter('mistriDetailFilter', 'from'), onMistriDetailTo: this.setGenericFilter('mistriDetailFilter', 'to'), onMistriDetailMonth: this.setMonthShortcut('mistriDetailFilter'),
+      mistriDetailFilter: s.mistriDetailFilter, exportMistriDetailExcel: this.exportMistriDetailExcel.bind(this), exportMistriDetailPDF: this.exportMistriDetailPDF.bind(this), onMistriDetailFrom: this.setGenericFilter('mistriDetailFilter', 'from'), onMistriDetailTo: this.setGenericFilter('mistriDetailFilter', 'to'), onMistriDetailMonth: this.setMonthShortcut('mistriDetailFilter'), onPayMonth: this.setMonthShortcut('payPageFilters'), monthVal: (function () { const o = {}; ["dashFilters","txPageFilters","dieselPageFilters","detailFilters","staffPaymentsFilter","cementFilter","cementSiteDetailFilter","mistriDetailFilter","payPageFilters","vehiclesSummaryFilter","activityTrackerFilter","dieselSupDetailFilter","staffDetailFilter","labourDetailFilter","siteDetailFilter","fundTransferFilter","userBalanceFilter","siteWalletFilter"].forEach(function (k) { const f = s[k] || {}; if (!f.from && !f.to) { o[k] = 'all'; return; } const r = self.monthShortcutRange(String(f.from || '').slice(0, 7)); o[k] = (f.from && r.from === f.from && r.to === f.to) ? f.from.slice(0, 7) : ''; }); return o; })(), onVehiclesSummaryMonth: this.setMonthShortcut('vehiclesSummaryFilter'), onActivityTrackerMonth: this.setMonthShortcut('activityTrackerFilter'), dieselSupDetailFilter: s.dieselSupDetailFilter || { from: '', to: '' }, onDieselSupDetailFrom: this.setGenericFilter('dieselSupDetailFilter', 'from'), onDieselSupDetailTo: this.setGenericFilter('dieselSupDetailFilter', 'to'), onDieselSupDetailMonth: this.setMonthShortcut('dieselSupDetailFilter'), staffDetailFilter: s.staffDetailFilter || { from: '', to: '' }, onStaffDetailFrom: this.setGenericFilter('staffDetailFilter', 'from'), onStaffDetailTo: this.setGenericFilter('staffDetailFilter', 'to'), onStaffDetailMonth: this.setMonthShortcut('staffDetailFilter'),
       showMistriPicker: showMistriPicker, mistriOptions: mistriOptions,
       openMistriModal: function () { self.openModal('mistri'); }, openMistriDueModal: function () { self.openModal('mistriDue'); }, openMistriPaymentModal: function () { self.openModal('mistriPayment'); },
       submitMistri: this.submitMistri.bind(this), submitMistriDue: this.submitMistriDue.bind(this), submitMistriPayment: this.submitMistriPayment.bind(this), submitMistriPaymentDiscount: this.submitMistriPaymentDiscount.bind(this), openMistriPaymentDiscountModal: function () { self.openModal('mistriPaymentDiscount'); },
