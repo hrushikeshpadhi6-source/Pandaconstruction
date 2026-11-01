@@ -200,6 +200,7 @@
       <button onClick="{{ navAttendance }}" style="{{ navStyle.attendance }}">Attendance</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Fund Distribution</div>
       <button onClick="{{ navFunds }}" style="{{ navStyle.funds }}">Money & Sites<sc-if value="{{ hasNew.funds }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ newCount.funds }}</span></sc-if></button>
+      <button onClick="{{ navCashbook }}" style="{{ navStyle.cashbook }}">Sites Cashbook</button>
       <div style="margin:16px 12px 6px;"></div>
       <button onClick="{{ navReports }}" style="{{ navStyle.reports }}">Reports</button>
       <button onClick="{{ navSettings }}" style="{{ navStyle.settings }}">Settings</button>
@@ -1937,6 +1938,102 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ viewIs.cashbook }}">
+      <div style="font-weight:700;font-size:15px;margin-bottom:12px;">{{ cbWalletName }}'s Cashbook</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Opening Balance</div><div style="font-size:20px;font-weight:700;">{{ cbOpeningFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Received</div><div style="font-size:20px;font-weight:700;color:#2e9e5b;">{{ cbInFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Total Expenditure</div><div style="font-size:20px;font-weight:700;color:#e2574c;">{{ cbOutFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:18px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Closing Balance</div><div style="font-size:20px;font-weight:700;color:{{ cbClosingColor }};">{{ cbClosingFmt }}</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:-8px 0 20px;">
+        <div style="background:var(--surface);border:1px solid var(--border-soft);border-radius:8px;padding:12px;"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Received (Cash)</div><div style="font-size:15px;font-weight:700;">{{ cbInCashFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border-soft);border-radius:8px;padding:12px;"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Received (A/C)</div><div style="font-size:15px;font-weight:700;">{{ cbInACFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border-soft);border-radius:8px;padding:12px;"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Spent (Cash)</div><div style="font-size:15px;font-weight:700;">{{ cbOutCashFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border-soft);border-radius:8px;padding:12px;"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Spent (A/C)</div><div style="font-size:15px;font-weight:700;">{{ cbOutACFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border-soft);border-radius:8px;padding:12px;"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Balance (Cash)</div><div style="font-size:15px;font-weight:700;">{{ cbCloseCashFmt }}</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border-soft);border-radius:8px;padding:12px;"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Balance (A/C)</div><div style="font-size:15px;font-weight:700;">{{ cbCloseACFmt }}</div></div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;">
+        <sc-if value="{{ canSeeAllFunds }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;"><div style="font-size:12px;color:var(--muted);margin-bottom:6px;">User</div><select onChange="{{ cbSetUser }}" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;min-width:150px;"><sc-for list="{{ cbUsers }}" as="u"><option value="{{ u.name }}" selected="{{ u.selected }}">{{ u.name }}</option></sc-for></select></div></sc-if>
+        <div style="display:flex;flex-direction:column;"><div style="font-size:12px;color:var(--muted);margin-bottom:6px;">From</div><input type="date" value="{{ cbFrom }}" onChange="{{ cbSetFrom }}" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;"></div>
+        <div style="display:flex;flex-direction:column;"><div style="font-size:12px;color:var(--muted);margin-bottom:6px;">To</div><input type="date" value="{{ cbTo }}" onChange="{{ cbSetTo }}" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;"></div>
+        <div style="display:flex;flex-direction:column;"><div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Month</div><input type="month" value="{{ cbMonth }}" onChange="{{ cbSetMonth }}" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;"></div>
+        <button onClick="{{ cbClear }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Show All</button>
+        <div style="flex:1;"></div>
+        <button onClick="{{ exportCashbookExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Export Excel</button>
+        <button onClick="{{ exportCashbookPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Export PDF</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <thead><tr>
+            <th rowspan="2" style="text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Date</th>
+            <th colspan="3" style="text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;color:#2e9e5b;border-left:1px solid var(--border);">Received</th>
+            <th colspan="3" style="text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;color:#e2574c;border-left:1px solid var(--border);">Expenditure</th>
+            <th rowspan="2" style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;border-left:1px solid var(--border);">Net</th>
+            <th colspan="3" style="text-align:center;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;border-left:1px solid var(--border);">Balance</th>
+          </tr><tr>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;border-left:1px solid var(--border);">Cash</th>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;">A/C</th>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;">Total</th>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;border-left:1px solid var(--border);">Cash</th>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;">A/C</th>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;">Total</th>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;border-left:1px solid var(--border);">Cash</th>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;">A/C</th>
+            <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;">Total</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ cbDays }}" as="d" hint-placeholder-count="4">
+              <tr onClick="{{ d.toggle }}" style="cursor:pointer;border-bottom:1px solid var(--border-soft);" style-hover="background:rgba(255,255,255,0.03);">
+                <td style="padding:12px;white-space:nowrap;"><span style="display:inline-block;width:14px;color:var(--muted);">{{ d.arrow }}</span><span style="font-weight:700;">{{ d.dateLabel }}</span> <span style="font-size:12px;color:var(--muted);margin-left:6px;">{{ d.count }}</span></td>
+                <td style="padding:12px;text-align:right;white-space:nowrap;border-left:1px solid var(--border-soft);">{{ d.inCashFmt }}</td>
+                <td style="padding:12px;text-align:right;white-space:nowrap;">{{ d.inACFmt }}</td>
+                <td style="padding:12px;text-align:right;font-weight:700;color:#2e9e5b;white-space:nowrap;">{{ d.receivedFmt }}</td>
+                <td style="padding:12px;text-align:right;white-space:nowrap;border-left:1px solid var(--border-soft);">{{ d.outCashFmt }}</td>
+                <td style="padding:12px;text-align:right;white-space:nowrap;">{{ d.outACFmt }}</td>
+                <td style="padding:12px;text-align:right;font-weight:700;color:#e2574c;white-space:nowrap;">{{ d.spentFmt }}</td>
+                <td style="padding:12px;text-align:right;font-weight:600;color:{{ d.netColor }};white-space:nowrap;border-left:1px solid var(--border-soft);">{{ d.netFmt }}</td>
+                <td style="padding:12px;text-align:right;white-space:nowrap;border-left:1px solid var(--border-soft);">{{ d.balCashFmt }}</td>
+                <td style="padding:12px;text-align:right;white-space:nowrap;">{{ d.balACFmt }}</td>
+                <td style="padding:12px;text-align:right;font-weight:700;white-space:nowrap;">{{ d.balanceFmt }}</td>
+              </tr>
+              <sc-if value="{{ d.open }}">
+                <tr><td colspan="11" style="padding:0 12px 12px 38px;border-bottom:1px solid var(--border);">
+                  <div style="display:flex;flex-direction:column;border:1px solid var(--border-soft);border-radius:8px;overflow:hidden;">
+                    <sc-for list="{{ d.items }}" as="e">
+                      <div style="display:grid;grid-template-columns:130px minmax(0,1fr) 60px 120px 120px;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--border-soft);font-size:13px;">
+                        <div style="font-weight:700;">{{ e.cat }}</div>
+                        <div style="min-width:0;"><div>{{ e.detail }}</div><div style="font-size:11px;color:var(--muted);">{{ e.remarks }}</div></div>
+                        <div style="font-size:11px;color:var(--muted);">{{ e.method }}</div>
+                        <div style="text-align:right;color:#2e9e5b;font-weight:700;">{{ e.inFmt }}</div>
+                        <div style="text-align:right;color:#e2574c;font-weight:700;">{{ e.outFmt }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </td></tr>
+              </sc-if>
+            </sc-for>
+          </tbody>
+          <tfoot><tr>
+            <td style="padding:12px;font-weight:800;border-top:2px solid var(--gold);">TOTAL</td>
+            <td style="padding:12px;text-align:right;font-weight:800;white-space:nowrap;border-top:2px solid var(--gold);">{{ cbInCashFmt }}</td>
+            <td style="padding:12px;text-align:right;font-weight:800;white-space:nowrap;border-top:2px solid var(--gold);">{{ cbInACFmt }}</td>
+            <td style="padding:12px;text-align:right;font-weight:800;white-space:nowrap;border-top:2px solid var(--gold);color:#2e9e5b;">{{ cbInFmt }}</td>
+            <td style="padding:12px;text-align:right;font-weight:800;white-space:nowrap;border-top:2px solid var(--gold);">{{ cbOutCashFmt }}</td>
+            <td style="padding:12px;text-align:right;font-weight:800;white-space:nowrap;border-top:2px solid var(--gold);">{{ cbOutACFmt }}</td>
+            <td style="padding:12px;text-align:right;font-weight:800;white-space:nowrap;border-top:2px solid var(--gold);color:#e2574c;">{{ cbOutFmt }}</td>
+            <td style="padding:12px;text-align:right;font-weight:800;white-space:nowrap;border-top:2px solid var(--gold);"></td>
+            <td style="padding:12px;text-align:right;font-weight:800;white-space:nowrap;border-top:2px solid var(--gold);">{{ cbCloseCashFmt }}</td>
+            <td style="padding:12px;text-align:right;font-weight:800;white-space:nowrap;border-top:2px solid var(--gold);">{{ cbCloseACFmt }}</td>
+            <td style="padding:12px;text-align:right;font-weight:800;white-space:nowrap;border-top:2px solid var(--gold);color:{{ cbClosingColor }};">{{ cbClosingFmt }}</td>
+          </tr></tfoot>
+        </table>
+        <sc-if value="{{ cbNoDays }}"><div style="padding:28px;text-align:center;color:var(--muted);">No transactions in this range.</div></sc-if>
+      </div>
+      <div style="color:var(--muted2);font-size:12px;margin-top:10px;">Tap a date to see every transaction on that day. Balance is the running wallet balance after that day.</div>
+    </sc-if>
+
     <sc-if value="{{ viewIs.funds }}">
       <div style="font-weight:700;font-size:15px;margin-bottom:12px;">Sukadev's Wallet</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:12px;">
@@ -3481,7 +3578,7 @@ class Component extends DCLogic {
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [], siteTransfers: [],
-    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], staffBF: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], mistriBF: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], labourBF: [], vehicles: [], vehicleDailyLog: [], fundTransfers: [], siteAllocations: [], driverAllocations: [], siteExpenses: [], otherPayments: [], cementReceived: [], cementUsed: [], taskCompletions: [], duplicateReviews: [], dupPanelOpen: false, taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
+    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], staffBF: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], mistriBF: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], labourBF: [], vehicles: [], vehicleDailyLog: [], cbFrom: '', cbTo: '', cbMonth: '', cbUser: '', cbOpen: {}, fundTransfers: [], siteAllocations: [], driverAllocations: [], siteExpenses: [], otherPayments: [], cementReceived: [], cementUsed: [], taskCompletions: [], duplicateReviews: [], dupPanelOpen: false, taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
     selectedSupplier: null, selectedMistri: null, selectedLabour: null, selectedSite: null, selectedDieselSupplier: null, selectedVehicle: null, selectedCementSite: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     txPageFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
@@ -5527,6 +5624,88 @@ class Component extends DCLogic {
   paidWithDiscount(list) { return this.sum(list, 'AmountPaid') + this.sum(list, 'DiscountAmount'); }
   inRange(dateStr, from, to) { if (!dateStr) return true; if (from && dateStr < from) return false; if (to && dateStr > to) return false; return true; }
   oc(n) { n = Number(n) || 0; return n > 0 ? '#e2574c' : (n < 0 ? '#2ea043' : 'var(--muted)'); }
+  cashbookEntries(name) {
+    const s = this.state;
+    const pm = function (r) { return r.PaymentMethod === 'Cash' ? 'Cash' : 'A/C'; };
+    const out = [];
+    const add = function (list, match, amtField, kind, cat, detailFn) {
+      (list || []).forEach(function (r) { if (!match(r)) return; const v = Number(r[amtField]) || 0; if (!v) return; out.push({ Date: r.Date || '', kind: kind, cat: cat, detail: detailFn(r) || '', remarks: r.Remarks || r.Purpose || r.Note || '', method: pm(r), amt: v }); });
+    };
+    add(s.fundTransfers, function (t) { return t.To === name; }, 'Amount', 'in', 'Received', function (t) { return 'From ' + (t.From || '-'); });
+    add(s.fundTransfers, function (t) { return t.From === name; }, 'Amount', 'out', 'Fund Transfer', function (t) { return 'To ' + (t.To || '-'); });
+    add(s.siteAllocations, function (a) { return a.User === name; }, 'Amount', 'out', 'Site', function (a) { return a.Site || a.SiteName; });
+    add(s.payments, function (p) { return p.CreatedBy === name; }, 'AmountPaid', 'out', 'Supplier', function (p) { return p.Supplier; });
+    add(s.dieselPayments, function (p) { return p.CreatedBy === name; }, 'AmountPaid', 'out', 'Diesel', function (p) { return p.Supplier || p.DieselSupplier; });
+    add(s.staffPayments, function (p) { return p.CreatedBy === name; }, 'AmountPaid', 'out', 'Staff', function (p) { return p.StaffName; });
+    add(s.mistriPayments, function (p) { return p.CreatedBy === name; }, 'AmountPaid', 'out', 'Mistri', function (p) { return [p.MistriName, p.Site].filter(Boolean).join(' · '); });
+    add(s.mistriAdvances, function (p) { return p.CreatedBy === name; }, 'Amount', 'out', 'Mistri Advance', function (p) { return p.MistriName; });
+    add(s.labourPayments, function (p) { return p.CreatedBy === name; }, 'AmountPaid', 'out', 'Labour', function (p) { return [p.LabourName, p.Site].filter(Boolean).join(' · '); });
+    add(s.labourAdvances, function (p) { return p.CreatedBy === name; }, 'Amount', 'out', 'Labour Advance', function (p) { return p.LabourName; });
+    add(s.otherPayments, function (p) { return p.From === name; }, 'Amount', 'out', 'Other', function (p) { return p.To || p.PaidTo || p.Purpose; });
+    return out;
+  }
+  buildCashbook() {
+    const s = this.state;
+    const name = s.cbUser || 'Sukadev';
+    let from = s.cbFrom, to = s.cbTo;
+    if (s.cbMonth) { from = s.cbMonth + '-01'; to = s.cbMonth + '-31'; }
+    const all = this.cashbookEntries(name);
+    let opening = 0, openCash = 0, openAC = 0;
+    all.forEach(function (e) { if (from && e.Date && e.Date < from) { const v = e.kind === 'in' ? e.amt : -e.amt; opening += v; if (e.method === 'Cash') openCash += v; else openAC += v; } });
+    const inR = all.filter(function (e) { return (!from || !e.Date || e.Date >= from) && (!to || !e.Date || e.Date <= to) && !(from && !e.Date); });
+    const byDate = {};
+    inR.forEach(function (e) { const d = e.Date || ''; (byDate[d] = byDate[d] || []).push(e); });
+    const dates = Object.keys(byDate).sort();
+    let balC = openCash, balA = openAC;
+    let bal = opening, totIn = 0, totOut = 0, tInC = 0, tInA = 0, tOutC = 0, tOutA = 0;
+    const sumOf = function (items, kind, m) { return items.filter(function (e) { return e.kind === kind && (!m || e.method === m); }).reduce(function (a, e) { return a + e.amt; }, 0); };
+    const days = dates.map(function (d) {
+      const items = byDate[d].sort(function (a, b) { return a.kind === b.kind ? 0 : (a.kind === 'in' ? -1 : 1); });
+      const rin = items.filter(function (e) { return e.kind === 'in'; }).reduce(function (a, e) { return a + e.amt; }, 0);
+      const rout = items.filter(function (e) { return e.kind === 'out'; }).reduce(function (a, e) { return a + e.amt; }, 0);
+      const inC = sumOf(items, 'in', 'Cash'), outC = sumOf(items, 'out', 'Cash');
+      balC += inC - outC; balA += (rin - inC) - (rout - outC); bal += rin - rout; totIn += rin; totOut += rout; tInC += inC; tInA += rin - inC; tOutC += outC; tOutA += rout - outC;
+      return { date: d, received: rin, spent: rout, inCash: inC, inAC: rin - inC, outCash: outC, outAC: rout - outC, net: rin - rout, balance: bal, balCash: balC, balAC: balA, items: items };
+    });
+    return { name: name, from: from, to: to, opening: opening, openCash: openCash, openAC: openAC, totIn: totIn, totOut: totOut, tInC: tInC, tInA: tInA, tOutC: tOutC, tOutA: tOutA, closing: bal, closeCash: openCash + tInC - tOutC, closeAC: openAC + tInA - tOutA, days: days };
+  }
+  exportCashbookExcel() {
+    if (!window.XLSX) { alert('Excel library still loading — try again in a moment.'); return; }
+    const c = this.buildCashbook();
+    const aoa = [['PANDA CONSTRUCTION'], ['Sites Cashbook — ' + c.name], ['Range: ' + (c.from || 'Start') + ' to ' + (c.to || 'Today')], [], ['Date', 'Category', 'Detail', 'Remarks', 'Mode', 'Received Cash', 'Received A/C', 'Received Total', 'Spent Cash', 'Spent A/C', 'Spent Total', 'Balance Cash', 'Balance A/C', 'Balance Total'], ['', 'Opening Balance', '', '', '', '', '', '', '', '', '', c.openCash, c.openAC, c.opening]];
+    c.days.forEach(function (d) {
+      d.items.forEach(function (e) { const ic = e.kind === 'in' && e.method === 'Cash', ia = e.kind === 'in' && e.method !== 'Cash', oc = e.kind === 'out' && e.method === 'Cash', oa = e.kind === 'out' && e.method !== 'Cash'; aoa.push([d.date, e.cat, e.detail, e.remarks, e.method, ic ? e.amt : '', ia ? e.amt : '', e.kind === 'in' ? e.amt : '', oc ? e.amt : '', oa ? e.amt : '', e.kind === 'out' ? e.amt : '', '', '', '']); });
+      aoa.push([d.date, 'Day Total', '', '', '', d.inCash, d.inAC, d.received, d.outCash, d.outAC, d.spent, d.balCash, d.balAC, d.balance]);
+    });
+    aoa.push([], ['', 'TOTAL', '', '', '', c.tInC, c.tInA, c.totIn, c.tOutC, c.tOutA, c.totOut, c.closeCash, c.closeAC, c.closing]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'Cashbook');
+    XLSX.writeFile(wb, 'panda-construction-cashbook-' + c.name.toLowerCase() + '.xlsx');
+  }
+  async exportCashbookPDF() {
+    if (!window.jspdf) { alert('PDF library still loading — try again in a moment.'); return; }
+    const c = this.buildCashbook(); const f = this.fmtPdf.bind(this);
+    const logo = await this.loadLogoDataUrl();
+    const doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+    let y = 40;
+    if (logo) { try { doc.addImage(logo, 'PNG', 40, 24, 60, 30); } catch (e) {} }
+    doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('PANDA CONSTRUCTION', 120, y); y += 16;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('AT/PO LANGALESWAR , BALASORE , PH-9938353942', 120, y); y += 22;
+    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Sites Cashbook — ' + c.name, 40, y); y += 14;
+    doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.text('Range: ' + (c.from || 'Start') + ' to ' + (c.to || 'Today'), 40, y); y += 14;
+    doc.setFont(undefined, 'bold'); doc.text('Opening: ' + f(c.opening) + '    Received: ' + f(c.totIn) + ' (Cash ' + f(c.tInC) + ' / A/C ' + f(c.tInA) + ')    Expenditure: ' + f(c.totOut) + ' (Cash ' + f(c.tOutC) + ' / A/C ' + f(c.tOutA) + ')', 40, y); y += 12;
+    doc.text('Closing: ' + f(c.closing) + '  (Cash ' + f(c.closeCash) + ' / A/C ' + f(c.closeAC) + ')', 40, y);
+    const body = [];
+    c.days.forEach(function (d) {
+      d.items.forEach(function (e) { const cash = e.method === 'Cash'; body.push([d.date, e.cat, e.detail + (e.remarks ? ' (' + e.remarks + ')' : ''), e.method, e.kind === 'in' && cash ? f(e.amt) : '', e.kind === 'in' && !cash ? f(e.amt) : '', e.kind === 'in' ? f(e.amt) : '', e.kind === 'out' && cash ? f(e.amt) : '', e.kind === 'out' && !cash ? f(e.amt) : '', e.kind === 'out' ? f(e.amt) : '', '', '', '']); });
+      const st = { fontStyle: 'bold', fillColor: [240, 238, 232] };
+      body.push([{ content: d.date + ' — Day Total', colSpan: 4, styles: st }].concat([d.inCash, d.inAC, d.received, d.outCash, d.outAC, d.spent, d.balCash, d.balAC, d.balance].map(function (v) { return { content: f(v), styles: st }; })));
+    });
+    const tt = { fontStyle: 'bold', fillColor: [28, 26, 22], textColor: [255, 255, 255] };
+    body.push([{ content: 'TOTAL', colSpan: 4, styles: tt }].concat([c.tInC, c.tInA, c.totIn, c.tOutC, c.tOutA, c.totOut, c.closeCash, c.closeAC, c.closing].map(function (v) { return { content: f(v), styles: tt }; })));
+    doc.autoTable({ startY: y + 10, theme: 'grid', margin: { left: 24, right: 24 }, styles: { fontSize: 6.5, cellPadding: 3 }, headStyles: { fillColor: [28, 26, 22], textColor: [255, 255, 255], fontStyle: 'bold' }, columnStyles: { 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' }, 7: { halign: 'right' }, 8: { halign: 'right' }, 9: { halign: 'right' }, 10: { halign: 'right' }, 11: { halign: 'right' }, 12: { halign: 'right' } }, head: [['Date', 'Category', 'Detail', 'Mode', 'Rcvd Cash', 'Rcvd A/C', 'Rcvd Total', 'Spent Cash', 'Spent A/C', 'Spent Total', 'Bal Cash', 'Bal A/C', 'Bal Total']], body: body });
+    doc.save('panda-construction-cashbook-' + c.name.toLowerCase() + '.pdf');
+  }
   computeWalletTotals(name) {
     const s = this.state;
     const bucket = function (pm) { return pm === 'Cash' ? 'cash' : 'ac'; };
@@ -6622,7 +6801,7 @@ class Component extends DCLogic {
       dieselTx: s.view === 'dieselTx', dieselPayments: s.view === 'dieselPayments', dieselBF: s.view === 'dieselBF', dieselSuppliers: s.view === 'dieselSuppliers', dieselSupplierDetail: s.view === 'dieselSupplierDetail',
       vehicles: s.view === 'vehicles', vehicleDetail: s.view === 'vehicleDetail',
       sites: s.view === 'sites', materials: s.view === 'materials', cement: s.view === 'cement', cementSiteDetail: s.view === 'cementSiteDetail', reports: s.view === 'reports', settings: s.view === 'settings',
-      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', labour: s.view === 'labour', labourDetail: s.view === 'labourDetail', funds: s.view === 'funds', attendance: s.view === 'attendance', siteDetail: s.view === 'siteDetail'
+      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', labour: s.view === 'labour', labourDetail: s.view === 'labourDetail', funds: s.view === 'funds', cashbook: s.view === 'cashbook', attendance: s.view === 'attendance', siteDetail: s.view === 'siteDetail'
     };
     const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel', staffDue: s.reportTab === 'staffDue', labour: s.reportTab === 'labour' };
     const modalIs = { driverAllocation: s.modal === 'driverAllocation', siteTransfer: s.modal === 'siteTransfer', transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', cementReceived: s.modal === 'cementReceived', cementUsed: s.modal === 'cementUsed', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment', mistriPaymentDiscount: s.modal === 'mistriPaymentDiscount', labour: s.modal === 'labour', labourEntry: s.modal === 'labourEntry', labourPayment: s.modal === 'labourPayment', labourPaymentDiscount: s.modal === 'labourPaymentDiscount', paymentDiscount: s.modal === 'paymentDiscount', dieselPaymentDiscount: s.modal === 'dieselPaymentDiscount', otherPayment: s.modal === 'otherPayment', staffBF: s.modal === 'staffBF', labourBF: s.modal === 'labourBF', mistriBF: s.modal === 'mistriBF', vehicle: s.modal === 'vehicle', vehicleLog: s.modal === 'vehicleLog' };
@@ -6838,12 +7017,23 @@ class Component extends DCLogic {
     const modalTitleMap = { driverAllocation: isEditing ? 'Edit Driver Allocation' : 'Add Driver Allocation', transaction: isEditing ? 'Edit Supplier Transaction' : 'Add Supplier Transaction', payment: isEditing ? 'Edit Supplier Payment' : 'Add Supplier Payment', paymentDiscount: 'Add Supplier Discount', bf: isEditing ? 'Edit BF Balance' : 'Add BF Balance', dieselTx: isEditing ? 'Edit Diesel Transaction' : 'Add Diesel Transaction', dieselPayment: isEditing ? 'Edit Diesel Payment' : 'Add Diesel Payment', dieselPaymentDiscount: 'Add Diesel Discount', dieselBF: isEditing ? 'Edit Diesel BF' : 'Add Diesel BF', supplier: isEditing ? 'Edit Supplier' : 'Add Supplier', site: isEditing ? 'Edit Site' : 'Add Site', material: isEditing ? 'Edit Material' : 'Add Material', staff: isEditing ? 'Edit Staff' : 'Add Staff', staffSalary: isEditing ? 'Edit Salary Slip' : 'Add Salary Slip', staffPayment: isEditing ? 'Edit Staff Payment' : 'Add Staff Payment', userContact: 'Edit WhatsApp Number', fundTransfer: isEditing ? 'Edit Fund Transfer' : 'Send Money', siteAllocation: isEditing ? 'Edit Site Allocation' : 'Allocate to Site', siteExpense: isEditing ? 'Edit Site Expenditure' : 'Log Site Expenditure', cementReceived: isEditing ? 'Edit Cement Received' : 'Log Cement Received', cementUsed: isEditing ? 'Edit Cement Used' : 'Log Cement Used', mistri: isEditing ? 'Edit Mistri' : 'Add Mistri', mistriDue: isEditing ? 'Edit Mistri Due' : 'Add Mistri Due', mistriPayment: isEditing ? 'Edit Mistri Payment' : 'Add Mistri Payment', mistriPaymentDiscount: 'Add Mistri Discount', labour: isEditing ? 'Edit Labour' : 'Add Labour', labourEntry: isEditing ? 'Edit Labour Entry' : 'Add Labour Entry', labourPayment: isEditing ? 'Edit Labour Payment' : 'Add Labour Payment', labourPaymentDiscount: 'Add Labour Discount', otherPayment: isEditing ? 'Edit Payment' : 'Send Payment', staffBF: isEditing ? 'Edit Staff BF Balance' : 'Add Staff BF Balance', labourBF: isEditing ? 'Edit Labour BF Balance' : 'Add Labour BF Balance', mistriBF: isEditing ? 'Edit Mistri BF Balance' : 'Add Mistri BF Balance', vehicle: isEditing ? 'Edit Vehicle' : 'Add Vehicle', vehicleLog: isEditing ? 'Edit Daily Log' : 'Add Daily Log', siteTransfer: isEditing ? 'Edit Site Transfer' : 'Transfer Balance' };
     const modalTitle = modalTitleMap[s.modal] || '';
 
+    const cbFmt = function (n) { n = Number(n) || 0; return (n < 0 ? '-₹' : '₹') + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 0 }); };
+    const cbData = s.view === 'cashbook' ? self.buildCashbook() : { name: '', opening: 0, openCash: 0, openAC: 0, totIn: 0, totOut: 0, tInC: 0, tInA: 0, tOutC: 0, tOutA: 0, closing: 0, closeCash: 0, closeAC: 0, days: [] };
+    const cbDays = cbData.days.slice().reverse().map(function (d) {
+      const open = !!s.cbOpen[d.date];
+      const p = d.date.split('-');
+      return { date: d.date, dateLabel: p.length === 3 ? p[2] + '-' + p[1] + '-' + p[0] : (d.date || 'No date'), receivedFmt: d.received ? cbFmt(d.received) : '—', spentFmt: d.spent ? cbFmt(d.spent) : '—', inCashFmt: d.inCash ? cbFmt(d.inCash) : '—', inACFmt: d.inAC ? cbFmt(d.inAC) : '—', outCashFmt: d.outCash ? cbFmt(d.outCash) : '—', outACFmt: d.outAC ? cbFmt(d.outAC) : '—', netFmt: cbFmt(d.net), netColor: d.net >= 0 ? '#2e9e5b' : '#e2574c', balanceFmt: cbFmt(d.balance), balCashFmt: cbFmt(d.balCash), balACFmt: cbFmt(d.balAC), count: d.items.length + (d.items.length === 1 ? ' entry' : ' entries'), open: open, arrow: open ? '▾' : '▸',
+        toggle: function () { self.setState(function (st) { const o = Object.assign({}, st.cbOpen); o[d.date] = !o[d.date]; return { cbOpen: o }; }); },
+        items: d.items.map(function (e) { return { cat: e.cat, detail: e.detail, remarks: e.remarks, method: e.method, inFmt: e.kind === 'in' ? cbFmt(e.amt) : '', outFmt: e.kind === 'out' ? cbFmt(e.amt) : '' }; }) };
+    });
+    const cbUserSet = {}; (s.fundTransfers || []).forEach(function (t) { if (t.To) cbUserSet[t.To] = 1; if (t.From) cbUserSet[t.From] = 1; }); cbUserSet['Sukadev'] = 1;
+    const cbUsers = Object.keys(cbUserSet).sort().map(function (n) { return { name: n, selected: n === cbData.name }; });
     const navBtn = function (active) { return 'display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;margin-bottom:2px;box-sizing:border-box;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';border-left:3px solid ' + (active ? 'var(--gold)' : 'transparent') + ';'; };
-    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselSuppliers: navBtn(viewIs.dieselSuppliers || viewIs.dieselSupplierDetail), dieselTx: navBtn(viewIs.dieselTx), vehicles: navBtn(viewIs.vehicles || viewIs.vehicleDetail), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), cement: navBtn(viewIs.cement), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), labour: navBtn(viewIs.labour || viewIs.labourDetail), funds: navBtn(viewIs.funds), attendance: navBtn(viewIs.attendance) };
+    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselSuppliers: navBtn(viewIs.dieselSuppliers || viewIs.dieselSupplierDetail), dieselTx: navBtn(viewIs.dieselTx), vehicles: navBtn(viewIs.vehicles || viewIs.vehicleDetail), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), cement: navBtn(viewIs.cement), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), labour: navBtn(viewIs.labour || viewIs.labourDetail), funds: navBtn(viewIs.funds), cashbook: navBtn(viewIs.cashbook), attendance: navBtn(viewIs.attendance) };
     const tabBtn = function (active) { return 'padding:9px 16px;border-radius:20px;border:1px solid ' + (active ? 'var(--gold)' : 'var(--border)') + ';cursor:pointer;font-size:13px;font-weight:600;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';'; };
     const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel), staffDue: tabBtn(reportTabIs.staffDue), labour: tabBtn(reportTabIs.labour) };
 
-    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', dieselSuppliers: 'Diesel Suppliers', dieselSupplierDetail: dieselSupplierDetail.name, vehicles: 'Vehicles', vehicleDetail: vehicleDetail.VehicleNumber, sites: 'Sites', siteDetail: siteDetail.name, materials: 'Materials', cement: 'Cement', cementSiteDetail: cementSiteDetail.name, reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', mistri: 'Mistri', mistriDetail: mistriDetail.Name, labour: 'Labour', labourDetail: labourDetail.Name, funds: 'Fund Distribution', attendance: 'Attendance' };
+    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', dieselSuppliers: 'Diesel Suppliers', dieselSupplierDetail: dieselSupplierDetail.name, vehicles: 'Vehicles', vehicleDetail: vehicleDetail.VehicleNumber, sites: 'Sites', siteDetail: siteDetail.name, materials: 'Materials', cement: 'Cement', cementSiteDetail: cementSiteDetail.name, reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', mistri: 'Mistri', mistriDetail: mistriDetail.Name, labour: 'Labour', labourDetail: labourDetail.Name, funds: 'Fund Distribution', cashbook: 'Sites Cashbook', attendance: 'Attendance' };
 
     return {
       session: s.session, loading: s.loading, toast: s.toast, loginError: s.loginError, isDemo: isDemo, todayStr: todayStr,
@@ -6863,7 +7053,7 @@ class Component extends DCLogic {
       navPayments: function () { self.setView('payments'); }, navBF: function () { self.setView('bf'); }, navDieselSuppliers: function () { self.setView('dieselSuppliers'); }, navDieselTx: function () { self.setView('dieselTx'); }, navVehicles: function () { self.setView('vehicles'); },
       navDieselPayments: function () { self.setView('dieselPayments'); }, navDieselBF: function () { self.setView('dieselBF'); }, navSites: function () { self.setView('sites'); },
       navMaterials: function () { self.setView('materials'); }, navCement: function () { self.setView('cement'); }, navReports: function () { self.setView('reports'); }, navSettings: function () { self.setView('settings'); },
-      navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navMistri: function () { self.setView('mistri'); }, navFunds: function () { self.setView('funds'); }, navAttendance: function () { self.setView('attendance'); },
+      navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navMistri: function () { self.setView('mistri'); }, navFunds: function () { self.setView('funds'); }, navCashbook: function () { self.setView('cashbook'); }, navAttendance: function () { self.setView('attendance'); },
       mobileNavOpen: s.mobileNavOpen, toggleMobileNav: this.toggleMobileNav.bind(this), closeMobileNav: this.closeMobileNav.bind(this),
       isOwnerOrAdmin1: isOwnerOrAdmin1, canSeeAllFunds: canSeeAllFunds, isAdmin1: isAdmin1, showAppPicker: showAppPicker, pickConstruction: this.pickConstruction.bind(this), pickHomePipes: this.pickHomePipes.bind(this), showMaintenanceLock: showMaintenanceLock, appAccessible: appAccessible,
       zoomLevel: s.zoomLevel || 1, zoomLabel: Math.round((s.zoomLevel || 1) * 100) + '%', zoomWidthPct: Math.round(100 / (s.zoomLevel || 1)) + '%', onZoomIn: this.onZoomIn.bind(this), onZoomOut: this.onZoomOut.bind(this), onZoomReset: this.onZoomReset.bind(this), siteCount: s.sites.length,
@@ -6923,6 +7113,9 @@ class Component extends DCLogic {
       dieselSupplierCards: dieselSupplierCards, dieselSupplierDetail: dieselSupplierDetail,
       vehicleCards: vehicleCards, vehicleDetail: vehicleDetail, openVehicleModal: function () { self.openModal('vehicle'); },
       vehiclesSummaryFilter: s.vehiclesSummaryFilter, onVehiclesSummaryFrom: this.setGenericFilter('vehiclesSummaryFilter', 'from'), onVehiclesSummaryTo: this.setGenericFilter('vehiclesSummaryFilter', 'to'), onVehiclesSummaryAll: this.clearFilterToAll('vehiclesSummaryFilter'), onExportVehiclesSummaryPDF: this.exportVehiclesSummaryPDF.bind(this),
+      cbOpeningFmt: cbFmt(cbData.opening), cbInFmt: cbFmt(cbData.totIn), cbOutFmt: cbFmt(cbData.totOut), cbClosingFmt: cbFmt(cbData.closing), cbClosingColor: cbData.closing >= 0 ? '#2e9e5b' : '#e2574c', cbInCashFmt: cbFmt(cbData.tInC), cbInACFmt: cbFmt(cbData.tInA), cbOutCashFmt: cbFmt(cbData.tOutC), cbOutACFmt: cbFmt(cbData.tOutA), cbCloseCashFmt: cbFmt(cbData.closeCash), cbCloseACFmt: cbFmt(cbData.closeAC), cbOpenCashFmt: cbFmt(cbData.openCash), cbOpenACFmt: cbFmt(cbData.openAC), cbWalletName: cbData.name, cbDays: cbDays, cbHasDays: cbDays.length > 0, cbNoDays: cbDays.length === 0, cbUsers: cbUsers, cbFrom: s.cbFrom, cbTo: s.cbTo, cbMonth: s.cbMonth,
+      cbSetFrom: function (e) { self.setState({ cbFrom: e.target.value, cbMonth: '' }); }, cbSetTo: function (e) { self.setState({ cbTo: e.target.value, cbMonth: '' }); }, cbSetMonth: function (e) { self.setState({ cbMonth: e.target.value, cbFrom: '', cbTo: '' }); }, cbSetUser: function (e) { self.setState({ cbUser: e.target.value, cbOpen: {} }); },
+      cbClear: function () { self.setState({ cbFrom: '', cbTo: '', cbMonth: '', cbOpen: {} }); }, exportCashbookExcel: this.exportCashbookExcel.bind(this), exportCashbookPDF: this.exportCashbookPDF.bind(this),
       exportDieselTxExcel: this.exportDieselTxExcel.bind(this), exportDieselTxPDF: this.exportDieselTxPDF.bind(this),
       dieselTxRows: dieselTxF2.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i, SiteDisplay: r.Site || r.VehicleSite || '' }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }), exportDieselTxExcel: this.exportDieselTxExcel.bind(this), exportDieselTxPDF: this.exportDieselTxPDF.bind(this),
       dieselPayRows: dieselPayF2.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), DiscountAmountFmt: fmt(r.DiscountAmount || 0), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
