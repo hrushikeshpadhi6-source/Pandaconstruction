@@ -129,6 +129,7 @@
     User: { coll: "users", idField: "UserID", counter: "UserID", prefix: "USR", def: { Status: "Pending", Role: "Pending" } },
     HPProduction: { coll: "hpProduction", idField: "ProdID", counter: "HPProdID", prefix: "HPP" },
     HPSale: { coll: "hpSales", idField: "SaleID", counter: "HPSaleID", prefix: "HPS" },
+    Notification: { coll: "notifications", idField: "NotifID", counter: "NotifID", prefix: "NTF" },
     HPCashbook: { coll: "hpCashbook", idField: "EntryID", counter: "HPCashID", prefix: "HPC" },
     HPMistri: { coll: "hpMistri", idField: "MistriID", counter: "HPMistriID", prefix: "HPM", def: { Status: "Active" } },
     HPMistriPayment: { coll: "hpMistriPayments", idField: "PaymentID", counter: "HPMistriPayID", prefix: "HPMP" },
@@ -140,16 +141,22 @@
   const HP_CATEGORIES = ["300mm", "450mm", "600mm", "900mm", "1000mm", "GP", "KM Stone", "200M Stone"];
   const HP_INCH_FACTOR = { "300mm": 12, "450mm": 18, "600mm": 24, "900mm": 36, "1000mm": 40, "GP": 0, "KM Stone": 0, "200M Stone": 0 };
 
+  // Approval context: set by PandaAPI.call from the client's __approval hint, merged into the
+  // record written by the matching entity's add/update.
+  let APPROVAL_CTX = null;
   async function genericAdd(key, payload) {
     const m = MAP[key];
+    const ctx = APPROVAL_CTX;
     const id = await nextId(m.counter, m.prefix, m.coll);
     const rec = Object.assign({}, m.def, payload, { CreatedAt: new Date().toISOString() });
+    if (ctx && ctx.key === key && ctx.fields) Object.assign(rec, ctx.fields);
     rec[m.idField] = m.idField === "SLNo" ? Number(id.replace(m.prefix, "")) : id;
     await db.collection(m.coll).doc(String(rec[m.idField])).set(rec);
     return { rec: rec, id: rec[m.idField] };
   }
   async function genericUpdate(key, payload, fields) {
     const m = MAP[key];
+    if (APPROVAL_CTX && APPROVAL_CTX.key === key && APPROVAL_CTX.fields) fields = Object.assign({}, fields, APPROVAL_CTX.fields);
     const idVal = payload[m.idField];
     if (idVal === undefined || idVal === null || idVal === "") return false;
     const ref = db.collection(m.coll).doc(String(idVal));
@@ -265,6 +272,16 @@
         return { success: true, message: "Announcement updated.", announcement: await getAnnouncementStatus() };
       }
       case "getCollection": return { success: true, data: await colToArray(p.name) };
+      case "setApproval": {
+        const m = MAP[p.key]; if (!m) return { success: false, message: "Unknown entry type." };
+        const idp = {}; idp[m.idField] = p.id;
+        const ok = await genericUpdate(p.key, idp, p.fields || {});
+        if (!ok) return { success: false, message: "Entry not found." };
+        await auditLog(p.CreatedBy || "", "Approval: " + ((p.fields && p.fields.ApprovalStatus) || "update"), p.key, String(p.id), (p.fields && p.fields.ApprovalNote) || "");
+        return { success: true, message: "Updated." };
+      }
+      case "addNotification": { const r = await genericAdd("Notification", { To: p.To || "", Message: p.Message || "", Type: p.Type || "", RefKey: p.RefKey || "", RefId: String(p.RefId || ""), Read: false, CreatedBy: p.CreatedBy || "" }); return { success: true, data: r.rec }; }
+      case "markNotificationsRead": { const ids = p.ids || []; await Promise.all(ids.map(function (id) { return db.collection("notifications").doc(String(id)).set({ Read: true }, { merge: true }); })); return { success: true }; }
       // One-time, automatic, silent cleanup for the bad BF rows the old (pre-fix) auto-rollover
       // wrote. Runs itself at most once ever (guarded by a meta flag) \u2014 no button, no admin
       // action, nothing to click by mistake. Deletes only System-created rows for the month it
@@ -461,12 +478,19 @@
         return { success: true, skipped: false, rolled: rolled, message: "Monthly rollover complete (" + rolled + " BF entries added)." };
       }
       case "getAllData": {
-        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "siteTransfers", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions", "staffBF", "labourBF", "mistriBF", "vehicles", "vehicleDailyLog", "cementReceived", "cementUsed", "driverAllocations", "duplicateReviews"];
+        const names = ["suppliers", "transactions", "payments", "bf", "dieselTx", "dieselPayments", "dieselBF", "sites", "materials", "users", "staff", "staffSalary", "staffPayments", "fundTransfers", "siteAllocations", "siteExpenses", "siteTransfers", "otherPayments", "staffAttendance", "mistri", "mistriDue", "mistriPayments", "mistriAdvances", "labour", "labourEntries", "labourPayments", "labourAdvances", "taskCompletions", "staffBF", "labourBF", "mistriBF", "vehicles", "vehicleDailyLog", "cementReceived", "cementUsed", "driverAllocations", "duplicateReviews", "notifications"];
         const dateFilteredNames = ["transactions", "payments", "dieselTx", "dieselPayments", "siteExpenses", "siteTransfers", "staffPayments", "mistriPayments", "mistriAdvances", "labourPayments", "labourAdvances", "otherPayments", "fundTransfers", "siteAllocations", "vehicleDailyLog", "cementReceived", "cementUsed", "staffAttendance", "labourEntries", "driverAllocations"];
-        const cutoff = await computeLoadCutoff();
-        const arrs = await Promise.all(names.map(function (n) { return dateFilteredNames.indexOf(n) !== -1 ? colToArraySince(n, cutoff) : colToArray(n); }));
+        // Step 1 (parallel): BF ledgers + settings + every non-date collection. BF arrays give the
+        // cutoff, so they are read once and reused instead of fetched twice.
+        const firstNames = names.filter(function (n) { return dateFilteredNames.indexOf(n) === -1; });
+        const [firstArrs, settingsMap] = await Promise.all([Promise.all(firstNames.map(colToArray)), getSettingsMap()]);
         const out = { success: true };
-        names.forEach(function (n, i) { out[n] = arrs[i]; });
+        firstNames.forEach(function (n, i) { out[n] = firstArrs[i]; });
+        let cutoff = null;
+        ["bf", "dieselBF", "staffBF", "labourBF", "mistriBF"].forEach(function (k) { (out[k] || []).forEach(function (r) { if (r.BFDate && (!cutoff || r.BFDate < cutoff)) cutoff = r.BFDate; }); });
+        // Step 2 (parallel): date-filtered collections from the cutoff.
+        const secondArrs = await Promise.all(dateFilteredNames.map(function (n) { return colToArraySince(n, cutoff); }));
+        dateFilteredNames.forEach(function (n, i) { out[n] = secondArrs[i]; });
         if (p.user) {
           const usersArr = out.users || [];
           const u2 = usersArr.find(function (x) { return String(x.Name).toLowerCase() === String(p.user).toLowerCase(); });
@@ -477,8 +501,9 @@
           }
         }
         out.auditLog = []; // fetched separately via getAuditLog only when the Settings/Audit tab is opened
-        out.maintenance = await getMaintenanceStatus();
-        out.announcement = await getAnnouncementStatus();
+        out.maintenance = { enabled: String(settingsMap.MaintenanceMode) === "TRUE", message: settingsMap.MaintenanceMessage || "" };
+        out.announcement = { enabled: String(settingsMap.AnnouncementEnabled) === "TRUE", message: settingsMap.AnnouncementMessage || "" };
+        out.loadedAt = new Date().toISOString();
         return out;
       }
       case "getUsers": return { success: true, data: await colToArray("users") };
@@ -894,7 +919,11 @@
       catch (e) { return { reads: 0, writes: 0, deletes: 0 }; }
     },
     call: function (action, payload) {
-      return route(action, payload).then(function (res) {
+      let ctx = null;
+      if (payload && payload.__approval) { ctx = payload.__approval; payload = Object.assign({}, payload); delete payload.__approval; }
+      if (ctx) APPROVAL_CTX = ctx;
+      const pr = route(action, payload).finally(function () { if (ctx && APPROVAL_CTX === ctx) APPROVAL_CTX = null; });
+      return pr.then(function (res) {
         if (/^get/.test(action)) trackUsage('reads', (res && res.data && res.data.length) || (action === 'getAllData' ? 500 : 1));
         else if (/^add/.test(action)) trackUsage('writes', 2);
         else if (/^update/.test(action)) trackUsage('writes', 1);

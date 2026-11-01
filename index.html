@@ -175,6 +175,7 @@
     </div>
     <div style="flex:1;display:flex;flex-direction:column;padding:16px 12px;overflow-y:auto;">
       <button onClick="{{ navDashboard }}" style="{{ navStyle.dashboard }}">Dashboard</button>
+      <button onClick="{{ navApprovals }}" style="{{ navStyle.approvals }}">Approvals<sc-if value="{{ apprBadge }}"><span style="display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;text-align:center;">{{ apprBadge }}</span></sc-if></button>
       <button onClick="{{ navTasks }}" style="{{ navStyle.tasks }}">Task Tracker</button>
       <div style="margin:16px 12px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.6px;">Supplier Management</div>
       <button onClick="{{ navSuppliers }}" style="{{ navStyle.suppliers }}">Suppliers</button>
@@ -218,6 +219,8 @@
       <h1 style="font-size:24px;font-weight:800;margin:0;">{{ pageTitle }}</h1>
       <div style="display:flex;align-items:center;gap:8px;">
         <sc-if value="{{ isDemo }}"><div style="background:var(--chip);color:var(--gold);font-size:12px;padding:6px 14px;border-radius:20px;white-space:nowrap;">Demo Data — connect config.js for live Sheet</div></sc-if>
+        <sc-if value="{{ syncing }}"><div style="font-size:12px;color:var(--muted);white-space:nowrap;">Updating…</div></sc-if>
+        <button type="button" onClick="{{ navApprovals }}" title="Approvals" style="position:relative;background:var(--surface);border:1px solid var(--border);color:var(--text);height:36px;padding:0 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">Approvals<sc-if value="{{ apprBadge }}"><span style="position:absolute;top:-6px;right:-6px;background:#e2574c;color:#fff;font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 3px;">{{ apprBadge }}</span></sc-if></button>
         <div style="position:relative;">
           <button type="button" onClick="{{ toggleDupPanel }}" title="Duplicate entries" style="position:relative;background:var(--surface);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:16px;">
             🔔
@@ -1938,6 +1941,64 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ viewIs.approvals }}">
+      <div style="color:var(--muted);font-size:13px;line-height:1.5;margin-bottom:16px;max-width:820px;">{{ apprIntro }}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <sc-for list="{{ apprTabs }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</button></sc-for>
+      </div>
+      <sc-if value="{{ apprShowBulk }}">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:12px;">
+          <button onClick="{{ apprSelectAll }}" style="background:transparent;border:1px solid var(--text);color:var(--text);padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">{{ apprSelectAllLabel }}</button>
+          <div style="flex:1;"></div>
+          <button onClick="{{ apprBulkApprove }}" style="background:#2e9e5b;color:#fff;border:none;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">{{ apprBulkLabel }}</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ apprShowNotifs }}">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+          <sc-if value="{{ apprHasUnread }}"><div style="display:flex;justify-content:flex-end;padding:10px 14px;border-bottom:1px solid var(--border-soft);"><button onClick="{{ apprMarkRead }}" style="background:transparent;border:1px solid var(--gold);color:var(--gold);padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">Mark all read</button></div></sc-if>
+          <sc-for list="{{ apprNotifs }}" as="n">
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--border-soft);">
+              <div style="flex:none;width:8px;height:8px;border-radius:50%;margin-top:6px;background:{{ n.dot }};"></div>
+              <div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:{{ n.weight }};">{{ n.msg }}</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">{{ n.from }} · {{ n.when }}</div></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ apprNoNotifs }}"><div style="padding:28px;text-align:center;color:var(--muted);">No notifications yet.</div></sc-if>
+        </div>
+      </sc-if>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <sc-for list="{{ apprItems }}" as="it" hint-placeholder-count="3">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;">
+            <sc-if value="{{ it.selectable }}"><input type="checkbox" checked="{{ it.selected }}" onChange="{{ it.toggleSel }}" style="width:18px;height:18px;margin-top:2px;flex:none;cursor:pointer;"></sc-if>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+                <span style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.4px;">{{ it.label }}</span>
+                <span style="font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;border:1px solid {{ it.statusColor }};color:{{ it.statusColor }};">{{ it.statusText }}</span>
+                <span style="font-size:12px;color:var(--muted);">{{ it.date }} · by {{ it.by }}</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:baseline;">
+                <div style="font-size:15px;font-weight:600;min-width:0;">{{ it.detail }}</div>
+                <div style="font-size:17px;font-weight:800;white-space:nowrap;">{{ it.amountFmt }}</div>
+              </div>
+              <sc-if value="{{ it.hasNote }}"><div style="font-size:13px;color:#3b82f6;">Note: {{ it.note }}</div></sc-if>
+              <sc-if value="{{ it.hasReq }}"><div style="font-size:13px;color:#e8a33d;">{{ it.reqNote }}</div></sc-if>
+              <div style="font-size:11px;color:var(--muted2);line-height:1.5;">{{ it.history }}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">
+                <sc-if value="{{ it.canApprove }}"><button onClick="{{ it.onApprove }}" style="background:#2e9e5b;color:#fff;border:none;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">Approve</button></sc-if>
+                <sc-if value="{{ it.canSendBack }}"><button onClick="{{ it.onSendBack }}" style="background:transparent;border:1px solid #3b82f6;color:#3b82f6;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">Send back for edit</button></sc-if>
+                <sc-if value="{{ it.canReject }}"><button onClick="{{ it.onReject }}" style="background:transparent;border:1px solid #e2574c;color:#e2574c;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">Reject</button></sc-if>
+                <sc-if value="{{ it.canGrant }}"><button onClick="{{ it.onGrant }}" style="background:transparent;border:1px solid #2e9e5b;color:#2e9e5b;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">Allow edit</button></sc-if>
+                <sc-if value="{{ it.canGrant }}"><button onClick="{{ it.onDecline }}" style="background:transparent;border:1px solid #e2574c;color:#e2574c;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">Decline</button></sc-if>
+                <sc-if value="{{ it.canRequest }}"><button onClick="{{ it.onRequest }}" style="background:transparent;border:1px solid var(--gold);color:var(--gold);padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">Request edit</button></sc-if>
+                <sc-if value="{{ it.requested }}"><span style="font-size:12px;color:#e8a33d;">Edit requested — waiting for Owner</span></sc-if>
+                <sc-if value="{{ it.canEditHint }}"><span style="font-size:12px;color:var(--muted);">You can edit this from its normal page.</span></sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ apprEmpty }}"><div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px;text-align:center;color:var(--muted);">Nothing here.</div></sc-if>
+      </div>
+    </sc-if>
+
     <sc-if value="{{ viewIs.cashbook }}">
       <div style="font-weight:700;font-size:15px;margin-bottom:12px;">{{ cbWalletName }}'s Cashbook</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;">
@@ -3578,7 +3639,7 @@ class Component extends DCLogic {
     suppliers: [], transactions: [], payments: [], bf: [],
     dieselTx: [], dieselPayments: [], dieselBF: [],
     sites: [], materials: [], users: [], auditLog: [], siteTransfers: [],
-    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], staffBF: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], mistriBF: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], labourBF: [], vehicles: [], vehicleDailyLog: [], cbFrom: '', cbTo: '', cbMonth: '', cbUser: '', cbOpen: {}, fundTransfers: [], siteAllocations: [], driverAllocations: [], siteExpenses: [], otherPayments: [], cementReceived: [], cementUsed: [], taskCompletions: [], duplicateReviews: [], dupPanelOpen: false, taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
+    staff: [], staffSalary: [], staffPayments: [], staffAttendance: [], staffBF: [], mistri: [], mistriDue: [], mistriPayments: [], mistriAdvances: [], mistriBF: [], labour: [], labourEntries: [], labourPayments: [], labourAdvances: [], labourBF: [], vehicles: [], vehicleDailyLog: [], apprTab: '', apprSel: {}, notifications: [], rejectedEntries: {}, cbFrom: '', cbTo: '', cbMonth: '', cbUser: '', cbOpen: {}, fundTransfers: [], siteAllocations: [], driverAllocations: [], siteExpenses: [], otherPayments: [], cementReceived: [], cementUsed: [], taskCompletions: [], duplicateReviews: [], dupPanelOpen: false, taskDate: '', attendanceDate: '', attendanceExportMonth: '', mobileNavOpen: false, labourEntryTypeUI: 'Daily',
     selectedSupplier: null, selectedMistri: null, selectedLabour: null, selectedSite: null, selectedDieselSupplier: null, selectedVehicle: null, selectedCementSite: null, modal: null, editRecord: null,
     dashFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
     txPageFilters: { from: '', to: '', supplier: '', site: '', material: '', vehicle: '' },
@@ -3592,6 +3653,9 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
+    this.ensureApprWrap();
+    if (!this._apprWrapTimer) this._apprWrapTimer = setInterval(this.ensureApprWrap.bind(this), 500);
+    if (!this._apprTimer) this._apprTimer = setInterval(this.apprReminderTick.bind(this), 10000);
     const savedTheme = localStorage.getItem('panda_theme');
     if (savedTheme === 'dark' || savedTheme === 'light') this.setState({ theme: savedTheme });
     PandaAPI.call('getUsers').then(function (r) {
@@ -3679,32 +3743,63 @@ class Component extends DCLogic {
     this._toastT = setTimeout(function () { this.setState({ toast: null }); }.bind(this), 3200);
   }
 
+  applyAllData(r) {
+    return {
+      suppliers: r.suppliers || [], transactions: r.transactions || [], payments: r.payments || [], bf: r.bf || [],
+      dieselTx: r.dieselTx || [], dieselPayments: r.dieselPayments || [], dieselBF: r.dieselBF || [],
+      sites: r.sites || [], materials: r.materials || [], users: r.users || [],
+      staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [], staffBF: r.staffBF || [],
+      mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [], mistriBF: r.mistriBF || [],
+      labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [], labourBF: r.labourBF || [],
+      fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], driverAllocations: r.driverAllocations || [], siteExpenses: r.siteExpenses || [], siteTransfers: r.siteTransfers || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [], duplicateReviews: r.duplicateReviews || [],
+      vehicles: r.vehicles || [], vehicleDailyLog: r.vehicleDailyLog || [],
+      cementReceived: r.cementReceived || [], cementUsed: r.cementUsed || [],
+      notifications: r.notifications || [], rejectedEntries: r.__rejected || this.state.rejectedEntries || {},
+      maintenance: r.maintenance || this.state.maintenance || { enabled: false, message: '' },
+      announcement: r.announcement || this.state.announcement || { enabled: false, message: '' }
+    };
+  }
+  // Tiny IndexedDB cache of the last good getAllData result: the app paints instantly from it
+  // and refreshes in the background, so a slow network never shows zeros.
+  idb() {
+    if (this._idbP) return this._idbP;
+    this._idbP = new Promise(function (res) {
+      try { const rq = indexedDB.open('panda_cache', 1); rq.onupgradeneeded = function () { rq.result.createObjectStore('kv'); }; rq.onsuccess = function () { res(rq.result); }; rq.onerror = function () { res(null); }; } catch (e) { res(null); }
+    });
+    return this._idbP;
+  }
+  cacheGet() { return this.idb().then(function (db) { if (!db) return null; return new Promise(function (res) { try { const rq = db.transaction('kv').objectStore('kv').get('allData'); rq.onsuccess = function () { res(rq.result || null); }; rq.onerror = function () { res(null); }; } catch (e) { res(null); } }); }); }
+  cacheSet(r) { return this.idb().then(function (db) { if (!db) return; try { db.transaction('kv', 'readwrite').objectStore('kv').put(r, 'allData'); } catch (e) {} }); }
   loadAll() {
-    this.setState({ loading: true });
+    this.ensureApprWrap();
     const self = this;
-    const timeoutGuard = setTimeout(function () { self.setState(function (s) { return s.loading ? { loading: false } : null; }); self.showToast('Data load timed out — check your connection and try again.'); }, 15000);
-    return PandaAPI.call('getAllData', { user: this.state.session && this.state.session.name }).then(function (r) {
-      clearTimeout(timeoutGuard);
-      if (!r || !r.success) { this.setState({ loading: false }); this.showToast((r && r.message) || 'Failed to load data.'); return; }
-      this.setState({
-        suppliers: r.suppliers || [], transactions: r.transactions || [], payments: r.payments || [], bf: r.bf || [],
-        dieselTx: r.dieselTx || [], dieselPayments: r.dieselPayments || [], dieselBF: r.dieselBF || [],
-        sites: r.sites || [], materials: r.materials || [], users: r.users || [], auditLog: r.auditLog || [],
-        staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [], staffBF: r.staffBF || [],
-        mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [], mistriBF: r.mistriBF || [],
-        labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [], labourBF: r.labourBF || [],
-        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], driverAllocations: r.driverAllocations || [], siteExpenses: r.siteExpenses || [], siteTransfers: r.siteTransfers || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [], duplicateReviews: r.duplicateReviews || [],
-        vehicles: r.vehicles || [], vehicleDailyLog: r.vehicleDailyLog || [],
-        cementReceived: r.cementReceived || [], cementUsed: r.cementUsed || [],
-        maintenance: r.maintenance || { enabled: false, message: '' },
-        announcement: r.announcement || { enabled: false, message: '' },
-        loading: false
+    const hasData = (this.state.suppliers || []).length > 0;
+    if (!hasData) this.setState({ loading: true });
+    this.setState({ syncing: true });
+    let usedCache = hasData;
+    this.cacheGet().then(function (c) {
+      if (c && !self._freshLoaded) { usedCache = true; self.setState(Object.assign(self.applyAllData(c), { loading: false, cacheTime: c.loadedAt || '' })); }
+    });
+    const slowGuard = setTimeout(function () { if (!usedCache) self.showToast('Slow connection — still loading, please wait…'); }, 12000);
+    const attempt = function (n) {
+      return PandaAPI.call('getAllData', { user: self.state.session && self.state.session.name }).then(function (r) {
+        if (!r || !r.success) throw new Error((r && r.message) || 'Failed to load data.');
+        return r;
+      }).catch(function (e) {
+        if (n < 3) return new Promise(function (res) { setTimeout(res, 1500 * (n + 1)); }).then(function () { return attempt(n + 1); });
+        throw e;
       });
-    }.bind(this)).catch(function (e) {
-      clearTimeout(timeoutGuard);
-      this.setState({ loading: false });
-      this.showToast('Failed to load data: ' + e.message + ' — check your connection and try again.');
-    }.bind(this));
+    };
+    return attempt(0).then(function (r) {
+      clearTimeout(slowGuard);
+      self._freshLoaded = true;
+      self.setState(Object.assign(self.applyAllData(r), { loading: false, syncing: false, cacheTime: '' }));
+      self.cacheSet(r);
+    }).catch(function (e) {
+      clearTimeout(slowGuard);
+      self.setState({ syncing: false, loading: false });
+      self.showToast(usedCache ? 'Offline — showing last saved data. Pull to refresh when connected.' : ('Could not load data: ' + e.message + ' — check your connection and refresh.'));
+    });
   }
 
   // Refetches ONLY the one collection an add/update action touched, instead of reloading all
@@ -3729,21 +3824,13 @@ class Component extends DCLogic {
   // Same as loadAll but skips the loading screen — used after save/delete so a background
   // refresh never blocks or re-flashes the UI.
   loadAllQuiet() {
+    this.ensureApprWrap();
     const self = this;
     return PandaAPI.call('getAllData', { user: this.state.session && this.state.session.name }).then(function (r) {
       if (!r || !r.success) return;
-      self.setState({
-        suppliers: r.suppliers || [], transactions: r.transactions || [], payments: r.payments || [], bf: r.bf || [],
-        dieselTx: r.dieselTx || [], dieselPayments: r.dieselPayments || [], dieselBF: r.dieselBF || [],
-        sites: r.sites || [], materials: r.materials || [], users: r.users || [],
-        staff: r.staff || [], staffSalary: r.staffSalary || [], staffPayments: r.staffPayments || [], staffBF: r.staffBF || [],
-        mistri: r.mistri || [], mistriDue: r.mistriDue || [], mistriPayments: r.mistriPayments || [], mistriAdvances: r.mistriAdvances || [], mistriBF: r.mistriBF || [],
-        labour: r.labour || [], labourEntries: r.labourEntries || [], labourPayments: r.labourPayments || [], labourAdvances: r.labourAdvances || [], labourBF: r.labourBF || [],
-        fundTransfers: r.fundTransfers || [], siteAllocations: r.siteAllocations || [], driverAllocations: r.driverAllocations || [], siteExpenses: r.siteExpenses || [], siteTransfers: r.siteTransfers || [], otherPayments: r.otherPayments || [], staffAttendance: r.staffAttendance || [], taskCompletions: r.taskCompletions || [], duplicateReviews: r.duplicateReviews || [],
-        vehicles: r.vehicles || [], vehicleDailyLog: r.vehicleDailyLog || [],
-        cementReceived: r.cementReceived || [], cementUsed: r.cementUsed || []
-      });
-    });
+      self.setState(self.applyAllData(r));
+      self.cacheSet(r);
+    }).catch(function () {});
   }
 
   handleLogin(e) {
@@ -4629,6 +4716,7 @@ class Component extends DCLogic {
   currentUserName() { return this.state.session ? this.state.session.name : ''; }
 
   submitGeneric(action, payload, successMsg) {
+    this.ensureApprWrap();
     if (this.state.saveStatus === 'saving') return;
     this.setState({ saveStatus: 'saving' });
     const self = this;
@@ -4841,6 +4929,7 @@ class Component extends DCLogic {
     else this.submitGeneric('addDieselBF', payload, 'Diesel BF saved successfully.');
   }
   deleteRecord(action, idPayload, listKey) {
+    this.ensureApprWrap();
     if (!window.confirm('Delete this entry permanently? This cannot be undone.')) return;
     const payload = Object.assign({}, idPayload, { CreatedBy: this.currentUserName() });
     if (this.state.saveStatus === 'saving') return;
@@ -5624,6 +5713,223 @@ class Component extends DCLogic {
   paidWithDiscount(list) { return this.sum(list, 'AmountPaid') + this.sum(list, 'DiscountAmount'); }
   inRange(dateStr, from, to) { if (!dateStr) return true; if (from && dateStr < from) return false; if (to && dateStr > to) return false; return true; }
   oc(n) { n = Number(n) || 0; return n > 0 ? '#e2574c' : (n < 0 ? '#2ea043' : 'var(--muted)'); }
+  apprConfig() {
+    return {
+      Transaction: { state: 'transactions', id: 'SLNo', label: 'Supplier Purchase' }, Payment: { state: 'payments', id: 'PaymentID', label: 'Supplier Payment' },
+      DieselTransaction: { state: 'dieselTx', id: 'SLNo', label: 'Diesel Entry' }, DieselPayment: { state: 'dieselPayments', id: 'PaymentID', label: 'Diesel Payment' },
+      StaffSalary: { state: 'staffSalary', id: 'SalaryID', label: 'Staff Salary' }, StaffPayment: { state: 'staffPayments', id: 'PaymentID', label: 'Staff Payment' },
+      MistriDue: { state: 'mistriDue', id: 'DueID', label: 'Mistri Due' }, MistriPayment: { state: 'mistriPayments', id: 'PaymentID', label: 'Mistri Payment' }, MistriAdvance: { state: 'mistriAdvances', id: 'AdvanceID', label: 'Mistri Advance' },
+      LabourEntry: { state: 'labourEntries', id: 'EntryID', label: 'Labour Entry' }, LabourPayment: { state: 'labourPayments', id: 'PaymentID', label: 'Labour Payment' }, LabourAdvance: { state: 'labourAdvances', id: 'AdvanceID', label: 'Labour Advance' },
+      FundTransfer: { state: 'fundTransfers', id: 'TransferID', label: 'Fund Transfer' }, SiteAllocation: { state: 'siteAllocations', id: 'AllocationID', label: 'Site Allocation' }, DriverAllocation: { state: 'driverAllocations', id: 'AllocationID', label: 'Driver Allocation' },
+      SiteExpense: { state: 'siteExpenses', id: 'ExpenseID', label: 'Site Expense' }, SiteTransfer: { state: 'siteTransfers', id: 'TransferID', label: 'Site Transfer' }, OtherPayment: { state: 'otherPayments', id: 'PaymentID', label: 'Other Payment' },
+      CementReceived: { state: 'cementReceived', id: 'ReceiptID', label: 'Cement Received' }, CementUsed: { state: 'cementUsed', id: 'UsageID', label: 'Cement Used' }, VehicleLog: { state: 'vehicleDailyLog', id: 'LogID', label: 'Vehicle Log' }
+    };
+  }
+  ensureApprWrap() {
+    window.__pandaApprGate = this.approvalGate.bind(this);
+    const api = window.PandaAPI;
+    if (!api || typeof api.call !== 'function' || api.call.__apprGate) return;
+    const orig = api.call.bind(api);
+    const gated = function (a, p) { return window.__pandaApprGate ? window.__pandaApprGate(a, p, orig) : orig(a, p); };
+    gated.__apprGate = true;
+    api.__origCall = orig; api.__apprWrapped = true; api.call = gated;
+  }
+  isApprover() { const r = this.state.session && this.state.session.role; return r === 'Owner' || r === 'Admin 1'; }
+  apprFindRec(cfg, id) {
+    const s = this.state; const list = (s[cfg.state] || []).concat((s.rejectedEntries || {})[cfg.state] || []);
+    return list.find(function (r) { return String(r[cfg.id]) === String(id); });
+  }
+  apprFilterResp(action, p, r) {
+    if (!r || !r.success) return r;
+    const self = this; const cfgs = this.apprConfig();
+    const states = Object.keys(cfgs).map(function (k) { return cfgs[k].state; });
+    const isRej = function (x) { return x && x.ApprovalStatus === 'Rejected'; };
+    if (action === 'getAllData') {
+      const rej = {};
+      states.forEach(function (k) { if (Array.isArray(r[k])) { rej[k] = r[k].filter(isRej); r[k] = r[k].filter(function (x) { return !isRej(x); }); } });
+      r.__rejected = rej;
+    } else if (action === 'getCollection' && p && states.indexOf(p.name) !== -1 && Array.isArray(r.data)) {
+      const rejList = r.data.filter(isRej); r.data = r.data.filter(function (x) { return !isRej(x); });
+      setTimeout(function () { self.setState(function (s) { const o = Object.assign({}, s.rejectedEntries); o[p.name] = rejList; return { rejectedEntries: o }; }); }, 0);
+    }
+    return r;
+  }
+  approvalGate(action, p, orig) {
+    const self = this;
+    const m = /^(add|update|delete)(.+)$/.exec(action);
+    const cfg = m && this.apprConfig()[m[2]];
+    if (!cfg) return orig(action, p).then(function (r) { return self.apprFilterResp(action, p, r); });
+    const me = this.currentUserName(), approver = this.isApprover(), now = new Date().toISOString(), verb = m[1];
+    p = Object.assign({}, p || {});
+    if (verb === 'add') {
+      const hist = [{ a: 'Created', by: me, at: now }];
+      if (approver) hist.push({ a: 'Auto-approved', by: me, at: now });
+      p.__approval = { key: m[2], fields: { ApprovalStatus: approver ? 'Approved' : 'Pending', ApprovalHistory: hist, ApprovedBy: approver ? me : '', ApprovedAt: approver ? now : '' } };
+      return orig(action, p);
+    }
+    const rec = this.apprFindRec(cfg, p[cfg.id]);
+    const st = rec ? (rec.ApprovalStatus || 'Approved') : 'Approved';
+    const unlocked = rec && rec.UnlockedFor && rec.UnlockedFor === me;
+    if (!approver && st === 'Approved' && !unlocked) return Promise.resolve({ success: false, message: 'This entry is approved and locked. Go to Approvals → Approved and tap "Request edit".' });
+    if (verb === 'delete') return orig(action, p);
+    const hist = ((rec && rec.ApprovalHistory) || []).concat([{ a: 'Edited', by: me, at: now }]);
+    p.__approval = { key: m[2], fields: approver ? { ApprovalHistory: hist } : { ApprovalStatus: 'Pending', ApprovalHistory: hist, UnlockedFor: '', EditRequested: false, ApprovalNote: '' } };
+    return orig(action, p);
+  }
+  apprApply(item, fields, notify) {
+    const self = this; const orig = PandaAPI.__origCall || PandaAPI.call;
+    const me = this.currentUserName();
+    return orig('setApproval', { key: item.key, id: item.id, fields: fields, CreatedBy: me }).then(function (res) {
+      if (!res || !res.success) { self.showToast((res && res.message) || 'Update failed.'); return false; }
+      self.setState(function (s) {
+        const upd = {}; const k = item.state;
+        const rej = Object.assign({}, s.rejectedEntries);
+        let live = (s[k] || []).slice(); let rl = (rej[k] || []).slice();
+        const match = function (r) { return String(r[item.idField]) === String(item.id); };
+        let rec = live.find(match) || rl.find(match);
+        if (!rec) return null;
+        const nrec = Object.assign({}, rec, fields);
+        live = live.filter(function (r) { return !match(r); }); rl = rl.filter(function (r) { return !match(r); });
+        if (nrec.ApprovalStatus === 'Rejected') rl.push(nrec); else live.push(nrec);
+        upd[k] = live; rej[k] = rl; upd.rejectedEntries = rej;
+        const sel = Object.assign({}, s.apprSel); delete sel[item.key + ':' + item.id]; upd.apprSel = sel;
+        return upd;
+      });
+      if (notify && notify.to && notify.to !== me) {
+        orig('addNotification', { To: notify.to, Message: notify.msg, Type: notify.type || '', RefKey: item.key, RefId: item.id, CreatedBy: me }).then(function (r) { if (r && r.success && r.data) self.setState(function (s) { return { notifications: (s.notifications || []).concat([r.data]) }; }); });
+      }
+      return true;
+    });
+  }
+  apprHist(item, a, note) { return (item.rec.ApprovalHistory || []).concat([{ a: a, by: this.currentUserName(), at: new Date().toISOString(), note: note || '' }]); }
+  apprDesc(item) { return item.label + ' · ' + (item.detail || '') + (item.amountFmt ? ' · ' + item.amountFmt : '') + (item.date ? ' (' + item.date + ')' : ''); }
+  apprApprove(item, silent) {
+    const me = this.currentUserName(), now = new Date().toISOString();
+    const p = this.apprApply(item, { ApprovalStatus: 'Approved', ApprovedBy: me, ApprovedAt: now, UnlockedFor: '', EditRequested: false, ApprovalNote: '', ApprovalHistory: this.apprHist(item, 'Approved') }, { to: item.rec.CreatedBy, type: 'Approved', msg: 'Approved: ' + this.apprDesc(item) });
+    if (!silent) p.then(function (ok) { if (ok) this.showToast('Approved.'); }.bind(this));
+    return p;
+  }
+  apprReject(item) {
+    const reason = window.prompt('Reason for rejecting this entry?', ''); if (reason === null) return;
+    this.apprApply(item, { ApprovalStatus: 'Rejected', ApprovalNote: reason, UnlockedFor: '', EditRequested: false, ApprovalHistory: this.apprHist(item, 'Rejected', reason) }, { to: item.rec.CreatedBy, type: 'Rejected', msg: 'Rejected: ' + this.apprDesc(item) + (reason ? ' — ' + reason : '') }).then(function (ok) { if (ok) this.showToast('Rejected. Removed from balances.'); }.bind(this));
+  }
+  apprSendBack(item) {
+    const note = window.prompt('What should be corrected?', ''); if (note === null) return;
+    const to = item.rec.CreatedBy || '';
+    this.apprApply(item, { ApprovalStatus: 'SentBack', ApprovalNote: note, UnlockedFor: to, EditRequested: false, ApprovalHistory: this.apprHist(item, 'Sent back for edit', note) }, { to: to, type: 'SentBack', msg: 'Please edit: ' + this.apprDesc(item) + (note ? ' — ' + note : '') }).then(function (ok) { if (ok) this.showToast('Sent back to ' + (to || 'user') + ' for edit.'); }.bind(this));
+  }
+  apprRequestEdit(item) {
+    const note = window.prompt('Why do you need to edit this entry?', ''); if (note === null) return;
+    this.apprApply(item, { EditRequested: true, EditRequestNote: note, EditRequestedBy: this.currentUserName(), ApprovalHistory: this.apprHist(item, 'Edit requested', note) }).then(function (ok) { if (ok) this.showToast('Edit request sent to Owner.'); }.bind(this));
+  }
+  apprGrantEdit(item) {
+    const to = item.rec.EditRequestedBy || item.rec.CreatedBy || '';
+    this.apprApply(item, { ApprovalStatus: 'SentBack', ApprovalNote: 'Edit request approved', UnlockedFor: to, EditRequested: false, ApprovalHistory: this.apprHist(item, 'Edit request approved') }, { to: to, type: 'SentBack', msg: 'Edit allowed: ' + this.apprDesc(item) }).then(function (ok) { if (ok) this.showToast('Unlocked for ' + to + '.'); }.bind(this));
+  }
+  apprDeclineEdit(item) {
+    const to = item.rec.EditRequestedBy || item.rec.CreatedBy || '';
+    this.apprApply(item, { EditRequested: false, ApprovalHistory: this.apprHist(item, 'Edit request declined') }, { to: to, type: 'Declined', msg: 'Edit request declined: ' + this.apprDesc(item) }).then(function (ok) { if (ok) this.showToast('Edit request declined.'); }.bind(this));
+  }
+  apprBulkApprove(items) {
+    const self = this; if (!items.length) return;
+    if (!window.confirm('Approve ' + items.length + ' selected entr' + (items.length === 1 ? 'y' : 'ies') + '?')) return;
+    let chain = Promise.resolve();
+    items.forEach(function (it) { chain = chain.then(function () { return self.apprApprove(it, true); }); });
+    chain.then(function () { self.showToast(items.length + ' approved.'); });
+  }
+  apprMarkRead() {
+    const me = this.currentUserName(); const orig = PandaAPI.__origCall || PandaAPI.call;
+    const ids = (this.state.notifications || []).filter(function (n) { return n.To === me && !n.Read; }).map(function (n) { return n.NotifID; });
+    if (!ids.length) return;
+    this.setState(function (s) { return { notifications: s.notifications.map(function (n) { return ids.indexOf(n.NotifID) !== -1 ? Object.assign({}, n, { Read: true }) : n; }) }; });
+    orig('markNotificationsRead', { ids: ids });
+  }
+  apprCollect() {
+    const s = this.state; const cfgs = this.apprConfig(); const out = [];
+    Object.keys(cfgs).forEach(function (key) {
+      const c = cfgs[key];
+      (s[c.state] || []).concat((s.rejectedEntries || {})[c.state] || []).forEach(function (r) { out.push({ key: key, cfg: c, rec: r, status: r.ApprovalStatus || 'Approved' }); });
+    });
+    return out;
+  }
+  apprReminderTick() {
+    this.ensureApprWrap();
+    const s = this.state;
+    if (!s.session || s.loading || !this.isApprover()) return;
+    const n = this.apprCollect().filter(function (x) { return x.status === 'Pending' || x.rec.EditRequested; }).length;
+    if (!n) return;
+    const msg = n + (n === 1 ? ' entry is' : ' entries are') + ' waiting for your approval.';
+    if (!this._apprLoginReminded) { this._apprLoginReminded = true; this.showToast(msg); return; }
+    const d = new Date(); const today = d.toISOString().slice(0, 10);
+    if (d.getHours() >= 9 && localStorage.getItem('panda_appr_9am') !== today) { localStorage.setItem('panda_appr_9am', today); this.showToast('Daily reminder: ' + msg); }
+  }
+  approvalVals() {
+    const self = this, s = this.state; const me = this.currentUserName(); const approver = this.isApprover();
+    const fmtR = function (n) { n = Number(n) || 0; return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 }); };
+    const fmtDT = function (iso) { if (!iso) return ''; const d = new Date(iso); if (isNaN(d)) return ''; return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) + ' ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }); };
+    const all = this.apprCollect();
+    const mine = function (x) { return x.rec.CreatedBy === me; };
+    const isPending = function (x) { return x.status === 'Pending'; };
+    const isReq = function (x) { return !!x.rec.EditRequested && x.status === 'Approved'; };
+    const isSent = function (x) { return x.status === 'SentBack'; };
+    const isRej = function (x) { return x.status === 'Rejected'; };
+    const isAppr = function (x) { return x.status === 'Approved' && !!x.rec.ApprovedAt; };
+    const myNotifs = (s.notifications || []).filter(function (n) { return n.To === me; }).sort(function (a, b) { return (b.CreatedAt || '').localeCompare(a.CreatedAt || ''); });
+    const unread = myNotifs.filter(function (n) { return !n.Read; }).length;
+    const scope = approver ? all : all.filter(mine);
+    const tabsDef = approver
+      ? [['pending', 'Pending', isPending], ['requests', 'Edit Requests', isReq], ['sentback', 'Sent Back', isSent], ['rejected', 'Rejected', isRej], ['approved', 'Approved', isAppr]]
+      : [['pending', 'My Pending', isPending], ['sentback', 'Sent Back to Me', isSent], ['rejected', 'Rejected', isRej], ['approved', 'Approved', isAppr], ['notifs', 'Notifications', null]];
+    const tab = tabsDef.some(function (t) { return t[0] === s.apprTab; }) ? s.apprTab : (!approver && unread ? 'notifs' : 'pending');
+    const tabFn = (tabsDef.find(function (t) { return t[0] === tab; }) || [])[2];
+    const tabBtnS = function (on) { return 'padding:8px 14px;border-radius:20px;border:1px solid ' + (on ? 'var(--gold)' : 'var(--border)') + ';cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;background:' + (on ? 'var(--chip)' : 'transparent') + ';color:' + (on ? 'var(--gold)' : 'var(--text)') + ';'; };
+    const apprTabs = tabsDef.map(function (t) { const cnt = t[2] ? scope.filter(t[2]).length : unread; return { label: t[1] + (cnt ? ' (' + cnt + ')' : ''), style: tabBtnS(t[0] === tab), onClick: function () { self.setState({ apprTab: t[0], apprSel: {} }); } }; });
+    const statusColor = { Pending: '#e8a33d', Approved: '#2e9e5b', Rejected: '#e2574c', SentBack: '#3b82f6' };
+    const statusLabel = { Pending: 'Pending', Approved: 'Approved', Rejected: 'Rejected', SentBack: 'Sent back' };
+    let list = tabFn ? scope.filter(tabFn) : [];
+    list.sort(function (a, b) { const ka = tab === 'approved' ? a.rec.ApprovedAt : (a.rec.Date || a.rec.Month || ''); const kb = tab === 'approved' ? b.rec.ApprovedAt : (b.rec.Date || b.rec.Month || ''); return String(kb || '').localeCompare(String(ka || '')); });
+    if (tab === 'approved') list = list.slice(0, 150);
+    const items = list.map(function (x) {
+      const r = x.rec; const c = x.cfg;
+      const amt = Number(r.AmountPaid || r.Amount || r.Value || r.NetAmount || r.NetDue || r.NetSalary || r.TotalAmount || 0) + (r.AmountPaid === 0 ? Number(r.DiscountAmount) || 0 : 0);
+      const who = r.Supplier || r.StaffName || r.MistriName || r.LabourName || r.Name || r.VehicleNumber || ((r.From || r.To) ? (r.From || '-') + ' → ' + (r.To || r.Site || '-') : '') || r.User || '';
+      const detail = [who, r.Site && who.indexOf(r.Site) === -1 ? r.Site : '', r.Material || '', r.Bags ? r.Bags + ' bags' : ''].filter(Boolean).join(' · ');
+      const it = { key: x.key, id: r[c.id], state: c.state, idField: c.id, rec: r, label: c.label, detail: detail, amountFmt: amt ? fmtR(amt) : '', date: r.Date || r.Month || '' };
+      const sk = x.key + ':' + it.id;
+      const hist = (r.ApprovalHistory || []).map(function (h) { return h.a + ' by ' + (h.by || '-') + (h.at ? ' · ' + fmtDT(h.at) : '') + (h.note ? ' (' + h.note + ')' : ''); }).join('  →  ');
+      return Object.assign(it, {
+        by: r.CreatedBy || '-', statusText: statusLabel[x.status] || x.status, statusColor: statusColor[x.status] || 'var(--muted)',
+        note: r.ApprovalNote || '', hasNote: !!r.ApprovalNote && x.status !== 'Approved',
+        reqNote: r.EditRequested ? ('Edit request from ' + (r.EditRequestedBy || r.CreatedBy || '-') + (r.EditRequestNote ? ': ' + r.EditRequestNote : '')) : '', hasReq: !!r.EditRequested,
+        history: hist || ('Created by ' + (r.CreatedBy || '-') + (r.CreatedAt ? ' · ' + fmtDT(r.CreatedAt) : '')),
+        selectable: approver && x.status === 'Pending', selected: !!s.apprSel[sk],
+        toggleSel: function () { self.setState(function (st) { const o = Object.assign({}, st.apprSel); if (o[sk]) delete o[sk]; else o[sk] = 1; return { apprSel: o }; }); },
+        canApprove: approver && (x.status === 'Pending' || x.status === 'SentBack' || x.status === 'Rejected'),
+        canReject: approver && (x.status === 'Pending' || x.status === 'SentBack'),
+        canSendBack: approver && x.status === 'Pending',
+        canGrant: approver && !!r.EditRequested && x.status === 'Approved',
+        canRequest: !approver && x.status === 'Approved' && !r.EditRequested,
+        requested: !approver && x.status === 'Approved' && !!r.EditRequested,
+        canEditHint: !approver && (x.status === 'SentBack' || x.status === 'Pending'),
+        onApprove: function () { self.apprApprove(it); }, onReject: function () { self.apprReject(it); }, onSendBack: function () { self.apprSendBack(it); },
+        onGrant: function () { self.apprGrantEdit(it); }, onDecline: function () { self.apprDeclineEdit(it); }, onRequest: function () { self.apprRequestEdit(it); }
+      });
+    });
+    const selItems = items.filter(function (i) { return i.selected; });
+    const pendingCount = all.filter(isPending).length + all.filter(isReq).length;
+    const mySent = all.filter(function (x) { return mine(x) && isSent(x); }).length;
+    return {
+      apprBadge: approver ? pendingCount : (unread + mySent), apprIsApprover: approver,
+      apprTabs: apprTabs, apprItems: items, apprHasItems: items.length > 0, apprEmpty: tab !== 'notifs' && items.length === 0,
+      apprShowBulk: approver && tab === 'pending' && items.length > 0, apprSelCount: selItems.length, apprBulkLabel: 'Approve selected (' + selItems.length + ')',
+      apprSelectAll: function () { const o = {}; if (selItems.length < items.length) items.forEach(function (i) { o[i.key + ':' + i.id] = 1; }); self.setState({ apprSel: o }); },
+      apprSelectAllLabel: selItems.length && selItems.length === items.length ? 'Clear selection' : 'Select all',
+      apprBulkApprove: function () { self.apprBulkApprove(selItems); },
+      apprShowNotifs: tab === 'notifs', apprNotifs: myNotifs.slice(0, 100).map(function (n) { return { msg: n.Message, when: fmtDT(n.CreatedAt), from: n.CreatedBy || '', dot: n.Read ? 'transparent' : '#e2574c', weight: n.Read ? '400' : '700' }; }),
+      apprNoNotifs: tab === 'notifs' && myNotifs.length === 0, apprHasUnread: unread > 0, apprMarkRead: this.apprMarkRead.bind(this),
+      apprIntro: approver ? 'Every entry made by users waits here until you or Admin 1 approve it. Pending amounts already count in balances; rejected entries are removed from balances. Approved entries are locked — only Owner and Admin 1 can edit them.' : 'Your entries stay Pending until the Owner approves them. You can edit Pending and Sent-back entries from their normal page. Approved entries are locked — tap "Request edit" to ask the Owner.'
+    };
+  }
   cashbookEntries(name) {
     const s = this.state;
     const pm = function (r) { return r.PaymentMethod === 'Cash' ? 'Cash' : 'A/C'; };
@@ -6801,7 +7107,7 @@ class Component extends DCLogic {
       dieselTx: s.view === 'dieselTx', dieselPayments: s.view === 'dieselPayments', dieselBF: s.view === 'dieselBF', dieselSuppliers: s.view === 'dieselSuppliers', dieselSupplierDetail: s.view === 'dieselSupplierDetail',
       vehicles: s.view === 'vehicles', vehicleDetail: s.view === 'vehicleDetail',
       sites: s.view === 'sites', materials: s.view === 'materials', cement: s.view === 'cement', cementSiteDetail: s.view === 'cementSiteDetail', reports: s.view === 'reports', settings: s.view === 'settings',
-      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', labour: s.view === 'labour', labourDetail: s.view === 'labourDetail', funds: s.view === 'funds', cashbook: s.view === 'cashbook', attendance: s.view === 'attendance', siteDetail: s.view === 'siteDetail'
+      tasks: s.view === 'tasks', staff: s.view === 'staff', staffDetail: s.view === 'staffDetail', staffPayments: s.view === 'staffPayments', mistri: s.view === 'mistri', mistriDetail: s.view === 'mistriDetail', labour: s.view === 'labour', labourDetail: s.view === 'labourDetail', funds: s.view === 'funds', cashbook: s.view === 'cashbook', approvals: s.view === 'approvals', attendance: s.view === 'attendance', siteDetail: s.view === 'siteDetail'
     };
     const reportTabIs = { supplier: s.reportTab === 'supplier', site: s.reportTab === 'site', material: s.reportTab === 'material', monthly: s.reportTab === 'monthly', diesel: s.reportTab === 'diesel', staffDue: s.reportTab === 'staffDue', labour: s.reportTab === 'labour' };
     const modalIs = { driverAllocation: s.modal === 'driverAllocation', siteTransfer: s.modal === 'siteTransfer', transaction: s.modal === 'transaction', payment: s.modal === 'payment', bf: s.modal === 'bf', dieselTx: s.modal === 'dieselTx', dieselPayment: s.modal === 'dieselPayment', dieselBF: s.modal === 'dieselBF', supplier: s.modal === 'supplier', site: s.modal === 'site', material: s.modal === 'material', staff: s.modal === 'staff', staffSalary: s.modal === 'staffSalary', staffPayment: s.modal === 'staffPayment', userContact: s.modal === 'userContact', fundTransfer: s.modal === 'fundTransfer', siteAllocation: s.modal === 'siteAllocation', siteExpense: s.modal === 'siteExpense', cementReceived: s.modal === 'cementReceived', cementUsed: s.modal === 'cementUsed', mistri: s.modal === 'mistri', mistriDue: s.modal === 'mistriDue', mistriPayment: s.modal === 'mistriPayment', mistriPaymentDiscount: s.modal === 'mistriPaymentDiscount', labour: s.modal === 'labour', labourEntry: s.modal === 'labourEntry', labourPayment: s.modal === 'labourPayment', labourPaymentDiscount: s.modal === 'labourPaymentDiscount', paymentDiscount: s.modal === 'paymentDiscount', dieselPaymentDiscount: s.modal === 'dieselPaymentDiscount', otherPayment: s.modal === 'otherPayment', staffBF: s.modal === 'staffBF', labourBF: s.modal === 'labourBF', mistriBF: s.modal === 'mistriBF', vehicle: s.modal === 'vehicle', vehicleLog: s.modal === 'vehicleLog' };
@@ -7029,11 +7335,11 @@ class Component extends DCLogic {
     const cbUserSet = {}; (s.fundTransfers || []).forEach(function (t) { if (t.To) cbUserSet[t.To] = 1; if (t.From) cbUserSet[t.From] = 1; }); cbUserSet['Sukadev'] = 1;
     const cbUsers = Object.keys(cbUserSet).sort().map(function (n) { return { name: n, selected: n === cbData.name }; });
     const navBtn = function (active) { return 'display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;margin-bottom:2px;box-sizing:border-box;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';border-left:3px solid ' + (active ? 'var(--gold)' : 'transparent') + ';'; };
-    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselSuppliers: navBtn(viewIs.dieselSuppliers || viewIs.dieselSupplierDetail), dieselTx: navBtn(viewIs.dieselTx), vehicles: navBtn(viewIs.vehicles || viewIs.vehicleDetail), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), cement: navBtn(viewIs.cement), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), labour: navBtn(viewIs.labour || viewIs.labourDetail), funds: navBtn(viewIs.funds), cashbook: navBtn(viewIs.cashbook), attendance: navBtn(viewIs.attendance) };
+    const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselSuppliers: navBtn(viewIs.dieselSuppliers || viewIs.dieselSupplierDetail), dieselTx: navBtn(viewIs.dieselTx), vehicles: navBtn(viewIs.vehicles || viewIs.vehicleDetail), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), cement: navBtn(viewIs.cement), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), labour: navBtn(viewIs.labour || viewIs.labourDetail), funds: navBtn(viewIs.funds), cashbook: navBtn(viewIs.cashbook), approvals: navBtn(viewIs.approvals), attendance: navBtn(viewIs.attendance) };
     const tabBtn = function (active) { return 'padding:9px 16px;border-radius:20px;border:1px solid ' + (active ? 'var(--gold)' : 'var(--border)') + ';cursor:pointer;font-size:13px;font-weight:600;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';'; };
     const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel), staffDue: tabBtn(reportTabIs.staffDue), labour: tabBtn(reportTabIs.labour) };
 
-    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', dieselSuppliers: 'Diesel Suppliers', dieselSupplierDetail: dieselSupplierDetail.name, vehicles: 'Vehicles', vehicleDetail: vehicleDetail.VehicleNumber, sites: 'Sites', siteDetail: siteDetail.name, materials: 'Materials', cement: 'Cement', cementSiteDetail: cementSiteDetail.name, reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', mistri: 'Mistri', mistriDetail: mistriDetail.Name, labour: 'Labour', labourDetail: labourDetail.Name, funds: 'Fund Distribution', cashbook: 'Sites Cashbook', attendance: 'Attendance' };
+    const pageTitles = { dashboard: 'Dashboard', suppliers: 'Supplier Management', supplierDetail: supplierDetail.name, transactions: 'Supplier Transactions', payments: 'Supplier Payments', bf: 'BF Balance Management', dieselTx: 'Diesel Management', dieselPayments: 'Diesel Payments', dieselBF: 'Diesel BF', dieselSuppliers: 'Diesel Suppliers', dieselSupplierDetail: dieselSupplierDetail.name, vehicles: 'Vehicles', vehicleDetail: vehicleDetail.VehicleNumber, sites: 'Sites', siteDetail: siteDetail.name, materials: 'Materials', cement: 'Cement', cementSiteDetail: cementSiteDetail.name, reports: 'Reports', settings: 'Settings', tasks: 'Task Tracker', staff: 'Staff & Payroll', staffDetail: staffDetail.Name, staffPayments: 'Staff Payments', mistri: 'Mistri', mistriDetail: mistriDetail.Name, labour: 'Labour', labourDetail: labourDetail.Name, funds: 'Fund Distribution', cashbook: 'Sites Cashbook', approvals: 'Approvals', attendance: 'Attendance' };
 
     return {
       session: s.session, loading: s.loading, toast: s.toast, loginError: s.loginError, isDemo: isDemo, todayStr: todayStr,
@@ -7053,7 +7359,7 @@ class Component extends DCLogic {
       navPayments: function () { self.setView('payments'); }, navBF: function () { self.setView('bf'); }, navDieselSuppliers: function () { self.setView('dieselSuppliers'); }, navDieselTx: function () { self.setView('dieselTx'); }, navVehicles: function () { self.setView('vehicles'); },
       navDieselPayments: function () { self.setView('dieselPayments'); }, navDieselBF: function () { self.setView('dieselBF'); }, navSites: function () { self.setView('sites'); },
       navMaterials: function () { self.setView('materials'); }, navCement: function () { self.setView('cement'); }, navReports: function () { self.setView('reports'); }, navSettings: function () { self.setView('settings'); },
-      navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navMistri: function () { self.setView('mistri'); }, navFunds: function () { self.setView('funds'); }, navCashbook: function () { self.setView('cashbook'); }, navAttendance: function () { self.setView('attendance'); },
+      navTasks: function () { self.setView('tasks'); }, navStaff: function () { self.setView('staff'); }, navStaffPayments: function () { self.setView('staffPayments'); }, navMistri: function () { self.setView('mistri'); }, navFunds: function () { self.setView('funds'); }, navCashbook: function () { self.setView('cashbook'); }, navApprovals: function () { self.setView('approvals'); }, navAttendance: function () { self.setView('attendance'); },
       mobileNavOpen: s.mobileNavOpen, toggleMobileNav: this.toggleMobileNav.bind(this), closeMobileNav: this.closeMobileNav.bind(this),
       isOwnerOrAdmin1: isOwnerOrAdmin1, canSeeAllFunds: canSeeAllFunds, isAdmin1: isAdmin1, showAppPicker: showAppPicker, pickConstruction: this.pickConstruction.bind(this), pickHomePipes: this.pickHomePipes.bind(this), showMaintenanceLock: showMaintenanceLock, appAccessible: appAccessible,
       zoomLevel: s.zoomLevel || 1, zoomLabel: Math.round((s.zoomLevel || 1) * 100) + '%', zoomWidthPct: Math.round(100 / (s.zoomLevel || 1)) + '%', onZoomIn: this.onZoomIn.bind(this), onZoomOut: this.onZoomOut.bind(this), onZoomReset: this.onZoomReset.bind(this), siteCount: s.sites.length,
@@ -7113,6 +7419,7 @@ class Component extends DCLogic {
       dieselSupplierCards: dieselSupplierCards, dieselSupplierDetail: dieselSupplierDetail,
       vehicleCards: vehicleCards, vehicleDetail: vehicleDetail, openVehicleModal: function () { self.openModal('vehicle'); },
       vehiclesSummaryFilter: s.vehiclesSummaryFilter, onVehiclesSummaryFrom: this.setGenericFilter('vehiclesSummaryFilter', 'from'), onVehiclesSummaryTo: this.setGenericFilter('vehiclesSummaryFilter', 'to'), onVehiclesSummaryAll: this.clearFilterToAll('vehiclesSummaryFilter'), onExportVehiclesSummaryPDF: this.exportVehiclesSummaryPDF.bind(this),
+      ...self.approvalVals(), syncing: !!s.syncing && !s.loading,
       cbOpeningFmt: cbFmt(cbData.opening), cbInFmt: cbFmt(cbData.totIn), cbOutFmt: cbFmt(cbData.totOut), cbClosingFmt: cbFmt(cbData.closing), cbClosingColor: cbData.closing >= 0 ? '#2e9e5b' : '#e2574c', cbInCashFmt: cbFmt(cbData.tInC), cbInACFmt: cbFmt(cbData.tInA), cbOutCashFmt: cbFmt(cbData.tOutC), cbOutACFmt: cbFmt(cbData.tOutA), cbCloseCashFmt: cbFmt(cbData.closeCash), cbCloseACFmt: cbFmt(cbData.closeAC), cbOpenCashFmt: cbFmt(cbData.openCash), cbOpenACFmt: cbFmt(cbData.openAC), cbWalletName: cbData.name, cbDays: cbDays, cbHasDays: cbDays.length > 0, cbNoDays: cbDays.length === 0, cbUsers: cbUsers, cbFrom: s.cbFrom, cbTo: s.cbTo, cbMonth: s.cbMonth,
       cbSetFrom: function (e) { self.setState({ cbFrom: e.target.value, cbMonth: '' }); }, cbSetTo: function (e) { self.setState({ cbTo: e.target.value, cbMonth: '' }); }, cbSetMonth: function (e) { self.setState({ cbMonth: e.target.value, cbFrom: '', cbTo: '' }); }, cbSetUser: function (e) { self.setState({ cbUser: e.target.value, cbOpen: {} }); },
       cbClear: function () { self.setState({ cbFrom: '', cbTo: '', cbMonth: '', cbOpen: {} }); }, exportCashbookExcel: this.exportCashbookExcel.bind(this), exportCashbookPDF: this.exportCashbookPDF.bind(this),
