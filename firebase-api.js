@@ -181,6 +181,27 @@
     if (!q.empty) await q.docs[0].ref.delete();
   }
 
+  // "Other supplier's vehicle" fare: the material row carries no fare; a linked row (FareLinkOf = parent SLNo)
+  // is written to the vehicle owner's supplier book so it shows as Fare there and in every total/export.
+  async function syncFareLink(parentSL, p) {
+    const q = await db.collection("transactions").where("FareLinkOf", "==", String(parentSL)).get();
+    const amt = Number(p.FareTotal) || 0;
+    const want = p.FareType === "Other" && p.FareSupplier && amt > 0;
+    if (!want) { await Promise.all(q.docs.map(function (d) { return d.ref.delete(); })); return; }
+    const fields = { Date: p.Date, Time: p.Time || "", Supplier: p.FareSupplier, VehicleNumber: p.VehicleNumber || "", Material: "Vehicle Fare", Quantity: 1, Unit: "Trip", Rate: 0, Fare: amt, FareType: "Supplier", MaterialAmount: 0, FareAmount: amt, Value: amt, Site: p.Site || "", Remarks: "Fare for " + (p.Material || "") + " from " + (p.Supplier || "") + (p.Remarks ? " — " + p.Remarks : ""), FareLinkOf: String(parentSL), CreatedBy: p.CreatedBy || "" };
+    if (!q.empty) { await q.docs[0].ref.set(fields, { merge: true }); await Promise.all(q.docs.slice(1).map(function (d) { return d.ref.delete(); })); }
+    else await genericAdd("Transaction", fields);
+  }
+  async function batchRename(coll, field, from, to) {
+    const snap = await db.collection(coll).where(field, "==", from).get();
+    for (let i = 0; i < snap.docs.length; i += 400) {
+      const b = db.batch(); const o = {}; o[field] = to;
+      snap.docs.slice(i, i + 400).forEach(function (d) { b.set(d.ref, o, { merge: true }); });
+      await b.commit();
+    }
+    return snap.size;
+  }
+
   function computeLabourNet(p) {
     const additional = Number(p.AdditionalAmount) || 0;
     const fare = Number(p.Fare) || 0;
@@ -272,6 +293,25 @@
         return { success: true, message: "Announcement updated.", announcement: await getAnnouncementStatus() };
       }
       case "getCollection": return { success: true, data: await colToArray(p.name) };
+      case "setEditAccess": {
+        const users = await colToArray("users");
+        const req = users.find(function (x) { return x.Name === p.RequestedBy; });
+        if (!req || (req.Role !== "Owner" && req.Role !== "Admin 1")) return { success: false, message: "Only Owner or Admin 1 can change edit access." };
+        const ok = await genericUpdate("User", { UserID: p.UserID }, { EditAccess: Array.isArray(p.EditAccess) ? p.EditAccess : [] });
+        if (!ok) return { success: false, message: "User not found." };
+        await auditLog(p.RequestedBy, "Changed Edit Access", "Users", p.UserID, (p.Name || "") + ": " + (p.EditAccess || []).join(", "));
+        return { success: true, message: "Edit access saved for " + (p.Name || "user") + "." };
+      }
+      case "renameSupplier": {
+        const from = String(p.From || "").trim(), to = String(p.To || "").trim();
+        if (!from || !to) return { success: false, message: "Old and new name are required." };
+        if (from === to) return { success: false, message: "New name is the same." };
+        const clash = await db.collection("suppliers").where("SupplierName", "==", to).limit(1).get();
+        if (!clash.empty) return { success: false, message: "A supplier named \"" + to + "\" already exists." };
+        const n = [await batchRename("suppliers", "SupplierName", from, to), await batchRename("transactions", "Supplier", from, to), await batchRename("transactions", "FareSupplier", from, to), await batchRename("payments", "Supplier", from, to), await batchRename("bf", "Supplier", from, to)];
+        await auditLog(p.CreatedBy || "", "Renamed Supplier", "Suppliers", from, from + " → " + to + " (" + (n[1] + n[3] + n[4]) + " entries)");
+        return { success: true, message: "Renamed to " + to + ". " + (n[1] + n[2] + n[3] + n[4]) + " entries updated." };
+      }
       case "setApproval": {
         const m = MAP[p.key]; if (!m) return { success: false, message: "Unknown entry type." };
         const idp = {}; idp[m.idField] = p.id;
@@ -532,9 +572,9 @@
       case "deleteSupplier": await genericDelete("Supplier", p.SupplierID); await auditLog(p.CreatedBy, "Deleted Supplier", "Suppliers", p.SupplierID, p.SupplierName || ""); return { success: true, message: "Supplier deleted successfully." };
 
       case "getTransactions": return { success: true, data: await colToArray("transactions") };
-      case "addTransaction": { const fare = Number(p.Fare) || 0; const fareType = p.FareType === "Self" ? "Self" : "Supplier"; const materialAmount = Number(p.Quantity) * Number(p.Rate); const fareAmount = Number(p.Quantity) * fare; const value = materialAmount + (fareType === "Self" ? 0 : fareAmount); const r = await genericAdd("Transaction", { Date: p.Date, Time: p.Time || "", Supplier: p.Supplier, VehicleNumber: p.VehicleNumber, Material: p.Material, Quantity: p.Quantity, Unit: p.Unit, Rate: p.Rate, Fare: fare, FareType: fareType, MaterialAmount: materialAmount, FareAmount: fareAmount, Value: value, Site: p.Site, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Supplier Transaction", "SupplierTransactions", r.id, p.Supplier + " ₹" + value); return { success: true, message: "Transaction saved successfully.", data: { Value: value } }; }
-      case "updateTransaction": { const fare = Number(p.Fare) || 0; const fareType = p.FareType === "Self" ? "Self" : "Supplier"; const materialAmount = Number(p.Quantity) * Number(p.Rate); const fareAmount = Number(p.Quantity) * fare; const value = materialAmount + (fareType === "Self" ? 0 : fareAmount); const ok = await genericUpdate("Transaction", { SLNo: p.SLNo }, { Date: p.Date, Time: p.Time || "", Supplier: p.Supplier, VehicleNumber: p.VehicleNumber, Material: p.Material, Quantity: p.Quantity, Unit: p.Unit, Rate: p.Rate, Fare: fare, FareType: fareType, MaterialAmount: materialAmount, FareAmount: fareAmount, Value: value, Site: p.Site, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Transaction not found." }; await auditLog(p.CreatedBy, "Updated Supplier Transaction", "SupplierTransactions", p.SLNo, p.Supplier + " ₹" + value); return { success: true, message: "Transaction updated successfully." }; }
-      case "deleteTransaction": await genericDelete("Transaction", p.SLNo); await auditLog(p.CreatedBy, "Deleted Transaction", "SupplierTransactions", p.SLNo, ""); return { success: true, message: "Transaction deleted successfully." };
+      case "addTransaction": { const fareType = p.FareType === "Self" ? "Self" : (p.FareType === "Other" ? "Other" : "Supplier"); const fare = fareType === "Other" ? 0 : (Number(p.Fare) || 0); const materialAmount = Number(p.Quantity) * Number(p.Rate); const fareAmount = Number(p.Quantity) * fare; const value = materialAmount + (fareType === "Supplier" ? fareAmount : 0); const otherFare = { FareSupplier: fareType === "Other" ? (p.FareSupplier || "") : "", OtherFareAmount: fareType === "Other" ? (Number(p.FareTotal) || 0) : 0 }; const r = await genericAdd("Transaction", { FareSupplier: otherFare.FareSupplier, OtherFareAmount: otherFare.OtherFareAmount, Date: p.Date, Time: p.Time || "", Supplier: p.Supplier, VehicleNumber: p.VehicleNumber, Material: p.Material, Quantity: p.Quantity, Unit: p.Unit, Rate: p.Rate, Fare: fare, FareType: fareType, MaterialAmount: materialAmount, FareAmount: fareAmount, Value: value, Site: p.Site, Remarks: p.Remarks || "", CreatedBy: p.CreatedBy || "" }); await syncFareLink(r.id, p); await auditLog(p.CreatedBy, "Added Supplier Transaction", "SupplierTransactions", r.id, p.Supplier + " ₹" + value); return { success: true, message: "Transaction saved successfully.", data: { Value: value } }; }
+      case "updateTransaction": { const fareType = p.FareType === "Self" ? "Self" : (p.FareType === "Other" ? "Other" : "Supplier"); const fare = fareType === "Other" ? 0 : (Number(p.Fare) || 0); const materialAmount = Number(p.Quantity) * Number(p.Rate); const fareAmount = Number(p.Quantity) * fare; const value = materialAmount + (fareType === "Supplier" ? fareAmount : 0); const otherFare = { FareSupplier: fareType === "Other" ? (p.FareSupplier || "") : "", OtherFareAmount: fareType === "Other" ? (Number(p.FareTotal) || 0) : 0 }; const ok = await genericUpdate("Transaction", { SLNo: p.SLNo }, { FareSupplier: otherFare.FareSupplier, OtherFareAmount: otherFare.OtherFareAmount, Date: p.Date, Time: p.Time || "", Supplier: p.Supplier, VehicleNumber: p.VehicleNumber, Material: p.Material, Quantity: p.Quantity, Unit: p.Unit, Rate: p.Rate, Fare: fare, FareType: fareType, MaterialAmount: materialAmount, FareAmount: fareAmount, Value: value, Site: p.Site, Remarks: p.Remarks }); if (!ok) return { success: false, message: "Transaction not found." }; if (!p.FareLinkOf) await syncFareLink(p.SLNo, p); await auditLog(p.CreatedBy, "Updated Supplier Transaction", "SupplierTransactions", p.SLNo, p.Supplier + " ₹" + value); return { success: true, message: "Transaction updated successfully." }; }
+      case "deleteTransaction": await genericDelete("Transaction", p.SLNo); await syncFareLink(p.SLNo, {}); await auditLog(p.CreatedBy, "Deleted Transaction", "SupplierTransactions", p.SLNo, ""); return { success: true, message: "Transaction deleted successfully." };
 
       case "getPayments": return { success: true, data: await colToArray("payments") };
       case "addPayment": { const chk = await checkMoneySpend(p.CreatedBy, "Sukadev", p.AmountPaid); if (!chk.ok) return { success: false, message: chk.message }; const r = await genericAdd("Payment", { Date: p.Date, Supplier: p.Supplier, AmountPaid: p.AmountPaid, DiscountAmount: p.DiscountAmount || 0, PaymentMethod: p.PaymentMethod, ReferenceNumber: p.ReferenceNumber || "", Site: p.Site || "", Remarks: p.Remarks || "", WalletUser: "Sukadev", CreatedBy: p.CreatedBy || "" }); await auditLog(p.CreatedBy, "Added Supplier Payment", "SupplierPayments", r.id, p.Supplier + " ₹" + p.AmountPaid); return { success: true, message: "Payment saved successfully." }; }

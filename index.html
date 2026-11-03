@@ -25,6 +25,17 @@
   tbody:empty::after { content: "No records for this range."; display: block; padding: 28px; text-align: center; color: var(--muted); font-size: 13px; }
   @keyframes pandaConvoy { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
   [data-mobile-topbar] { display: none; }
+  @media (min-width: 1181px) { [data-sidebar-panel] { display: none !important; } [data-app-shell] { flex-direction: column; } }
+  @media (max-width: 1180px) {
+    [data-sidebar-panel] { position: fixed !important; left: 0 !important; top: 0 !important; height: 100dvh !important; max-height: 100dvh !important; width: 260px !important; z-index: 300; transform: translateX(-100%); transition: transform 0.25s ease; box-shadow: 0 0 30px rgba(0,0,0,0.35); }
+    [data-sidebar-panel][data-open="true"] { transform: translateX(0) !important; }
+    [data-app-shell] { display: block !important; }
+    [data-main-content] { padding: 84px 20px 24px !important; }
+    [data-mobile-topbar] { display: flex !important; }
+    [data-mobile-overlay][data-open="true"] { display: block; }
+    [data-top-nav] { display: none !important; }
+  }
+  [data-top-nav]::-webkit-scrollbar { height: 0; }
   [data-mobile-overlay] { display: none; }
   [data-stat-grid] [style*="font-weight:800"] { overflow-wrap: anywhere !important; word-break: break-word !important; }
   @media (max-width: 860px) {
@@ -33,6 +44,7 @@
     [data-app-shell] { display: block !important; }
     [data-main-content] { padding: 84px 16px 24px !important; }
     [data-mobile-topbar] { display: flex !important; }
+    [data-top-nav] { display: none !important; }
     [data-mobile-overlay][data-open="true"] { display: block; }
     [data-stat-grid] { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
     [data-card-grid] { grid-template-columns: 1fr !important; }
@@ -214,7 +226,44 @@
     </div>
   </div>
 
-  <div data-main-content style="flex:1;min-width:0;padding:32px 40px;overflow-y:auto;box-sizing:border-box;">
+  <div data-top-nav style="position:sticky;top:{{ announcementOffsetPx }}px;z-index:240;background:var(--sidebar);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;padding:0 20px;height:56px;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;gap:9px;margin-right:14px;flex:none;">
+      <img src="logo.png" alt="logo" style="width:32px;height:32px;object-fit:contain;" />
+      <div style="font-weight:800;font-size:13px;letter-spacing:0.6px;white-space:nowrap;">PANDA</div>
+    </div>
+    <div style="width:1px;height:24px;background:var(--border);margin-right:8px;flex:none;"></div>
+    <div style="display:flex;align-items:center;gap:0;flex:1;min-width:0;">
+      <sc-for list="{{ topNav }}" as="g" hint-placeholder-count="8">
+        <div style="position:relative;flex:none;">
+          <button onClick="{{ g.onClick }}" title="{{ g.title }}" style="{{ g.style }}">{{ g.label }}<sc-if value="{{ g.count }}"><span style="min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:6px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;">{{ g.count }}</span></sc-if><sc-if value="{{ g.dot }}"><span style="width:6px;height:6px;border-radius:50%;background:#e2574c;margin-left:5px;display:inline-block;"></span></sc-if><sc-if value="{{ g.hasMenu }}"><span style="margin-left:4px;font-size:9px;opacity:0.55;">▾</span></sc-if></button>
+          <sc-if value="{{ g.open }}">
+            <div style="position:absolute;top:calc(100% + 6px);left:0;min-width:210px;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,0.35);padding:6px;z-index:260;display:flex;flex-direction:column;gap:2px;">
+              <sc-for list="{{ g.items }}" as="it">
+                <button onClick="{{ it.onClick }}" style="{{ it.style }}">{{ it.label }}<sc-if value="{{ it.badge }}"><span style="display:inline-block;min-width:16px;padding:1px 5px;border-radius:9px;background:#e2574c;color:#fff;font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle;text-align:center;">{{ it.badge }}</span></sc-if></button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <div style="position:relative;flex:none;">
+      <button onClick="{{ toggleUserMenu }}" style="display:flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--border);color:var(--text);padding:4px 10px 4px 4px;border-radius:20px;cursor:pointer;font-family:inherit;">
+        <span style="width:26px;height:26px;border-radius:50%;background:var(--chip);color:var(--gold);font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">{{ userInitials }}</span><span style="font-size:13px;font-weight:700;white-space:nowrap;">{{ userFirstName }}</span>
+        <span style="font-size:10px;opacity:0.7;">▾</span>
+      </button>
+      <sc-if value="{{ userMenuOpen }}">
+        <div style="position:absolute;top:calc(100% + 6px);right:0;min-width:190px;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,0.35);padding:8px;z-index:260;display:flex;flex-direction:column;gap:6px;">
+          <div style="padding:6px 6px 8px;border-bottom:1px solid var(--border-soft);"><div style="font-size:13px;font-weight:700;">{{ session.name }}</div><div style="font-size:11px;color:var(--muted);">{{ session.role }}</div></div>
+          <button onClick="{{ navSettingsTop }}" style="width:100%;text-align:left;background:transparent;border:none;color:var(--text);padding:9px 8px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;">Settings</button>
+          <button onClick="{{ toggleTheme }}" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;">{{ themeToggleLabel }}</button>
+          <button onClick="{{ logout }}" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text);padding:9px;border-radius:6px;cursor:pointer;font-size:13px;font-family:inherit;">Logout</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+  <sc-if value="{{ anyNavMenuOpen }}"><div onClick="{{ closeNavMenus }}" style="position:fixed;inset:0;z-index:230;"></div></sc-if>
+
+  <div data-main-content style="flex:1;min-width:0;padding:28px 32px;overflow-y:auto;box-sizing:border-box;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;gap:16px;flex-wrap:wrap;">
       <h1 style="font-size:24px;font-weight:800;margin:0;">{{ pageTitle }}</h1>
       <div style="display:flex;align-items:center;gap:8px;">
@@ -379,6 +428,7 @@
     <sc-if value="{{ viewIs.supplierDetail }}">
       <button onClick="{{ goBack }}" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:20px;">← Back</button>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px;">
+        <sc-if value="{{ canRenameSupplier }}"><button onClick="{{ renameSupplier }}" style="background:transparent;border:1px solid var(--gold);color:var(--gold);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Rename</button></sc-if>
         <button onClick="{{ supplierDetail.onExportExcel }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export Excel</button>
         <button onClick="{{ supplierDetail.onExportPDF }}" style="background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;cursor:pointer;font-size:13px;">Export PDF</button>
       </div>
@@ -2525,6 +2575,7 @@
               <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Other Expenditure</th>
               <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Mistri</th>
               <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Labour</th>
+              <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Site Discount</th>
               <th style="text-align:right;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Total Expenditure</th>
             </tr></thead>
             <tbody>
@@ -2535,13 +2586,14 @@
                   <td style="padding:12px;font-size:12px;font-weight:500;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.OtherExpenditure }}</td>
                   <td style="padding:12px;font-size:12px;font-weight:500;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Mistri }}</td>
                   <td style="padding:12px;font-size:12px;font-weight:500;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;">{{ r.Labour }}</td>
+                  <td style="padding:12px;font-size:12px;font-weight:500;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:#2e9e5b;">{{ r.Discount }}</td>
                   <td style="padding:12px;font-size:12px;font-weight:500;border-bottom:1px solid var(--border-soft);white-space:nowrap;text-align:right;color:var(--gold);font-weight:700;">{{ r.Expenditure }}</td>
                 </tr>
               </sc-for>
             </tbody>
           </table>
         </div>
-        <div style="color:var(--muted2);font-size:12px;margin-top:10px;">Total Expenditure = Material cost + Other Expenditure + Mistri payments + Labour payments for this site.</div>
+        <div style="color:var(--muted2);font-size:12px;margin-top:10px;">Total Expenditure = Material cost + Other Expenditure + Mistri payments + Labour payments − Site Discount for this site. Site discounts are never taken from the wallet.</div>
       </sc-if>
       <sc-if value="{{ reportTabIs.material }}">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:auto;">
@@ -2777,6 +2829,7 @@
             <th style="text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">WhatsApp Number</th>
             <th style="text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Last Refresh</th>
             <th style="text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Money Access</th>
+            <th style="text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;">Edit Access</th>
             <sc-if value="{{ isOwnerOrAdmin1 }}"><th style="padding:12px;border-bottom:1px solid var(--border);"></th></sc-if>
           </tr></thead>
           <tbody>
@@ -2794,6 +2847,10 @@
                   <sc-if value="{{ !isHrushikesh }}">
                     <span style="font-size:12px;color:{{ u.moneyOn ? '#2e9e5b' : '#e2574c' }};font-weight:700;">{{ u.moneyLabel }}</span>
                   </sc-if>
+                </td>
+                <td style="padding:12px;font-size:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap;">
+                  <sc-if value="{{ u.canSetAccess }}"><button onClick="{{ u.onEditAccess }}" style="background:transparent;border:1px solid var(--gold);color:var(--gold);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;">{{ u.accessLabel }}</button></sc-if>
+                  <sc-if value="{{ u.accessReadOnly }}"><span style="color:var(--muted);">{{ u.accessLabel }}</span></sc-if>
                 </td>
                 <sc-if value="{{ isOwnerOrAdmin1 }}"><td style="padding:12px;border-bottom:1px solid var(--border-soft);text-align:right;"><button onClick="{{ u.onEditContact }}" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button></td></sc-if>
               </tr>
@@ -2914,6 +2971,26 @@
   </div>
 </sc-if>
 
+<sc-if value="{{ accessModalOpen }}">
+  <div data-app-theme="{{ theme }}" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:420;display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Manrope',sans-serif;" onClick="{{ closeAccessModal }}">
+    <div style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:420px;width:100%;max-height:85vh;overflow:auto;display:flex;flex-direction:column;gap:14px;" onClick="{{ stopClickPropagation }}">
+      <div style="font-weight:700;font-size:16px;">Edit access — {{ accessName }}</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.5;">Ticked sections: this user can edit or delete approved entries without asking. Their changes go back to Pending for approval.</div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <sc-for list="{{ accessRows }}" as="a" hint-placeholder-count="6">
+          <label style="display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--border-soft);border-radius:8px;cursor:pointer;font-size:14px;">
+            <input type="checkbox" checked="{{ a.on }}" onChange="{{ a.toggle }}" style="width:18px;height:18px;cursor:pointer;" />{{ a.label }}
+          </label>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button onClick="{{ closeAccessModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit;">Cancel</button>
+        <button onClick="{{ saveEditAccess }}" style="flex:1;background:var(--gold);color:#0e0e10;font-weight:700;padding:11px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-family:inherit;">Save</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ toast }}">
   <div data-app-theme="{{ theme }}" style="position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);border-left:4px solid {{ toast.color }};padding:14px 20px;border-radius:8px;color:var(--text);font-size:14px;font-family:'Manrope',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:200;">{{ toast.msg }}</div>
 </sc-if>
@@ -2943,8 +3020,16 @@
           </div>
           <div>
             <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">Vehicle fare paid to</label>
-            <select name="FareType" defaultValue="{{ txDefaults.FareType }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;width:100%;box-sizing:border-box;"><option value="Supplier">Supplier vehicle (adds to supplier book)</option><option value="Self">Self / own vehicle (excluded from supplier book)</option></select>
+            <select name="FareType" defaultValue="{{ txDefaults.FareType }}" onChange="{{ onFareTypeChange }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;width:100%;box-sizing:border-box;"><option value="Supplier">Supplier vehicle (adds to supplier book)</option><option value="Self">Self / own vehicle (excluded from supplier book)</option><option value="Other">Other supplier's vehicle (fare goes to that supplier)</option></select>
           </div>
+          <sc-if value="{{ txFareIsOther }}">
+            <div style="display:flex;flex-direction:column;gap:10px;border:1px dashed var(--gold);border-radius:8px;padding:12px;">
+              <label style="display:block;font-size:11px;color:var(--muted);">Vehicle owner (supplier who gets the fare)</label>
+              <select name="FareSupplier" required="true" defaultValue="{{ txDefaults.FareSupplier }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;width:100%;box-sizing:border-box;"><option value="">Select vehicle supplier</option><sc-for list="{{ supplierOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
+              <input type="number" step="any" name="FareTotal" required="true" placeholder="Total fare amount (₹)" defaultValue="{{ txDefaults.FareTotal }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;width:100%;box-sizing:border-box;" />
+              <div style="color:var(--muted2);font-size:12px;">This amount is added under Fare in the selected supplier's book. Fare per unit above is ignored.</div>
+            </div>
+          </sc-if>
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ txDefaults.Site }}" list="siteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="siteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ txDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
@@ -2967,6 +3052,13 @@
           <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ payDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ payDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--border);border-radius:8px;padding:10px;">
+            <label style="font-size:11px;color:var(--muted);">Site discount (optional) — reduces site cost, not taken from wallet</label>
+            <div style="display:flex;gap:10px;">
+              <input type="text" name="DiscountSite" placeholder="Site" autocomplete="off" list="discSiteList_payment" defaultValue="{{ siteDiscDefaults.DiscountSite }}" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" /><datalist id="discSiteList_payment"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+              <input type="number" step="any" name="SiteDiscount" placeholder="Discount (₹)" defaultValue="{{ siteDiscDefaults.SiteDiscount }}" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            </div>
+          </div>
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ payDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -3315,6 +3407,13 @@
             <option value="Cash">Cash</option>
             <option value="A/C">A/C</option>
           </select>
+          <div style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--border);border-radius:8px;padding:10px;">
+            <label style="font-size:11px;color:var(--muted);">Site discount (optional) — reduces site cost, not taken from wallet</label>
+            <div style="display:flex;gap:10px;">
+              
+              <input type="number" step="any" name="SiteDiscount" placeholder="Discount (₹)" defaultValue="{{ siteDiscDefaults.SiteDiscount }}" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            </div>
+          </div>
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ siteAllocationDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -3380,6 +3479,13 @@
           <input type="text" name="Site" placeholder="Site (pick or type new)" required="true" autocomplete="off" defaultValue="{{ siteExpenseDefaults.Site }}" list="expenseSiteList" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
           <datalist id="expenseSiteList"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
           <input type="number" step="any" name="Amount" placeholder="Amount (₹)" required="true" defaultValue="{{ siteExpenseDefaults.Amount }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--border);border-radius:8px;padding:10px;">
+            <label style="font-size:11px;color:var(--muted);">Site discount (optional) — reduces site cost, not taken from wallet</label>
+            <div style="display:flex;gap:10px;">
+              
+              <input type="number" step="any" name="SiteDiscount" placeholder="Discount (₹)" defaultValue="{{ siteDiscDefaults.SiteDiscount }}" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            </div>
+          </div>
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ siteExpenseDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -3433,6 +3539,13 @@
             <option value="Cheque">Cheque</option>
             <option value="Bank Transfer">Bank Transfer</option>
           </select>
+          <div style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--border);border-radius:8px;padding:10px;">
+            <label style="font-size:11px;color:var(--muted);">Site discount (optional) — reduces site cost, not taken from wallet</label>
+            <div style="display:flex;gap:10px;">
+              <input type="text" name="DiscountSite" placeholder="Site" autocomplete="off" list="discSiteList_otherPayment" defaultValue="{{ siteDiscDefaults.DiscountSite }}" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" /><datalist id="discSiteList_otherPayment"><sc-for list="{{ siteOptions }}" as="opt" hint-placeholder-count="3"><option value="{{ opt }}"></option></sc-for></datalist>
+              <input type="number" step="any" name="SiteDiscount" placeholder="Discount (₹)" defaultValue="{{ siteDiscDefaults.SiteDiscount }}" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            </div>
+          </div>
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ otherPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -3488,6 +3601,13 @@
           <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ mistriPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ mistriPaymentDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--border);border-radius:8px;padding:10px;">
+            <label style="font-size:11px;color:var(--muted);">Site discount (optional) — reduces site cost, not taken from wallet</label>
+            <div style="display:flex;gap:10px;">
+              
+              <input type="number" step="any" name="SiteDiscount" placeholder="Discount (₹)" defaultValue="{{ siteDiscDefaults.SiteDiscount }}" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            </div>
+          </div>
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ mistriPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -3590,6 +3710,13 @@
           <sc-if value="{{ !isSukadev }}"><div style="font-size:12px;color:var(--muted);">This payment will be made on behalf of Sukadev's wallet.</div></sc-if>
           <select name="PaymentMethod" defaultValue="{{ labourPaymentDefaults.PaymentMethod }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;"><sc-for list="{{ paymentMethodOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for></select>
           <input type="text" name="ReferenceNumber" placeholder="Reference Number" defaultValue="{{ labourPaymentDefaults.ReferenceNumber }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+          <div style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--border);border-radius:8px;padding:10px;">
+            <label style="font-size:11px;color:var(--muted);">Site discount (optional) — reduces site cost, not taken from wallet</label>
+            <div style="display:flex;gap:10px;">
+              
+              <input type="number" step="any" name="SiteDiscount" placeholder="Discount (₹)" defaultValue="{{ siteDiscDefaults.SiteDiscount }}" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;" />
+            </div>
+          </div>
           <textarea name="Remarks" required="true" onKeyDown="{{ onRemarksKeyDown }}" placeholder="Remarks (required — press Enter to save)" defaultValue="{{ labourPaymentDefaults.Remarks }}" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;font-size:14px;box-sizing:border-box;resize:vertical;min-height:50px;"></textarea>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button type="button" onClick="{{ closeModal }}" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
@@ -4684,6 +4811,7 @@ class Component extends DCLogic {
   }
   openModal(type, record) {
     const r = record || {};
+    if (this.state.txFareTypeUI) this.setState({ txFareTypeUI: null });
     const partyStartMap = { payment: r.Supplier, paymentDiscount: r.Supplier, dieselPayment: r.Supplier, dieselPaymentDiscount: r.Supplier, mistriPayment: this.state.selectedMistri || r.MistriName, mistriPaymentDiscount: this.state.selectedMistri || r.MistriName, labourPayment: this.state.selectedLabour || r.LabourName, labourPaymentDiscount: this.state.selectedLabour || r.LabourName };
     const patch = { modal: type, editRecord: record || null, partyPicker: partyStartMap.hasOwnProperty(type) ? (partyStartMap[type] || '') : null };
     if (type === 'dieselTx') patch.dieselForIsVehicle = !r.Site || !!r.VehicleNumber;
@@ -4712,7 +4840,19 @@ class Component extends DCLogic {
   }
   onRemarksKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (e.target.form) e.target.form.requestSubmit(); } }
   openLabourEntryModal(record) { this.setState({ modal: 'labourEntry', editRecord: record || null, labourEntryTypeUI: (record && record.Type) || 'Daily' }); }
-  closeModal() { this.setState({ modal: null, editRecord: null, sitePrefill: null }); }
+  closeModal() { this.setState({ modal: null, editRecord: null, sitePrefill: null, txFareTypeUI: null }); }
+  renameSupplierPrompt(oldName) {
+    if (!oldName) return;
+    const nn = window.prompt('Rename supplier "' + oldName + '" to:', oldName);
+    if (nn === null) return;
+    const to = nn.trim(); if (!to || to === oldName) return;
+    if (!window.confirm('Rename "' + oldName + '" to "' + to + '"? All transactions, payments and BF entries will move to the new name.')) return;
+    const self = this;
+    PandaAPI.call('renameSupplier', { From: oldName, To: to, CreatedBy: this.currentUserName() }).then(function (r) {
+      self.showToast((r && r.message) || 'Rename failed.');
+      if (r && r.success) { self.setState({ selectedSupplier: to }); self.loadAllQuiet(); }
+    });
+  }
   currentUserName() { return this.state.session ? this.state.session.name : ''; }
 
   submitGeneric(action, payload, successMsg) {
@@ -4741,7 +4881,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Supplier.value || !f.Material.value.trim() || !f.Quantity.value || !f.Rate.value || !f.Site.value.trim()) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, Time: f.Time.value, Material: f.Material.value.trim(), Quantity: f.Quantity.value, Unit: f.Unit.value, Rate: f.Rate.value, Fare: f.Fare.value || 0, FareType: f.FareType.value || 'Supplier', Site: f.Site.value.trim(), Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, VehicleNumber: f.VehicleNumber.value, Time: f.Time.value, Material: f.Material.value.trim(), Quantity: f.Quantity.value, Unit: f.Unit.value, Rate: f.Rate.value, Fare: f.Fare.value || 0, FareType: f.FareType.value || 'Supplier', FareSupplier: f.FareSupplier ? f.FareSupplier.value : '', FareTotal: f.FareTotal ? (f.FareTotal.value || 0) : 0, Site: f.Site.value.trim(), Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
 
     // Duplicate check: same date + time is the trigger; only then compare vehicle & weight.
     if (payload.Time) {
@@ -4759,15 +4899,22 @@ class Component extends DCLogic {
       }
     }
 
-    if (ed) { payload.SLNo = ed.SLNo; this.submitGeneric('updateTransaction', payload, 'Transaction updated successfully.'); }
-    else this.submitGeneric('addTransaction', payload, 'Transaction saved successfully.');
+    if (payload.FareType === 'Other') {
+      if (!payload.FareSupplier || !(Number(payload.FareTotal) > 0)) { this.showToast('Select the vehicle supplier and enter the fare amount.'); return; }
+      if (payload.FareSupplier === payload.Supplier) { this.showToast('Vehicle supplier is the same as the material supplier — choose "Supplier vehicle" instead.'); return; }
+    }
+    if (ed && ed.FareLinkOf) payload.FareLinkOf = ed.FareLinkOf;
+    const self = this;
+    const after = function () { self.loadAllQuiet(); };
+    if (ed) { payload.SLNo = ed.SLNo; Promise.resolve(this.submitGeneric('updateTransaction', payload, 'Transaction updated successfully.')).then(after); }
+    else Promise.resolve(this.submitGeneric('addTransaction', payload, 'Transaction saved successfully.')).then(after);
   }
   submitPayment(e) {
     e.preventDefault();
     const f = e.target.elements;
     if (!f.Date.value || !f.Supplier.value || !f.AmountPaid.value) { this.showToast('Please fill all required fields.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, DiscountAmount: f.DiscountAmount ? (f.DiscountAmount.value || 0) : 0, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Supplier: f.Supplier.value, AmountPaid: f.AmountPaid.value, DiscountAmount: f.DiscountAmount ? (f.DiscountAmount.value || 0) : 0, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', SiteDiscount: f.SiteDiscount ? (Number(f.SiteDiscount.value) || 0) : 0, DiscountSite: f.DiscountSite ? f.DiscountSite.value.trim() : '', CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updatePayment', payload, 'Payment updated successfully.'); }
     else this.submitGeneric('addPayment', payload, 'Payment saved successfully.');
   }
@@ -5030,7 +5177,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.MistriName.value || !f.Site.value.trim() || !f.AmountPaid.value) { this.showToast('Date, mistri, site and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, MistriName: f.MistriName.value, Site: f.Site.value.trim(), AmountPaid: f.AmountPaid.value, DiscountAmount: f.DiscountAmount ? (f.DiscountAmount.value || 0) : 0, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, MistriName: f.MistriName.value, Site: f.Site.value.trim(), AmountPaid: f.AmountPaid.value, DiscountAmount: f.DiscountAmount ? (f.DiscountAmount.value || 0) : 0, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', SiteDiscount: f.SiteDiscount ? (Number(f.SiteDiscount.value) || 0) : 0, DiscountSite: f.DiscountSite ? f.DiscountSite.value.trim() : '', CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateMistriPayment', payload, 'Mistri payment updated successfully.'); }
     else this.submitGeneric('addMistriPayment', payload, 'Mistri payment saved successfully.');
   }
@@ -5077,7 +5224,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.LabourName.value || !f.Site.value.trim() || !f.AmountPaid.value) { this.showToast('Date, labour, site and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, LabourName: f.LabourName.value, Site: f.Site.value.trim(), AmountPaid: f.AmountPaid.value, DiscountAmount: f.DiscountAmount ? (f.DiscountAmount.value || 0) : 0, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, LabourName: f.LabourName.value, Site: f.Site.value.trim(), AmountPaid: f.AmountPaid.value, DiscountAmount: f.DiscountAmount ? (f.DiscountAmount.value || 0) : 0, PaymentMethod: f.PaymentMethod.value, ReferenceNumber: f.ReferenceNumber.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', SiteDiscount: f.SiteDiscount ? (Number(f.SiteDiscount.value) || 0) : 0, DiscountSite: f.DiscountSite ? f.DiscountSite.value.trim() : '', CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; this.submitGeneric('updateLabourPayment', payload, 'Labour payment updated successfully.'); }
     else this.submitGeneric('addLabourPayment', payload, 'Labour payment saved successfully.');
   }
@@ -5173,7 +5320,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Site.value || !f.Amount.value) { this.showToast('Date, site and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, User: this.currentUserName(), Site: f.Site.value, Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, User: this.currentUserName(), Site: f.Site.value, Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, WalletUser: 'Sukadev', SiteDiscount: f.SiteDiscount ? (Number(f.SiteDiscount.value) || 0) : 0, DiscountSite: f.DiscountSite ? f.DiscountSite.value.trim() : '', CreatedBy: this.currentUserName() };
     if (ed) { payload.AllocationID = ed.AllocationID; payload.User = ed.User; this.submitGeneric('updateSiteAllocation', payload, 'Site allocation updated successfully.'); }
     else this.submitGeneric('addSiteAllocation', payload, 'Site allocation saved successfully.');
   }
@@ -5202,7 +5349,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Site.value || !f.Amount.value) { this.showToast('Date, site and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, Site: f.Site.value, Amount: f.Amount.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, Site: f.Site.value, Amount: f.Amount.value, Remarks: f.Remarks.value, SiteDiscount: f.SiteDiscount ? (Number(f.SiteDiscount.value) || 0) : 0, DiscountSite: f.DiscountSite ? f.DiscountSite.value.trim() : '', CreatedBy: this.currentUserName() };
     if (ed) { payload.ExpenseID = ed.ExpenseID; this.submitGeneric('updateSiteExpense', payload, 'Site expenditure updated successfully.'); }
     else this.submitGeneric('addSiteExpense', payload, 'Site expenditure saved successfully.');
   }
@@ -5229,7 +5376,7 @@ class Component extends DCLogic {
     const f = e.target.elements;
     if (!f.Date.value || !f.Name.value.trim() || !f.Purpose.value.trim() || !f.Amount.value) { this.showToast('Date, name, purpose and amount are required.'); return; }
     const ed = this.state.editRecord;
-    const payload = { Date: f.Date.value, From: this.currentUserName(), WalletUser: 'Sukadev', Name: f.Name.value.trim(), Purpose: f.Purpose.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, CreatedBy: this.currentUserName() };
+    const payload = { Date: f.Date.value, From: this.currentUserName(), WalletUser: 'Sukadev', Name: f.Name.value.trim(), Purpose: f.Purpose.value.trim(), Amount: f.Amount.value, PaymentMethod: f.PaymentMethod.value, Remarks: f.Remarks.value, SiteDiscount: f.SiteDiscount ? (Number(f.SiteDiscount.value) || 0) : 0, DiscountSite: f.DiscountSite ? f.DiscountSite.value.trim() : '', CreatedBy: this.currentUserName() };
     if (ed) { payload.PaymentID = ed.PaymentID; payload.From = ed.From; this.submitGeneric('updateOtherPayment', payload, 'Payment updated successfully.'); }
     else this.submitGeneric('addOtherPayment', payload, 'Payment sent successfully.');
   }
@@ -5725,6 +5872,37 @@ class Component extends DCLogic {
       CementReceived: { state: 'cementReceived', id: 'ReceiptID', label: 'Cement Received' }, CementUsed: { state: 'cementUsed', id: 'UsageID', label: 'Cement Used' }, VehicleLog: { state: 'vehicleDailyLog', id: 'LogID', label: 'Vehicle Log' }
     };
   }
+  siteDiscountTotal(site, s, from, to) {
+    const self = this; let t = 0;
+    ['payments', 'mistriPayments', 'labourPayments', 'otherPayments', 'siteAllocations', 'siteExpenses'].forEach(function (k) {
+      (s[k] || []).forEach(function (r) { const d = Number(r.SiteDiscount) || 0; if (!d) return; if ((r.DiscountSite || r.Site) !== site) return; if (!self.inRange(r.Date, from, to)) return; t += d; });
+    });
+    return t;
+  }
+  accessSections() { return [['suppliers', 'Suppliers (purchases & payments)'], ['diesel', 'Diesel'], ['staff', 'Staff & salary'], ['mistri', 'Mistri'], ['labour', 'Labour'], ['funds', 'Money & Sites'], ['cement', 'Cement'], ['vehicles', 'Vehicles']]; }
+  sectionOfKey(key) {
+    if (key === 'Transaction' || key === 'Payment') return 'suppliers';
+    if (/^Diesel/.test(key)) return 'diesel';
+    if (/^Staff/.test(key)) return 'staff';
+    if (/^Mistri/.test(key)) return 'mistri';
+    if (/^Labour/.test(key)) return 'labour';
+    if (/^Cement/.test(key)) return 'cement';
+    if (key === 'VehicleLog') return 'vehicles';
+    return 'funds';
+  }
+  userHasEditAccess(key) {
+    const me = this.currentUserName();
+    const u = (this.state.users || []).find(function (x) { return x.Name === me; });
+    return !!(u && Array.isArray(u.EditAccess) && u.EditAccess.indexOf(this.sectionOfKey(key)) !== -1);
+  }
+  saveEditAccess() {
+    const self = this; const a = this.state.accessEdit; if (!a) return;
+    const orig = PandaAPI.__origCall || PandaAPI.call;
+    orig('setEditAccess', { UserID: a.UserID, Name: a.Name, EditAccess: a.sections, RequestedBy: this.currentUserName() }).then(function (r) {
+      self.showToast((r && r.message) || 'Failed.');
+      if (r && r.success) self.setState(function (s) { return { accessEdit: null, users: s.users.map(function (u) { return u.UserID === a.UserID ? Object.assign({}, u, { EditAccess: a.sections }) : u; }) }; });
+    });
+  }
   ensureApprWrap() {
     window.__pandaApprGate = this.approvalGate.bind(this);
     const api = window.PandaAPI;
@@ -5761,19 +5939,24 @@ class Component extends DCLogic {
     if (!cfg) return orig(action, p).then(function (r) { return self.apprFilterResp(action, p, r); });
     const me = this.currentUserName(), approver = this.isApprover(), now = new Date().toISOString(), verb = m[1];
     p = Object.assign({}, p || {});
+    const disc = p.SiteDiscount !== undefined ? { SiteDiscount: Number(p.SiteDiscount) || 0, DiscountSite: p.DiscountSite || '' } : {};
+    const withDisc = function () { if (p.__approval) Object.assign(p.__approval.fields, disc); };
     if (verb === 'add') {
       const hist = [{ a: 'Created', by: me, at: now }];
       if (approver) hist.push({ a: 'Auto-approved', by: me, at: now });
       p.__approval = { key: m[2], fields: { ApprovalStatus: approver ? 'Approved' : 'Pending', ApprovalHistory: hist, ApprovedBy: approver ? me : '', ApprovedAt: approver ? now : '' } };
+      withDisc();
       return orig(action, p);
     }
     const rec = this.apprFindRec(cfg, p[cfg.id]);
     const st = rec ? (rec.ApprovalStatus || 'Approved') : 'Approved';
     const unlocked = rec && rec.UnlockedFor && rec.UnlockedFor === me;
-    if (!approver && st === 'Approved' && !unlocked) return Promise.resolve({ success: false, message: 'This entry is approved and locked. Go to Approvals → Approved and tap "Request edit".' });
+    const hasAccess = this.userHasEditAccess(m[2]);
+    if (!approver && st === 'Approved' && !unlocked && !hasAccess) return Promise.resolve({ success: false, message: 'This entry is approved and locked. Go to Approvals → Approved and tap "Request edit".' });
     if (verb === 'delete') return orig(action, p);
     const hist = ((rec && rec.ApprovalHistory) || []).concat([{ a: 'Edited', by: me, at: now }]);
     p.__approval = { key: m[2], fields: approver ? { ApprovalHistory: hist } : { ApprovalStatus: 'Pending', ApprovalHistory: hist, UnlockedFor: '', EditRequested: false, ApprovalNote: '' } };
+    withDisc();
     return orig(action, p);
   }
   apprApply(item, fields, notify) {
@@ -6183,8 +6366,10 @@ class Component extends DCLogic {
   staffFinancials(st, s, attendanceDeduped, curMonthKey, hasSlipThisMonth) {
     const self = this;
     const bf = this.personLatestBF(s.staffBF, st.Name, st.BFAmount);
-    const due = this.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name && (!bf.date || (r.Month + '-01') > bf.date); }), 'NetSalary');
-    const paid = this.sum(s.staffPayments.filter(function (r) { return r.StaffName === st.Name && (!bf.date || r.Date > bf.date); }), 'AmountPaid');
+    const mkS = function (m) { m = String(m || ''); return /^\d{4}-\d{2}$/.test(m) ? m : self.monthLabelToKey(m); };
+    // Month can be stored as "2026-10" or "October 2026" — normalise before comparing to the BF date.
+    const due = this.sum(s.staffSalary.filter(function (r) { return r.StaffName === st.Name && (!bf.date || (mkS(r.Month) + '-01') > bf.date); }), 'NetSalary');
+    const paid = this.paidWithDiscount(s.staffPayments.filter(function (r) { return r.StaffName === st.Name && (!bf.date || r.Date > bf.date); }));
     const bfAmt = bf.amt;
     const presentThisMonth = this.sum(attendanceDeduped.filter(function (r) { return r.StaffName === st.Name && String(r.Date).slice(0, 7) === curMonthKey; }).map(function (r) { return { v: self.dayValue(r.Status) }; }), 'v');
     // Daily staff: count attendance after the BF date for every month that has no salary slip yet (e.g. September before its slip is saved).
@@ -6201,7 +6386,8 @@ class Component extends DCLogic {
   // Same idea for Mistri: BF + all due entries (across every site they've worked) minus payments.
   mistriFinancials(m, s) {
     const bf = this.personLatestBF(s.mistriBF, m.Name, m.BFAmount);
-    const due = this.sum(s.mistriDue.filter(function (r) { return r.MistriName === m.Name && (!bf.date || (r.Month + '-01') > bf.date); }), 'NetDue');
+    const self = this; const mkM = function (x) { x = String(x || ''); return /^\d{4}-\d{2}$/.test(x) ? x : self.monthLabelToKey(x); };
+    const due = this.sum(s.mistriDue.filter(function (r) { return r.MistriName === m.Name && (!bf.date || (mkM(r.Month) + '-01') > bf.date); }), 'NetDue');
     const advances = this.sum(s.mistriAdvances.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }), 'Amount');
     const paid = this.paidWithDiscount(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }));
     const discount = this.sum(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }), 'DiscountAmount');
@@ -6717,7 +6903,7 @@ class Component extends DCLogic {
       const materialTotal = allTx.reduce(function (a, r) { return a + matAmtOf(r); }, 0);
       const selfFareTotal = allTx.filter(isSelfFare).reduce(function (a, r) { return a + fareAmtOf(r); }, 0);
       const supplierFareTotal = allTx.filter(function (r) { return !isSelfFare(r); }).reduce(function (a, r) { return a + fareAmtOf(r); }, 0);
-      const fareTypeLabel = function (r) { return isSelfFare(r) ? 'Self' : 'Supplier'; };
+      const fareTypeLabel = function (r) { return isSelfFare(r) ? 'Self' : (r.FareType === 'Other' ? 'Other: ' + (r.FareSupplier || '-') : (r.FareLinkOf ? 'Fare (SL ' + r.FareLinkOf + ')' : 'Supplier')); };
       supplierDetail = {
         name: name, bfFmt: fmt(bfAmt), purchaseFmt: fmt(purchase), paidFmt: fmt(paid), outstandingFmt: fmt(outstanding), outstandingColor: this.oc(outstanding), bfMonth: bfMonth,
         materialFmt: fmt(materialTotal), supplierFareFmt: fmt(supplierFareTotal), selfFareFmt: fmt(selfFareTotal), totalFmt: fmt(materialTotal + supplierFareTotal),
@@ -6801,7 +6987,10 @@ class Component extends DCLogic {
     const showMaintenanceLock = !!(s.session && s.maintenance && s.maintenance.enabled && s.session.role !== 'Admin 1');
     const appAccessible = !showAppPicker && !showMaintenanceLock;
     const fmtLastLogin = function (v) { if (!v) return '—'; const d = new Date(v); return isNaN(d.getTime()) ? String(v) : d.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
-    const usersWithContact = s.users.map(function (u) { return Object.assign({}, u, { LastLoginFmt: fmtLastLogin(u.LastRefresh || u.LastLogin), onEditContact: function () { self.openModal('userContact', u); }, moneyOn: u.Role === 'Owner' || u.MoneyEnabled !== false, moneyLabel: (u.Role === 'Owner' || u.MoneyEnabled !== false) ? 'Enabled' : 'Disabled', onToggleMoney: function () { self.toggleMoneyPermission(u); } }); });
+    const usersWithContact = s.users.map(function (u) { return Object.assign({}, u, { LastLoginFmt: fmtLastLogin(u.LastRefresh || u.LastLogin), onEditContact: function () { self.openModal('userContact', u); }, moneyOn: u.Role === 'Owner' || u.MoneyEnabled !== false, moneyLabel: (u.Role === 'Owner' || u.MoneyEnabled !== false) ? 'Enabled' : 'Disabled', onToggleMoney: function () { self.toggleMoneyPermission(u); },
+      accessLabel: (u.Role === 'Owner' || u.Role === 'Admin 1') ? 'Full' : ((u.EditAccess || []).length ? (u.EditAccess || []).length + ' section' + ((u.EditAccess || []).length === 1 ? '' : 's') : 'None'),
+      canSetAccess: self.isApprover() && u.Role !== 'Owner' && u.Role !== 'Admin 1', accessReadOnly: !(self.isApprover() && u.Role !== 'Owner' && u.Role !== 'Admin 1'),
+      onEditAccess: function () { self.setState({ accessEdit: { UserID: u.UserID, Name: u.Name, sections: (u.EditAccess || []).slice() } }); } }); });
 
     const taskDateResolved = s.taskDate || todayStr;
     const taskAdmins = s.users.filter(function (u) { return u.Role === 'Admin 2' || u.Role === 'Admin 3'; });
@@ -7034,8 +7223,9 @@ class Component extends DCLogic {
       const mistriPaid = self.siteMistriPaid(site.SiteName, s, rf.from, rf.to);
       const labourPaid = self.siteLabourPaid(site.SiteName, s, rf.from, rf.to);
       const cementSpend = self.sum(s.cementReceived.filter(function (c) { return c.Site === site.SiteName && self.inRange(c.Date, rf.from, rf.to); }), 'Amount');
-      const expenditure = purchase + otherExpenditure + mistriPaid + labourPaid;
-      return { Site: site.SiteName, Material: fmt(purchase), Expenditure: fmt(expenditure), OtherExpenditure: fmt(otherExpenditure), Mistri: fmt(mistriPaid), Labour: fmt(labourPaid), Cement: fmt(cementSpend), _Material: purchase, _Expenditure: expenditure, _OtherExpenditure: otherExpenditure, _Mistri: mistriPaid, _Labour: labourPaid, _Cement: cementSpend };
+      const siteDisc = self.siteDiscountTotal(site.SiteName, s, rf.from, rf.to);
+      const expenditure = purchase + otherExpenditure + mistriPaid + labourPaid - siteDisc;
+      return { Discount: siteDisc ? '−' + fmt(siteDisc) : '—', _Discount: siteDisc, Site: site.SiteName, Material: fmt(purchase), Expenditure: fmt(expenditure), OtherExpenditure: fmt(otherExpenditure), Mistri: fmt(mistriPaid), Labour: fmt(labourPaid), Cement: fmt(cementSpend), _Material: purchase, _Expenditure: expenditure, _OtherExpenditure: otherExpenditure, _Mistri: mistriPaid, _Labour: labourPaid, _Cement: cementSpend };
     });
     const materialReportRows = rMaterialsF.map(function (m) {
       const rows = rTxF.filter(function (t) { return String(t.Material || '').trim().toLowerCase() === String(m.MaterialName || '').trim().toLowerCase(); });
@@ -7279,7 +7469,7 @@ class Component extends DCLogic {
     const showStaffPicker = !s.selectedStaff;
     const isEditing = !!s.editRecord;
     const formKey = s.modal + ':' + (editRecordRaw.SLNo || editRecordRaw.PaymentID || editRecordRaw.SupplierID || editRecordRaw.SiteID || editRecordRaw.MaterialID || editRecordRaw.StaffID || editRecordRaw.SalaryID || editRecordRaw.MistriID || editRecordRaw.DueID || editRecordRaw.LabourID || editRecordRaw.EntryID || editRecordRaw.AdvanceID || editRecordRaw.Name || (editRecordRaw.Supplier ? editRecordRaw.Supplier + '|' + editRecordRaw.BFDate : 'new'));
-    const txDefaults = { Date: editRecordRaw.Date || todayStr, Time: editRecordRaw.Time || '', Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Fare: editRecordRaw.Fare != null ? editRecordRaw.Fare : 0, FareType: editRecordRaw.FareType || 'Supplier', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
+    const txDefaults = { Date: editRecordRaw.Date || todayStr, Time: editRecordRaw.Time || '', Supplier: editRecordRaw.Supplier || '', VehicleNumber: editRecordRaw.VehicleNumber || '', Material: editRecordRaw.Material || '', Quantity: editRecordRaw.Quantity != null ? editRecordRaw.Quantity : '', Unit: editRecordRaw.Unit || 'TON', Rate: editRecordRaw.Rate != null ? editRecordRaw.Rate : '', Fare: editRecordRaw.Fare != null ? editRecordRaw.Fare : 0, FareType: editRecordRaw.FareType || 'Supplier', FareSupplier: editRecordRaw.FareSupplier || '', FareTotal: editRecordRaw.OtherFareAmount != null ? editRecordRaw.OtherFareAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const payDefaults = { Date: editRecordRaw.Date || todayStr, Supplier: editRecordRaw.Supplier || '', AmountPaid: editRecordRaw.AmountPaid != null ? editRecordRaw.AmountPaid : '', DiscountAmount: editRecordRaw.DiscountAmount != null ? editRecordRaw.DiscountAmount : '', PaymentMethod: editRecordRaw.PaymentMethod || 'Bank Transfer', ReferenceNumber: editRecordRaw.ReferenceNumber || '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '', WalletUser: editRecordRaw.WalletUser || myName };
     const bfDefaults = { Supplier: editRecordRaw.Supplier || '', BFMonth: editRecordRaw.BFMonth || '', BFDate: editRecordRaw.BFDate || '2026-08-31', BFAmount: editRecordRaw.BFAmount != null ? editRecordRaw.BFAmount : '', Site: editRecordRaw.Site || '', Remarks: editRecordRaw.Remarks || '' };
     const personBFName = s.modal === 'staffBF' ? s.selectedStaff : (s.modal === 'labourBF' ? s.selectedLabour : s.selectedMistri);
@@ -7335,6 +7525,31 @@ class Component extends DCLogic {
     const cbUserSet = {}; (s.fundTransfers || []).forEach(function (t) { if (t.To) cbUserSet[t.To] = 1; if (t.From) cbUserSet[t.From] = 1; }); cbUserSet['Sukadev'] = 1;
     const cbUsers = Object.keys(cbUserSet).sort().map(function (n) { return { name: n, selected: n === cbData.name }; });
     const navBtn = function (active) { return 'display:block;width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;margin-bottom:2px;box-sizing:border-box;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';border-left:3px solid ' + (active ? 'var(--gold)' : 'transparent') + ';'; };
+    const topBtnS = function (active, open) { return 'display:flex;align-items:center;white-space:nowrap;height:56px;padding:0 11px;border-radius:0;border:none;cursor:pointer;font-size:13.5px;font-weight:600;font-family:inherit;background:' + (open ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';box-shadow:' + (active ? 'inset 0 -2px 0 var(--gold)' : 'none') + ';'; };
+    const topItemS = function (active) { return 'display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;padding:9px 12px;border-radius:6px;border:none;cursor:pointer;font-size:13.5px;font-weight:600;font-family:inherit;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';'; };
+    const go = function (v) { return function () { self.setState({ navMenu: null, userMenuOpen: false }); self.setView(v); }; };
+    const detailOf = { supplierDetail: 'suppliers', dieselSupplierDetail: 'dieselSuppliers', staffDetail: 'staff', mistriDetail: 'mistri', labourDetail: 'labour', siteDetail: 'sites', vehicleDetail: 'vehicles' };
+    const curView = detailOf[s.view] || s.view;
+    const topDef = [
+      { k: 'dashboard', label: 'Dashboard', v: 'dashboard' },
+      { k: 'approvals', label: 'Approvals', v: 'approvals', badgeN: 'appr' },
+      { k: 'tasks', label: 'Tasks', v: 'tasks' },
+      { k: 'sup', label: 'Suppliers', items: [['Suppliers', 'suppliers'], ['Transactions', 'transactions'], ['Payments', 'payments'], ['BF Balance', 'bf']] },
+      { k: 'dsl', label: 'Diesel', items: [['Diesel Suppliers', 'dieselSuppliers'], ['Diesel Transactions', 'dieselTx'], ['Diesel Payments', 'dieselPayments'], ['Diesel BF', 'dieselBF']] },
+      { k: 'veh', label: 'Vehicles', v: 'vehicles' },
+      { k: 'mst', label: 'Masters', items: [['Sites', 'sites'], ['Materials', 'materials'], ['Cement', 'cement']] },
+      { k: 'stf', label: 'Staff', items: [['Staff', 'staff'], ['Staff Payments', 'staffPayments'], ['Mistri', 'mistri'], ['Labour', 'labour'], ['Attendance', 'attendance']] },
+      { k: 'fnd', label: 'Money', items: [['Money & Sites', 'funds'], ['Sites Cashbook', 'cashbook']] },
+      { k: 'rep', label: 'Reports', v: 'reports' }
+    ];
+    const buildTopNav = function (hn, nc, apprN) { hn = hn || {}; nc = nc || {}; return topDef.map(function (g) {
+      if (g.v) return { label: g.label, title: g.label, hasMenu: false, open: false, items: [], count: g.badgeN === 'appr' ? (apprN > 99 ? '99+' : (apprN || 0)) : 0, dot: false, style: topBtnS(curView === g.v, false), onClick: go(g.v) };
+      const items = g.items.map(function (it) { const b = hn[it[1]] ? (nc[it[1]] || 0) : 0; return { label: it[0], badge: b, style: topItemS(curView === it[1]), onClick: go(it[1]) }; });
+      const active = g.items.some(function (it) { return curView === it[1]; });
+      const open = s.navMenu === g.k;
+      const tot = items.reduce(function (a, i) { return a + (Number(i.badge) || 0); }, 0);
+      return { label: g.label, title: tot ? tot + ' new' : g.label, hasMenu: true, open: open, items: items, count: 0, dot: tot > 0, style: topBtnS(active, open), onClick: function () { self.setState({ navMenu: open ? null : g.k, userMenuOpen: false }); } };
+    }); };
     const navStyle = { dashboard: navBtn(viewIs.dashboard), suppliers: navBtn(viewIs.suppliers || viewIs.supplierDetail), transactions: navBtn(viewIs.transactions), payments: navBtn(viewIs.payments), staffPayments: navBtn(viewIs.staffPayments), bf: navBtn(viewIs.bf), dieselSuppliers: navBtn(viewIs.dieselSuppliers || viewIs.dieselSupplierDetail), dieselTx: navBtn(viewIs.dieselTx), vehicles: navBtn(viewIs.vehicles || viewIs.vehicleDetail), dieselPayments: navBtn(viewIs.dieselPayments), dieselBF: navBtn(viewIs.dieselBF), sites: navBtn(viewIs.sites), materials: navBtn(viewIs.materials), cement: navBtn(viewIs.cement), reports: navBtn(viewIs.reports), settings: navBtn(viewIs.settings), tasks: navBtn(viewIs.tasks), staff: navBtn(viewIs.staff || viewIs.staffDetail), mistri: navBtn(viewIs.mistri || viewIs.mistriDetail), labour: navBtn(viewIs.labour || viewIs.labourDetail), funds: navBtn(viewIs.funds), cashbook: navBtn(viewIs.cashbook), approvals: navBtn(viewIs.approvals), attendance: navBtn(viewIs.attendance) };
     const tabBtn = function (active) { return 'padding:9px 16px;border-radius:20px;border:1px solid ' + (active ? 'var(--gold)' : 'var(--border)') + ';cursor:pointer;font-size:13px;font-weight:600;background:' + (active ? 'var(--chip)' : 'transparent') + ';color:' + (active ? 'var(--gold)' : 'var(--text)') + ';'; };
     const reportTabStyle = { supplier: tabBtn(reportTabIs.supplier), site: tabBtn(reportTabIs.site), material: tabBtn(reportTabIs.material), monthly: tabBtn(reportTabIs.monthly), diesel: tabBtn(reportTabIs.diesel), staffDue: tabBtn(reportTabIs.staffDue), labour: tabBtn(reportTabIs.labour) };
@@ -7419,6 +7634,15 @@ class Component extends DCLogic {
       dieselSupplierCards: dieselSupplierCards, dieselSupplierDetail: dieselSupplierDetail,
       vehicleCards: vehicleCards, vehicleDetail: vehicleDetail, openVehicleModal: function () { self.openModal('vehicle'); },
       vehiclesSummaryFilter: s.vehiclesSummaryFilter, onVehiclesSummaryFrom: this.setGenericFilter('vehiclesSummaryFilter', 'from'), onVehiclesSummaryTo: this.setGenericFilter('vehiclesSummaryFilter', 'to'), onVehiclesSummaryAll: this.clearFilterToAll('vehiclesSummaryFilter'), onExportVehiclesSummaryPDF: this.exportVehiclesSummaryPDF.bind(this),
+      accessModalOpen: !!s.accessEdit, accessName: s.accessEdit ? s.accessEdit.Name : '',
+      accessRows: s.accessEdit ? self.accessSections().map(function (sec) { const on = s.accessEdit.sections.indexOf(sec[0]) !== -1; return { label: sec[1], on: on, toggle: function () { self.setState(function (st) { const a = Object.assign({}, st.accessEdit); a.sections = on ? a.sections.filter(function (x) { return x !== sec[0]; }) : a.sections.concat([sec[0]]); return { accessEdit: a }; }); } }; }) : [],
+      closeAccessModal: function () { self.setState({ accessEdit: null }); }, saveEditAccess: this.saveEditAccess.bind(this),
+      topNav: buildTopNav(hasNew, newCount, self.approvalVals().apprBadge),
+      userMenuOpen: !!s.userMenuOpen, navSettingsTop: go('settings'),
+      userInitials: String((s.session && s.session.name) || '').split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join(''),
+      userFirstName: String((s.session && s.session.name) || '').split(/\s+/)[0] || '', anyNavMenuOpen: !!s.navMenu || !!s.userMenuOpen,
+      toggleUserMenu: function () { self.setState({ userMenuOpen: !s.userMenuOpen, navMenu: null }); },
+      closeNavMenus: function () { self.setState({ navMenu: null, userMenuOpen: false }); },
       ...self.approvalVals(), syncing: !!s.syncing && !s.loading,
       cbOpeningFmt: cbFmt(cbData.opening), cbInFmt: cbFmt(cbData.totIn), cbOutFmt: cbFmt(cbData.totOut), cbClosingFmt: cbFmt(cbData.closing), cbClosingColor: cbData.closing >= 0 ? '#2e9e5b' : '#e2574c', cbInCashFmt: cbFmt(cbData.tInC), cbInACFmt: cbFmt(cbData.tInA), cbOutCashFmt: cbFmt(cbData.tOutC), cbOutACFmt: cbFmt(cbData.tOutA), cbCloseCashFmt: cbFmt(cbData.closeCash), cbCloseACFmt: cbFmt(cbData.closeAC), cbOpenCashFmt: cbFmt(cbData.openCash), cbOpenACFmt: cbFmt(cbData.openAC), cbWalletName: cbData.name, cbDays: cbDays, cbHasDays: cbDays.length > 0, cbNoDays: cbDays.length === 0, cbUsers: cbUsers, cbFrom: s.cbFrom, cbTo: s.cbTo, cbMonth: s.cbMonth,
       cbSetFrom: function (e) { self.setState({ cbFrom: e.target.value, cbMonth: '' }); }, cbSetTo: function (e) { self.setState({ cbTo: e.target.value, cbMonth: '' }); }, cbSetMonth: function (e) { self.setState({ cbMonth: e.target.value, cbFrom: '', cbTo: '' }); }, cbSetUser: function (e) { self.setState({ cbUser: e.target.value, cbOpen: {} }); },
@@ -7427,7 +7651,8 @@ class Component extends DCLogic {
       dieselTxRows: dieselTxF2.slice().map(function (r, i) { return Object.assign({}, r, { _origIdx: i, SiteDisplay: r.Site || r.VehicleSite || '' }); }).sort(function (a, b) { const ad = a.Date || '', bd = b.Date || ''; if (ad !== bd) return ad < bd ? 1 : -1; return b._origIdx - a._origIdx; }).map(function (r, i, arr) { return Object.assign({}, r, { DisplaySL: arr.length - i, RateFmt: fmt(r.Rate), ValueFmt: fmt(r.Value), onEdit: function () { self.openModal('dieselTx', r); }, onDelete: function () { self.deleteRecord('deleteDieselTransaction', { SLNo: r.SLNo }, 'dieselTx'); } }); }), exportDieselTxExcel: this.exportDieselTxExcel.bind(this), exportDieselTxPDF: this.exportDieselTxPDF.bind(this),
       dieselPayRows: dieselPayF2.slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), DiscountAmountFmt: fmt(r.DiscountAmount || 0), onEdit: function () { self.openModal('dieselPayment', r); }, onDelete: function () { self.deleteRecord('deleteDieselPayment', { PaymentID: r.PaymentID }, 'dieselPayments'); } }); }),
       dieselBFRows: s.dieselBF.slice().reverse().map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('dieselBF', r); }, onDelete: function () { if (r.Auto) { self.showToast('This BF is calculated automatically from last month. Add a BF for this month to override it.'); return; } self.deleteRecord('deleteDieselBF', { Supplier: r.Supplier, BFMonth: r.BFMonth, BFDate: r.BFDate }, 'dieselBF'); } }); }),
-      formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, payDefaults: payDefaults, bfDefaults: bfDefaults, personBFDefaults: personBFDefaults, personBFName: personBFName, personBFModalOpen: (modalIs.staffBF || modalIs.labourBF || modalIs.mistriBF), vehicleDefaults: vehicleDefaults, vehicleLogDefaults: vehicleLogDefaults, submitVehicle: this.submitVehicle.bind(this), submitVehicleLog: this.submitVehicleLog.bind(this), dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
+      formKey: formKey, modalTitle: modalTitle, txDefaults: txDefaults, siteDiscDefaults: { SiteDiscount: editRecordRaw.SiteDiscount || '', DiscountSite: editRecordRaw.DiscountSite || '' }, txFareIsOther: (s.txFareTypeUI || txDefaults.FareType) === 'Other', onFareTypeChange: function (e) { self.setState({ txFareTypeUI: e.target.value }); },
+      canRenameSupplier: self.isApprover(), renameSupplier: function () { self.renameSupplierPrompt(supplierDetail.name); }, payDefaults: payDefaults, bfDefaults: bfDefaults, personBFDefaults: personBFDefaults, personBFName: personBFName, personBFModalOpen: (modalIs.staffBF || modalIs.labourBF || modalIs.mistriBF), vehicleDefaults: vehicleDefaults, vehicleLogDefaults: vehicleLogDefaults, submitVehicle: this.submitVehicle.bind(this), submitVehicleLog: this.submitVehicleLog.bind(this), dieselTxDefaults: dieselTxDefaults, dieselPayDefaults: dieselPayDefaults, dieselBFDefaults: dieselBFDefaults, supplierDefaults: supplierDefaults, siteDefaults: siteDefaults, materialDefaults: materialDefaults,
       totalDieselQty: totalDieselQty, avgDieselRate: avgDieselRate, currentMonthDiesel: currentMonthDiesel,
       openTransactionModal: function () { self.openModal('transaction'); }, openPaymentModal: function () { self.openModal('payment'); }, openPaymentDiscountModal: function () { self.openModal('paymentDiscount'); }, openBFModal: function () { self.openModal('bf'); },
       openDieselTxModal: function () { self.openModal('dieselTx'); }, openDieselPaymentModal: function () { self.openModal('dieselPayment'); }, openDieselPaymentDiscountModal: function () { self.openModal('dieselPaymentDiscount'); }, openDieselBFModal: function () { self.openModal('dieselBF'); },
