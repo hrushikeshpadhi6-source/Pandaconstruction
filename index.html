@@ -6372,7 +6372,9 @@ class Component extends DCLogic {
     const close = this.balanceAsOf(kind, row, to || '');
     const pick = { supplier: [s.payments, 'Supplier'], diesel: [s.dieselPayments, 'Supplier'], staff: [s.staffPayments, 'StaffName'], mistri: [s.mistriPayments, 'MistriName'], labour: [s.labourPayments, 'LabourName'] }[kind];
     const pays = (pick[0] || []).filter(function (r) { return r[pick[1]] === n && self.inRange(r.Date, from, to); });
-    const paid = this.paidWithDiscount(pays);
+    const advPick = { mistri: [s.mistriAdvances, 'MistriName'], labour: [s.labourAdvances, 'LabourName'] }[kind];
+    const advs = advPick ? (advPick[0] || []).filter(function (r) { return r[advPick[1]] === n && self.inRange(r.Date, from, to); }) : [];
+    const paid = this.paidWithDiscount(pays) + this.sum(advs, 'Amount');
     let openLabel = '';
     if (openDate) {
       const od = new Date(openDate + 'T00:00:00');
@@ -6472,8 +6474,8 @@ class Component extends DCLogic {
     const paid = this.paidWithDiscount(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }));
     const discount = this.sum(s.mistriPayments.filter(function (r) { return r.MistriName === m.Name && (!bf.date || r.Date > bf.date); }), 'DiscountAmount');
     const bfAmt = bf.amt;
-    const outstanding = bfAmt + due + advances - paid;
-    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, advances: advances, paid: paid, discount: discount, outstanding: outstanding };
+    const outstanding = bfAmt + due - advances - paid;
+    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, advances: advances, paid: paid, paidTotal: paid + advances, discount: discount, outstanding: outstanding };
   }
   // Same idea for Labour: BF + all entries (daily or contract, across every site) + advances minus payments.
   labourFinancials(l, s) {
@@ -6483,8 +6485,8 @@ class Component extends DCLogic {
     const paid = this.paidWithDiscount(s.labourPayments.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }));
     const discount = this.sum(s.labourPayments.filter(function (r) { return r.LabourName === l.Name && (!bf.date || r.Date > bf.date); }), 'DiscountAmount');
     const bfAmt = bf.amt;
-    const outstanding = bfAmt + due + advances - paid;
-    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, advances: advances, paid: paid, discount: discount, outstanding: outstanding };
+    const outstanding = bfAmt + due - advances - paid;
+    return { bfAmt: bfAmt, bfMonth: bf.month, due: due, advances: advances, paid: paid, paidTotal: paid + advances, discount: discount, outstanding: outstanding };
   }
   // A site's own balance before any transfers are applied — used to decide which way a
   // transfer should move each side (see siteTransferNet).
@@ -7125,11 +7127,11 @@ class Component extends DCLogic {
 
     const mistriCards = s.mistri.map(function (m) {
       const fin = self.mistriFinancials(m, s);
-      return Object.assign({}, m, { bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteMistri(m); }, onView: function () { self.openMistriDetail(m.Name); }, onEdit: function () { self.openModal('mistri', m); }, _rec: m, _mt: 'mistri' });
+      return Object.assign({}, m, { bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paidTotal), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteMistri(m); }, onView: function () { self.openMistriDetail(m.Name); }, onEdit: function () { self.openModal('mistri', m); }, _rec: m, _mt: 'mistri' });
     });
     const labourCards = s.labour.map(function (l) {
       const fin = self.labourFinancials(l, s);
-      return Object.assign({}, l, { bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteLabour(l); }, onView: function () { self.openLabourDetail(l.Name); }, onEdit: function () { self.openModal('labour', l); }, _rec: l, _mt: 'labour' });
+      return Object.assign({}, l, { bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paidTotal), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), onDelete: function () { self.deleteLabour(l); }, onView: function () { self.openLabourDetail(l.Name); }, onEdit: function () { self.openModal('labour', l); }, _rec: l, _mt: 'labour' });
     });
 
     const toolDateResolved = s.attendanceDate || todayStr;
@@ -7227,14 +7229,14 @@ class Component extends DCLogic {
       const fin = self.mistriFinancials(miRow, s);
       mistriDetail = {
         Name: miRow.Name || miName, ContactNumber: miRow.ContactNumber || '',
-        bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paid), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), bfMonth: fin.bfMonth,
+        bfFmt: fmt(fin.bfAmt), totalDueFmt: fmt(fin.due), totalPaidFmt: fmt(fin.paidTotal), outstandingFmt: fmt(fin.outstanding), outstandingColor: self.oc(fin.outstanding), bfMonth: fin.bfMonth,
         bfRows: (s.mistriBF || []).filter(function (r) { return r.Name === miName; }).slice().sort(function (a, b) { return (b.BFDate || '').localeCompare(a.BFDate || ''); }).map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('mistriBF', r); }, _rec: r, _mt: 'mistriBF', onDelete: function () { self.deletePersonBF('mistriBF', 'deleteMistriBF', r); } }); }),
         onAddBF: function () { self.openModal('mistriBF', null); },
         dueRows: s.mistriDue.filter(function (r) { return r.MistriName === miName; }).slice().reverse().map(function (r) { return Object.assign({}, r, { NetDueFmt: fmt(r.NetDue), onEdit: function () { self.openModal('mistriDue', r); }, _rec: r, _mt: 'mistriDue', onDelete: function () { self.deleteMistriDue(r); } }); }),
         paymentRows: s.mistriPayments.filter(function (r) { return r.MistriName === miName && self.inRange(r.Date, s.mistriDetailFilter.from, s.mistriDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), DiscountAmountFmt: fmt(r.DiscountAmount || 0), onEdit: function () { self.openModal('mistriPayment', r); }, _rec: r, _mt: 'mistriPayment', onDelete: function () { self.deleteMistriPayment(r); } }); }),
         advanceRows: s.mistriAdvances.filter(function (r) { return r.MistriName === miName && self.inRange(r.Date, s.mistriDetailFilter.from, s.mistriDetailFilter.to); }).slice().reverse().map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isAdvance: true })); }, onDelete: function () { self.deleteMistriAdvance(r); } }); })
       };
-      this._lastMistriDetail = { name: mistriDetail.Name, dueRows: mistriDetail.dueRows, paymentRows: mistriDetail.paymentRows, advanceRows: mistriDetail.advanceRows, filter: s.mistriDetailFilter, bfAmt: fin.bfAmt, due: fin.due, paid: fin.paid, discount: fin.discount, outstanding: fin.outstanding };
+      this._lastMistriDetail = { name: mistriDetail.Name, dueRows: mistriDetail.dueRows, paymentRows: mistriDetail.paymentRows, advanceRows: mistriDetail.advanceRows, filter: s.mistriDetailFilter, bfAmt: fin.bfAmt, due: fin.due, paid: fin.paidTotal, discount: fin.discount, outstanding: fin.outstanding };
       const mdf = s.mistriDetailFilter || {};
       if (mdf.from || mdf.to) {
         const pm = self.periodStatement('mistri', miRow.Name ? miRow : { Name: miName }, mdf.from, mdf.to);
@@ -7253,14 +7255,14 @@ class Component extends DCLogic {
       const finL = self.labourFinancials(lbRow, s);
       labourDetail = {
         Name: lbRow.Name || lbName, ContactNumber: lbRow.ContactNumber || '',
-        bfFmt: fmt(finL.bfAmt), totalDueFmt: fmt(finL.due), totalPaidFmt: fmt(finL.paid), outstandingFmt: fmt(finL.outstanding), outstandingColor: self.oc(finL.outstanding), bfMonth: finL.bfMonth,
+        bfFmt: fmt(finL.bfAmt), totalDueFmt: fmt(finL.due), totalPaidFmt: fmt(finL.paidTotal), outstandingFmt: fmt(finL.outstanding), outstandingColor: self.oc(finL.outstanding), bfMonth: finL.bfMonth,
         bfRows: (s.labourBF || []).filter(function (r) { return r.Name === lbName; }).slice().sort(function (a, b) { return (b.BFDate || '').localeCompare(a.BFDate || ''); }).map(function (r) { return Object.assign({}, r, { BFAmountFmt: fmt(r.BFAmount), onEdit: function () { self.openModal('labourBF', r); }, _rec: r, _mt: 'labourBF', onDelete: function () { self.deletePersonBF('labourBF', 'deleteLabourBF', r); } }); }),
         onAddBF: function () { self.openModal('labourBF', null); },
         entryRows: s.labourEntries.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { const extra = (Number(r.AdditionalAmount) || 0) + (Number(r.Fare) || 0); return Object.assign({}, r, { NetAmountFmt: fmt(r.NetAmount), HowManyLabourFmt: r.HowManyLabour ? String(r.HowManyLabour) : '—', DailyPriceFmt: r.DailyPrice ? fmt(r.DailyPrice) : '—', ExtraFmt: extra ? fmt(extra) : '—', onEdit: function () { self.openLabourEntryModal(r); }, _rec: r, _mt: 'labourEntry', onDelete: function () { self.deleteLabourEntry(r); } }); }),
         paymentRows: s.labourPayments.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountPaidFmt: fmt(r.AmountPaid), DiscountAmountFmt: fmt(r.DiscountAmount || 0), onEdit: function () { self.openModal('labourPayment', r); }, _rec: r, _mt: 'labourPayment', onDelete: function () { self.deleteLabourPayment(r); } }); }),
         advanceRows: s.labourAdvances.filter(function (r) { return r.LabourName === lbName && self.inRange(r.Date, s.labourDetailFilter.from, s.labourDetailFilter.to); }).slice().sort(function (a, b) { return (b.Date || '').localeCompare(a.Date || ''); }).map(function (r) { return Object.assign({}, r, { AmountFmt: fmt(r.Amount), onEdit: function () { self.openModal('fundTransfer', Object.assign({}, r, { _isLabourAdvance: true })); }, onDelete: function () { self.deleteLabourAdvance(r); } }); })
       };
-      this._lastLabourDetail = { name: labourDetail.Name, entryRows: labourDetail.entryRows, paymentRows: labourDetail.paymentRows, advanceRows: labourDetail.advanceRows, filter: s.labourDetailFilter, bfAmt: finL.bfAmt, due: finL.due, paid: finL.paid, discount: finL.discount, outstanding: finL.outstanding };
+      this._lastLabourDetail = { name: labourDetail.Name, entryRows: labourDetail.entryRows, paymentRows: labourDetail.paymentRows, advanceRows: labourDetail.advanceRows, filter: s.labourDetailFilter, bfAmt: finL.bfAmt, due: finL.due, paid: finL.paidTotal, discount: finL.discount, outstanding: finL.outstanding };
       const ldf = s.labourDetailFilter || {};
       if (ldf.from || ldf.to) {
         const pl = self.periodStatement('labour', lbRow.Name ? lbRow : { Name: lbName }, ldf.from, ldf.to);
