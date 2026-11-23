@@ -296,7 +296,7 @@
       case "setEditAccess": {
         const users = await colToArray("users");
         const req = users.find(function (x) { return x.Name === p.RequestedBy; });
-        if (!req || (req.Role !== "Owner" && req.Role !== "Admin 1")) return { success: false, message: "Only Owner or Admin 1 can change edit access." };
+        if (!req || (req.Role !== "Owner" && req.Role !== "Admin 1" && req.Name !== "Hrushikesh Padhi")) return { success: false, message: "Only Owner, Admin 1 or Hrushikesh Padhi can change edit access." };
         const ok = await genericUpdate("User", { UserID: p.UserID }, { EditAccess: Array.isArray(p.EditAccess) ? p.EditAccess : [] });
         if (!ok) return { success: false, message: "User not found." };
         await auditLog(p.RequestedBy, "Changed Edit Access", "Users", p.UserID, (p.Name || "") + ": " + (p.EditAccess || []).join(", "));
@@ -638,7 +638,7 @@
 
       case "getStaff": return { success: true, data: await colToArray("staff") };
       case "addStaff": { const r = await genericAdd("Staff", { Name: p.Name, Role: p.Role, ContactNumber: p.ContactNumber, SalaryBasis: p.SalaryBasis, MonthlyAmount: p.MonthlyAmount || 0, DailyRate: p.DailyRate || 0, BFAmount: p.BFAmount || 0 }); await auditLog(p.CreatedBy, "Added Staff", "Staff", r.id, p.Name); return { success: true, message: "Staff saved successfully." }; }
-      case "updateStaff": { const ok = await genericUpdate("Staff", p, { Name: p.Name, Role: p.Role, ContactNumber: p.ContactNumber, SalaryBasis: p.SalaryBasis, MonthlyAmount: p.MonthlyAmount || 0, DailyRate: p.DailyRate || 0, BFAmount: p.BFAmount || 0 }); if (!ok) return { success: false, message: "Staff not found." }; await auditLog(p.CreatedBy, "Updated Staff", "Staff", p.StaffID, p.Name); return { success: true, message: "Staff updated successfully." }; }
+      case "updateStaff": { const upd = { Name: p.Name, Role: p.Role, ContactNumber: p.ContactNumber, SalaryBasis: p.SalaryBasis, MonthlyAmount: p.MonthlyAmount || 0, DailyRate: p.DailyRate || 0, BFAmount: p.BFAmount || 0 }; if (Array.isArray(p.RateHistory)) upd.RateHistory = p.RateHistory; const ok = await genericUpdate("Staff", p, upd); if (!ok) return { success: false, message: "Staff not found." }; await auditLog(p.CreatedBy, "Updated Staff", "Staff", p.StaffID, p.Name); return { success: true, message: "Staff updated successfully." }; }
       case "deleteStaff": await genericDelete("Staff", p.StaffID); await auditLog(p.CreatedBy, "Deleted Staff", "Staff", p.StaffID, p.Name || ""); return { success: true, message: "Staff deleted successfully." };
 
       case "getStaffSalary": return { success: true, data: await colToArray("staffSalary") };
